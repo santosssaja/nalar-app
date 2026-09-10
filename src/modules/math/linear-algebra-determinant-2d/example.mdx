@@ -1,0 +1,42 @@
+---
+title: "Aljabar Linear: Memvisualisasikan Determinan sebagai Perubahan Luas Wilayah 2D"
+category: "math"
+level: 3
+topic_slug: "linear-algebra-determinant-2d"
+---
+
+import { InteractiveLesson } from "./InteractiveLesson";
+import { Canvas } from "./Canvas";
+import { KaTeXFormula } from "./KaTeXFormula";
+
+# Memahami Determinan Matriks 2D Secara Geometris
+
+Kebanyakan buku teks langsung memperkenalkan determinan matriks $2 \times 2$ sebagai formula aljabar murni:
+
+$$
+\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc
+$$
+
+Namun, apa arti fisis dan geometris dari angka ini?
+
+## 1. Kotak Satuan Menjadi Jajaran Genjang
+
+Bayangkan sebuah kotak berukuran $1 \times 1$ pada bidang Kartesius yang dibentuk oleh dua vektor basis standar:
+- $\hat{i} = [1, 0]$
+- $\hat{j} = [0, 1]$
+
+Luas awal kotak ini tepat sama dengan $1$. Ketika matriks transformasi diterapkan, kedua vektor basis berpindah ke lokasi baru. Kotak satuan tadi berubah bentuk menjadi sebuah **jajaran genjang**.
+
+> **Determinan matriks** sesungguhnya adalah **faktor pengali luas** jajaran genjang baru tersebut terhadap luas kotak semula!
+
+## 2. Simulasi Interaktif
+
+Coba gerakkan titik ujung panah vektor $\hat{i}$ (hijau) dan $\hat{j}$ (biru) pada kanvas di bawah ini:
+
+<InteractiveLesson />
+
+## 3. Kondisi Kunci yang Perlu Diperhatikan
+
+1. **Determinan Positif ($\det > 0$):** Luas bidang membesar atau mengecil, dan orientasi ruang tetap searah jarum jam atau berlawanan arah seperti semula.
+2. **Determinan Nol ($\det = 0$):** Kedua vektor basis berada pada garis lurus yang sama (kolinier). Luas jajaran genjang menjadi $0$. Dimensi 2D mengempis menjadi garis 1D. Matriks ini **tidak dapat diinvers** karena informasi telah hilang!
+3. **Determinan Negatif ($\det < 0$):** Bidang koordinat terbalik seperti bayangan di cermin (*orientation reversed*).
