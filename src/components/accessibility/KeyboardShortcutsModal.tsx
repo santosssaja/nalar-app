@@ -10,7 +10,7 @@ interface KeyboardShortcutsModalProps {
 
 const SHORTCUTS = [
   { key: "Space", desc: "Mulai atau hentikan pembacaan narasi suara (audio)" },
-  { key: "C", desc: "Beralih antara Mode Gelap Normal dan Mode Kontras Tinggi" },
+  { key: "C", desc: "Beralih mode tema visual (Gelap → Terang → Kontras Tinggi)" },
   { key: "H", desc: "Minta petunjuk bertahap (AI Hint) pada tantangan aktif" },
   { key: "← / →", desc: "Menggeser nilai parameter slider (langkah 0.1)" },
   { key: "Tab", desc: "Navigasi antar elemen interaktif secara berurutan" },

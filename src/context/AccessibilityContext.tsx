@@ -7,7 +7,7 @@ import {
   FontScale,
   ThemeMode,
 } from "@/types/accessibility";
-import { getStoredItem, setStoredItem, STORAGE_KEYS } from "@/lib/storage";
+import { useLocalStorage, STORAGE_KEYS } from "@/lib/storage";
 import { speechManager } from "@/lib/audio/speech";
 
 interface AccessibilityContextType {
@@ -15,6 +15,7 @@ interface AccessibilityContextType {
   isSpeaking: boolean;
   activeSubtitle: string | null;
   setTheme: (theme: ThemeMode) => void;
+  cycleTheme: () => void;
   toggleHighContrast: () => void;
   setFontScale: (scale: FontScale) => void;
   toggleAudioNarration: () => void;
@@ -27,12 +28,10 @@ interface AccessibilityContextType {
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
 export function AccessibilityProvider({ children }: { children: React.ReactNode }) {
-  const [preferences, setPreferences] = useState<AccessibilityPreferences>(() => {
-    return getStoredItem<AccessibilityPreferences>(
-      STORAGE_KEYS.A11Y_PREFERENCES,
-      DEFAULT_ACCESSIBILITY_PREFERENCES
-    );
-  });
+  const [preferences, setPreferences] = useLocalStorage<AccessibilityPreferences>(
+    STORAGE_KEYS.A11Y_PREFERENCES,
+    DEFAULT_ACCESSIBILITY_PREFERENCES
+  );
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
 
@@ -43,24 +42,46 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     root.setAttribute("data-theme", preferences.theme);
     root.setAttribute("data-high-contrast", String(preferences.theme === "high-contrast"));
     root.setAttribute("data-font-scale", preferences.fontScale);
-
-    setStoredItem(STORAGE_KEYS.A11Y_PREFERENCES, preferences);
   }, [preferences]);
 
+  const triggerThemeTransition = () => {
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.add("theme-transitioning");
+      window.setTimeout(() => {
+        document.documentElement.classList.remove("theme-transitioning");
+      }, 250);
+    }
+  };
+
   const setTheme = useCallback((theme: ThemeMode) => {
+    triggerThemeTransition();
     setPreferences((prev) => ({ ...prev, theme }));
-  }, []);
+  }, [setPreferences]);
+
+  const cycleTheme = useCallback(() => {
+    triggerThemeTransition();
+    setPreferences((prev) => {
+      const nextTheme: ThemeMode =
+        prev.theme === "dark"
+          ? "light"
+          : prev.theme === "light"
+          ? "high-contrast"
+          : "dark";
+      return { ...prev, theme: nextTheme };
+    });
+  }, [setPreferences]);
 
   const toggleHighContrast = useCallback(() => {
+    triggerThemeTransition();
     setPreferences((prev) => ({
       ...prev,
       theme: prev.theme === "high-contrast" ? "dark" : "high-contrast",
     }));
-  }, []);
+  }, [setPreferences]);
 
   const setFontScale = useCallback((fontScale: FontScale) => {
     setPreferences((prev) => ({ ...prev, fontScale }));
-  }, []);
+  }, [setPreferences]);
 
   const toggleAudioNarration = useCallback(() => {
     setPreferences((prev) => {
@@ -72,15 +93,15 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
       }
       return { ...prev, audioNarrationEnabled: next };
     });
-  }, []);
+  }, [setPreferences]);
 
   const setSpeechRate = useCallback((speechRate: number) => {
     setPreferences((prev) => ({ ...prev, speechRate }));
-  }, []);
+  }, [setPreferences]);
 
   const toggleSubtitles = useCallback(() => {
     setPreferences((prev) => ({ ...prev, subtitlesEnabled: !prev.subtitlesEnabled }));
-  }, []);
+  }, [setPreferences]);
 
   const stopSpeech = useCallback(() => {
     speechManager.stop();
@@ -119,6 +140,7 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
         isSpeaking,
         activeSubtitle,
         setTheme,
+        cycleTheme,
         toggleHighContrast,
         setFontScale,
         toggleAudioNarration,

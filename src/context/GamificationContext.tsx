@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useCallback } from "react";
 import confetti from "canvas-confetti";
 import {
   AVAILABLE_BADGES,
@@ -8,7 +8,7 @@ import {
   INITIAL_PROGRESS_STATE,
   UserProgressState,
 } from "@/types/gamification";
-import { getStoredItem, setStoredItem, STORAGE_KEYS } from "@/lib/storage";
+import { useLocalStorage, STORAGE_KEYS } from "@/lib/storage";
 
 interface GamificationContextType {
   progress: UserProgressState;
@@ -26,16 +26,10 @@ interface GamificationContextType {
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
 
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
-  const [progress, setProgress] = useState<UserProgressState>(() => {
-    return getStoredItem<UserProgressState>(
-      STORAGE_KEYS.USER_PROGRESS,
-      INITIAL_PROGRESS_STATE
-    );
-  });
-
-  useEffect(() => {
-    setStoredItem(STORAGE_KEYS.USER_PROGRESS, progress);
-  }, [progress]);
+  const [progress, setProgress] = useLocalStorage<UserProgressState>(
+    STORAGE_KEYS.USER_PROGRESS,
+    INITIAL_PROGRESS_STATE
+  );
 
   const triggerCelebration = useCallback(() => {
     try {
@@ -100,13 +94,12 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       triggerCelebration();
       return { isNewSuccess, earnedXp: xpReward };
     },
-    [triggerCelebration]
+    [triggerCelebration, setProgress]
   );
 
   const resetProgress = useCallback(() => {
     setProgress(INITIAL_PROGRESS_STATE);
-    setStoredItem(STORAGE_KEYS.USER_PROGRESS, INITIAL_PROGRESS_STATE);
-  }, []);
+  }, [setProgress]);
 
   const unlockedBadgeList = AVAILABLE_BADGES.filter((b) =>
     progress.unlockedBadges.includes(b.id)

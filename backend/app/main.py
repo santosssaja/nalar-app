@@ -6,7 +6,7 @@ from app.api.v1.router import api_router
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Backend API for Nalar: Interactive & Inclusive STEM Education Platform (SDG 4)",
+    description="Backend API for Nalar: Interactive & Inclusive STEM Education Platform (Pendidikan Berkualitas)",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",

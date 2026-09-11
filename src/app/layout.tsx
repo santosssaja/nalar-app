@@ -5,11 +5,31 @@ import { GamificationProvider } from "@/context/GamificationContext";
 import { AccessibilityBar } from "@/components/accessibility/AccessibilityBar";
 
 export const metadata: Metadata = {
-  title: "Nalar | Platform Belajar STEM Interaktif & Inklusif (SDG 4)",
+  title: "Nalar | Platform Belajar STEM Interaktif & Inklusif",
   description:
-    "Eksplorasi konsep matematika dan sains melalui simulasi kanvas interaktif, visualisasi intuitif, dan fitur ramah aksesibilitas difabel tanpa hambatan pendaftaran.",
-  keywords: ["STEM", "Matematika Interaktif", "SDG 4", "Aljabar Linear", "Aksesibilitas", "Edukasi Visual"],
+    "Pendidikan Berkualitas: menyediakan pendidikan yang inklusif, merata, dan berkualitas melalui simulasi kanvas interaktif dan aksesibilitas ramah difabel.",
+  keywords: ["STEM", "Matematika Interaktif", "Pendidikan Berkualitas", "Aljabar Linear", "Aksesibilitas", "Edukasi Visual"],
 };
+
+/**
+ * Synchronous Anti-FOUC (Flash of Unstyled Content) Script.
+ * Runs in <head> before first browser paint to eliminate theme flickering on page refresh.
+ */
+const themeInitializerScript = `(function() {
+  try {
+    var stored = localStorage.getItem('nalar_a11y_prefs_v1');
+    if (stored) {
+      var prefs = JSON.parse(stored);
+      if (prefs && prefs.theme) {
+        document.documentElement.setAttribute('data-theme', prefs.theme);
+        document.documentElement.setAttribute('data-high-contrast', String(prefs.theme === 'high-contrast'));
+      }
+      if (prefs && prefs.fontScale) {
+        document.documentElement.setAttribute('data-font-scale', prefs.fontScale);
+      }
+    }
+  } catch (e) {}
+})();`;
 
 export default function RootLayout({
   children,
@@ -17,7 +37,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" data-theme="dark">
+    <html
+      lang="id"
+      data-theme="dark"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: themeInitializerScript }}
+        />
+      </head>
       <body className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         <AccessibilityProvider>
           <GamificationProvider>

@@ -1,123 +1,137 @@
-## 1. Arsitektur Konsep & UX (*Learning Experience Design*)
+# 📐 Nalar: Arsitektur Teknis Modul Matematika Interaktif
 
-Agar tidak menjadi sekadar repositori teks rumus, terapkan filosofi **"Intuisi Visual $\rightarrow$ Manipulasi Parameter $\rightarrow$ Formalisasi Matematis"**.
-
-```
-[1. Hook Fenomena/Visual]  --> Animasi interaktif tanpa rumus rumit
-           │
-[2. Interactive Sandbox]   --> Pengguna mengubah slider/vektor/koordinat langsung
-           │
-[3. Formalisasi Simbolik]  --> Rumus formal diturunkan dari pola yang baru saja dimanipulasi
-           │
-[4. Tantangan Mini (Quiz)] --> Masalah yang diselesaikan dengan menyetel parameter secara tepat
-
-```
-
-### Navigasi: Non-Linear Skill Tree (Peta Keterampilan)
-
-* Tampilkan kurikulum dalam bentuk **Skill Tree / Directed Acyclic Graph (DAG)** interaktif (mirip pohon riset pada *game* strategi).
-* Node materi saling terhubung dengan dependensi jelas (misalnya: membuka *Kalkulus Multivariabel* memerlukan *Kalkulus 1* dan *Aljabar Linear*).
-* Setiap node memiliki indikator progres dan tingkat penguasaan (*intuition clear, proofs understood, challenges solved*).
+Dokumen ini mendefinisikan standar arsitektur teknis, pola komponen, serta panduan rekayasa perangkat lunak untuk modul pembelajaran matematika pada platform **Nalar**.
 
 ---
 
-## 2. Pustaka & Tech Stack yang Direkomendasikan
+## 1. Filosofi Desain Pengalaman Belajar (*Learning Experience Design*)
 
-Untuk menghadirkan matematika dinamis di web modern, kombinasi stack berikut merupakan standar performa tinggi:
-
-### A. Inti Aplikasi & Manajemen Konten
-
-* **Framework:** Next.js (React). Cocok untuk perpaduan artikel edukasi berbasis teks (SEO-friendly) dan komponen visual dinamis.
-* **Format Penulisan Konten:** **MDX** (`.mdx`). Memungkinkan penulisan materi dalam Markdown biasa, namun dapat menyematkan komponen visual React interaktif di tengah-tengah paragraf:
-```mdx
-Perhatikan bagaimana matriks mengubah ruang vektor berikut:
-<MatrixTransform2D defaultMatrix={[[2, 1], [0, 1]]} />
+Agar platform tidak menjadi sekadar repositori teks rumus, setiap modul wajib mematuhi rantai pedagogi:
 
 ```
-
-* **Render Simbol Matematika:** **KaTeX** (jauh lebih cepat dalam rendering sisi klien maupun SSR dibanding MathJax konvensional).
-
-### B. Visualisasi Matematika & Grafis Interaktif
-
-Pilih *tool* berdasarkan dimensi dan kompleksitas visual materi:
-
-| Kebutuhan Visual | Rekomendasi Pustaka | Penggunaan Ideal |
-| --- | --- | --- |
-| **Visualisasi Matematika 2D Khusus** | **Mafs** (React math visualizer) | Plot fungsi, grid transformasi matriks, medan vektor, Riemann sum, titik tangen kalkulus. Komponennya terinspirasi dari animasi 3Blue1Brown. |
-| **Grafik Data & Jaringan (Graph Theory)** | **D3.js** atau **Cytoscape.js** | Visualisasi simpul dan sisi, traversal BFS/DFS, pohon biner, aliran jaringan (*network flow*). |
-| **Ruang 3D & Manifold** | **Three.js** / **React Three Fiber (R3F)** | Permukaan multivariabel, koordinat bola/silinder, topologi pita Möbius, kelengkungan ruang, medan vektor 3D. |
-| **Simulasi Partikel & Fisika Probabilitas** | **HTML5 Canvas / PixiJS** + **Matter.js** | Simulasi papan Galton (Plinko) untuk distribusi normal, estimasi Monte Carlo $\pi$, gas ideal. |
-| **Komputasi Simbolik & Numerik** | **Math.js** atau **nerdamer** | Menghitung determinan, turunan simbolik, atau inversi matriks langsung di sisi peramban (*client-side*). |
+[1. Hook Fenomena / Analogi]
+         │ (Visualisasi intuitif tanpa rumus menakutkan)
+         ▼
+[2. Manipulasi Parameter Langsung]
+         │ (Pengguna menggeser slider / menyeret titik di kanvas)
+         ▼
+[3. Formalisasi Simbolik Reaktif]
+         │ (Rumus KaTeX sinkron seketika dengan angka di kanvas)
+         ▼
+[4. Tantangan Logika Interaktif]
+           (Masalah diselesaikan dengan menyetel kanvas ke kondisi target)
+```
 
 ---
 
-## 3. Ide Interaktivitas Spesifik per Cabang Matematika
+## 2. Struktur Modul & Pemisahan Kepentingan (*Separation of Concerns*)
 
-### A. Aljabar Linear (Kunci: Transformasi Ruang)
+Setiap modul topik diorganisasikan secara modular dalam direktori `src/modules/math/<topic-slug>/`:
 
-* **2D Matrix Transformer:** Pengguna menggeser vektor basis $\hat{i} = [1, 0]$ dan $\hat{j} = [0, 1]$ pada kisi koordinat. Saat ditarik, seluruh grid di latar belakang ikut berotasi, meregang (*scaling*), atau memotong (*shearing*).
-* **Eigenvector Finder:** Menampilkan lingkaran vektor unit. Pengguna memutar vektor di sepanjang lingkaran hingga menemukan arah di mana vektor output sejajar dengan vektor input (vektor eigen) dan panjangnya berubah sebesar skalar tertentu (nilai eigen).
-* **3D Dot & Cross Product:** Memanipulasi dua panah vektor di ruang 3D, menampilkan proyeksi bayangan (*dot product*) dan bidang jajaran genjang yang tegak lurus (*cross product*).
+```text
+src/modules/math/<topic-slug>/
+├── types.ts              # Antarmuka TypeScript spesifik modul (State, Variables)
+├── content.ts            # Teks narasi, analogi konsep, deskripsi audio, data tantangan
+├── Canvas.tsx            # Komponen visualisasi interaktif (Mafs / SVG dinamis)
+├── Controls.tsx          # Panel slider dan pengatur parameter
+├── Challenge.tsx         # Antarmuka kuis dan validasi kondisi target
+├── example.mdx           # Dokumentasi dan contoh penggunaan komponen dalam artikel MDX
+└── index.ts              # Barrel export untuk kemudahan integrasi
+```
 
-### B. Kalkulus & Analisis
+### Logika Matematika Murni (*Math Engine*)
+Semua rumus dan komputasi murni **wajib dipisahkan** ke dalam `src/lib/math-engine/<topic>.ts` sebagai *pure functions* tanpa ketergantungan DOM atau React, agar dapat diuji secara unit (*unit-testable*):
 
-* **Interactive Tangent & Secant (Turunan):** Dua titik $x$ dan $x + \Delta x$ pada kurva. Pengguna menggeser slider $\Delta x \to 0$, memperlihatkan garis sekan secara halus bertransisi menjadi garis singgung tangen.
-* **Dynamic Riemann Sum (Integral):** Pengguna menggeser slider jumlah persegi panjang $N$ dari $3$ hingga $1000$. Area di bawah kurva diarsir secara *real-time*, memperlihatkan eror aproksimasi mengecil menuju nilai integral pasti.
-* **Vector Field Flow (Persamaan Diferensial):** Medan vektor 2D di mana pengguna dapat melepas ribuan partikel kecil untuk melihat aliran (*streamlines*) dari sistem diferensial $\frac{dx}{dt}$ dan $\frac{dy}{dt}$.
-
-### C. Matematika Diskrit & Struktur Data
-
-* **Interactive Graph Playground:** Kanvas kosong di mana pengguna bisa mengklik untuk membuat simpul (*node*), menarik garis untuk sisi berbobot, lalu menekan tombol *Play* untuk melihat algoritma Dijkstra atau A* mewarnai jalur terpendek langkah demi langkah.
-* **Modulo Clock (Aritmetika Modular):** Lingkaran jam dengan jumlah angka variabel ($n$). Menunjukkan perkalian modular secara visual (membentuk pola kardioid dan fraktal saat perkalian dinaikkan).
-
-### D. Probabilitas & Statistika
-
-* **Monte Carlo Experiment:** Tombol "Jatuhkan 10.000 Titik" ke dalam seperempat lingkaran di dalam persegi untuk menghitung rasio luas dan mengestimasi nilai $\pi$.
-* **Central Limit Theorem Playground:** Pengguna menggambar sendiri distribusi probabilitas acak apa pun (bahkan yang aneh atau bimodal). Platform kemudian mengambil sampel berulang kali dan menampilkan bagaimana distribusi rata-rata sampel selalu membentuk lonceng Gaussian (*Bell Curve*).
+- `src/lib/math-engine/linear-algebra.ts` (determinan 2D, transformasi matriks, validasi numerik).
+- `src/lib/math-engine/number-theory.ts` (aritmetika jam modulo, coprime, faktorisasi prima, titik lingkaran polar).
 
 ---
 
-## 4. Arsitektur Komponen Teknis (Pola Implementasi)
+## 3. Pustaka & Peran Teknologi Visual
 
-Untuk menjaga performa tetap mulus (60 FPS) tanpa membebani browser:
-
-### Struktur Komponen Interaktif
-
-Pisahkan antara state interaktif, kalkulasi matematis, dan layer grafis:
-
-```
-[Parent: MDX Page]
-    │
-    ▼
-[Controller Component] ── State: parameter (x, y, scale, speed, step)
-    │
-    ├── [Control Panel]: UI Slider, Checkbox, Toggle KaTeX
-    │
-    └── [Viewport Canvas/WebGL]:
-            ├── Menghitung koordinat baru via Math.js / WebGL shaders
-            └── Render via Mafs / Three.js / Canvas 2D
-
-```
-
-### Praktik Performa Penting
-
-1. **Web Workers untuk Komputasi Berat:** Jika ada simulasi numerik berat (seperti simulasi 100.000 partikel atau integral numerik berdimensi tinggi), jalankan kalkulasi di *Web Worker* terpisah agar UI thread peramban tidak *freeze*.
-2. **Dekorasi State Terisolasi:** Jangan biarkan perubahan slider matematis memicu *re-render* seluruh halaman dokumen; batasi pembaruan DOM hanya pada canvas bersangkutan.
-3. **Responsi Mobile:** Sediakan mode fallback sentuhan (gesture pinch-to-zoom dan drag) atau mode demonstrasi otomatis (animasi otomatis bergerak jika dibuka di layar ponsel kecil).
+| Kebutuhan Visual | Pustaka Terpilih | Penggunaan dalam Modul |
+| :--- | :--- | :--- |
+| **Bidang Kartesius & Aljabar Linear 2D** | **Mafs** (React math visualizer) | Transformasi matriks, vektor basis $\hat{i}$ dan $\hat{j}$, garis singgung kurva, poligon paralelogram. |
+| **Diagram Geometri & Aritmetika Jam** | **SVG Dinamis** | Lingkaran modulo jam, busur kardioid, fraktal perkalian modular. |
+| **Graf & Struktur Pohon Keterampilan** | **@xyflow/react** (React Flow) | Peta kurikulum non-linear (*Skill Tree*) dan simpul materi terhubung. |
+| **Render Formula Matematika** | **KaTeX** | Simbol matematika cepat sisi klien dan SSR (`$formula$` dan `$$formula$$`). |
+| **Perhitungan Numerik Berat** | **Math.js & Web Workers** | Perhitungan inversi matriks besar atau simulasi berulang (>16 ms per frame). |
 
 ---
 
-## 5. Rencana Tahapan Eksekusi (MVP)
+## 4. Invarian Arsitektur & Aturan Ketat (*Engineering Guardrails*)
 
-1. **Fase 1: Proof of Concept (Satu Modul Inti)**
-* Bangun 1 topik pembuktian visual yang sangat menarik, misalnya: *"Aljabar Linear: Memvisualisasikan Determinan sebagai Perubahan Luas Wilayah 2D"*.
-* Gunakan Next.js + Tailwind CSS + **Mafs**.
+### A. Isolasi Render (*Isolated UI State*)
+- Perubahan parameter slider di dalam kanvas **hanya boleh merender ulang kanvas target**, bukan seluruh tata letak halaman pembungkus.
+- Gunakan *state* lokal di tingkat modul atau pengontrol terisolasi untuk menghindari *re-render* yang tidak perlu pada elemen teks statis.
 
-2. **Fase 2: Sistem MDX & Komponen Dasar**
-* Buat template visual yang dapat dipakai ulang (*reusable*): komponen slider numerik, panel fungsi matematika, dan kanvas koordinat interaktif.
+### B. Pertahanan Numerik (*Defensive Math Calculations*)
+- Berikan penanganan defensif terhadap nilai tak hingga ($\pm\infty$), pembagian dengan nol, dan nilai `NaN`:
+  ```typescript
+  // Contoh penanganan aman pada kalkulasi kemiringan / rasio
+  export function safeRatio(numerator: number, denominator: number, fallback = 0): number {
+    if (Math.abs(denominator) < 1e-9 || isNaN(denominator)) return fallback;
+    const result = numerator / denominator;
+    return isFinite(result) ? result : fallback;
+  }
+  ```
 
-3. **Fase 3: Kerangka Peta Keterampilan (*Skill Tree*)**
-* Rancang visualisasi pohon relasi materi menggunakan D3.js atau library diagram node (seperti React Flow).
+### C. Alokasi Memori & Siklus Hidup Kanvas
+- **Dilarang** membuat objek baru di dalam loop animasi atau hook per-frame untuk mencegah *garbage collector freeze*.
+- Selalu bersihkan *event listener* dan timer pada *cleanup function* di dalam `useEffect`.
 
-4. **Fase 4: Ekspansi Materi Bertahap**
-* Rilis modul mengikuti alur: Fondasi Kalkulus $\rightarrow$ Aljabar Linear $\rightarrow$ Probabilitas $\rightarrow$ Topik Lanjutan.
+### D. Aksesibilitas Terpadu Kanvas
+- Setiap slider dan kontrol interaktif wajib memiliki:
+  - `aria-label` yang deskriptif.
+  - Nilai minimum (`min`), maksimum (`max`), dan langkah (`step`).
+  - Dukungan navigasi keyboard penuh (panah kiri/kanan, Home/End).
+  - Teks deskripsi alternatif untuk pembaca layar (*screen reader*).
+
+---
+
+## 5. Panduan Praktis: Menambahkan Modul Topik Baru
+
+Ikuti langkah-langkah berikut saat mengembangkan materi matematika baru:
+
+### Langkah 1: Definisikan Rumus Murni & Buat Unit Test
+Buat fungsi independen di `src/lib/math-engine/<new-topic>.ts`:
+```typescript
+export function calculateTopicValue(paramA: number, paramB: number): number {
+  // Pure math logic
+  return paramA * paramB;
+}
+```
+Tambahkan tes unit di `src/lib/math-engine/<new-topic>.test.ts` dan pastikan `npm test` lolos.
+
+### Langkah 2: Buat Konten & Spesifikasi Tantangan
+Buat `src/modules/math/<new-topic>/content.ts`:
+```typescript
+import { TopicLesson } from "@/types/topic";
+
+export const topicData: TopicLesson = {
+  id: "new-topic-id",
+  slug: "new-topic-slug",
+  title: "Judul Topik Baru",
+  category: "math",
+  summary: "Ringkasan konsep dalam 2-3 kalimat...",
+  audioNarrationText: "Teks narasi untuk Web Speech API...",
+  initialVariables: { x: 1, y: 1 },
+  challenges: [
+    {
+      question: "Atur parameter agar nilai mencapai target X",
+      targetCondition: (vars) => vars.x === 5,
+      hintText: "Coba tingkatkan variabel x..."
+    }
+  ]
+};
+```
+
+### Langkah 3: Bangun Komponen Visual (Canvas & Controls)
+- Implementasikan `Canvas.tsx` menggunakan **Mafs** atau **SVG dinamis**.
+- Pastikan ukuran berkas komponen tidak melebihi **250 baris kode** (pecah menjadi sub-komponen jika diperlukan sesuai `AGENTS.md`).
+
+### Langkah 4: Rangkai pada Halaman Rute
+Buat halaman di `src/app/topics/<new-topic-slug>/page.tsx` dengan memanfaatkan `AccessibilityContext` dan `GamificationContext`.
+
+### Langkah 5: Sediakan Berkas Contoh MDX
+Sertakan `example.mdx` di folder modul untuk memperlihatkan bagaimana komponen interaktif dapat disematkan di dalam artikel edukasi berbasis teks.

@@ -3,39 +3,99 @@
 @import "mafs/core.css";
 @import "@xyflow/react/dist/style.css";
 
+/* ==========================================================================
+   Tailwind CSS v4 Semantic Palette Mapping (Architecture: Theme Variable Override)
+   Ensures seamless Dark, Light, and High-Contrast rendering without visual glitches.
+   ========================================================================== */
+
+@theme {
+  --color-neutral-950: var(--theme-bg-app);
+  --color-neutral-900: var(--theme-bg-surface);
+  --color-neutral-800: var(--theme-bg-muted);
+  --color-neutral-700: var(--theme-border);
+  --color-neutral-600: var(--theme-border-subtle);
+  --color-neutral-500: var(--theme-text-subtle);
+  --color-neutral-400: var(--theme-text-muted);
+  --color-neutral-300: var(--theme-text-body);
+  --color-neutral-200: var(--theme-text-body-bright);
+  --color-neutral-100: var(--theme-text-heading);
+}
+
+:root,
+[data-theme="dark"] {
+  --theme-bg-app: #09090b;
+  --theme-bg-surface: #18181b;
+  --theme-bg-muted: #27272a;
+  --theme-border: #3f3f46;
+  --theme-border-subtle: #27272a;
+  --theme-text-subtle: #71717a;
+  --theme-text-muted: #a1a1aa;
+  --theme-text-body: #d4d4d8;
+  --theme-text-body-bright: #e4e4e7;
+  --theme-text-heading: #f4f4f5;
+
+  --theme-accent: #6366f1;
+  --theme-accent-hover: #4f46e5;
+  --theme-scrollbar-track: #09090b;
+  --theme-scrollbar-thumb: #27272a;
+}
+
+[data-theme="light"] {
+  --theme-bg-app: #f8fafc;
+  --theme-bg-surface: #ffffff;
+  --theme-bg-muted: #f1f5f9;
+  --theme-border: #cbd5e1;
+  --theme-border-subtle: #e2e8f0;
+  --theme-text-subtle: #94a3b8;
+  --theme-text-muted: #64748b;
+  --theme-text-body: #334155;
+  --theme-text-body-bright: #1e293b;
+  --theme-text-heading: #0f172a;
+
+  --theme-accent: #4f46e5;
+  --theme-accent-hover: #4338ca;
+  --theme-scrollbar-track: #f1f5f9;
+  --theme-scrollbar-thumb: #cbd5e1;
+}
+
+[data-theme="high-contrast"],
+[data-high-contrast="true"] {
+  --theme-bg-app: #000000;
+  --theme-bg-surface: #121212;
+  --theme-bg-muted: #1c1c1c;
+  --theme-border: #facc15;
+  --theme-border-subtle: #fde047;
+  --theme-text-subtle: #e4e4e7;
+  --theme-text-muted: #ffffff;
+  --theme-text-body: #ffffff;
+  --theme-text-body-bright: #ffffff;
+  --theme-text-heading: #ffffff;
+
+  --theme-accent: #38bdf8;
+  --theme-accent-hover: #0284c7;
+  --theme-scrollbar-track: #000000;
+  --theme-scrollbar-thumb: #facc15;
+}
+
 @layer base {
-  :root {
-    --bg-primary: #09090b;
-    --bg-surface: #18181b;
-    --text-primary: #f4f4f5;
-    --text-secondary: #a1a1aa;
-    --border-color: #27272a;
-    --accent: #6366f1;
-    --accent-hover: #4f46e5;
-  }
-
-  /* High contrast mode for low vision accessibility */
-  [data-high-contrast="true"] {
-    --bg-primary: #000000;
-    --bg-surface: #121212;
-    --text-primary: #ffffff;
-    --text-secondary: #e4e4e7;
-    --border-color: #facc15;
-    --accent: #38bdf8;
-    --accent-hover: #0284c7;
-  }
-
   body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    background-color: var(--theme-bg-app);
+    color: var(--theme-text-body);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Ensure keyboard focus indicators are distinct and high contrast for accessibility */
+  /* Smooth theme transition only during explicit theme toggles, preventing refresh flickering */
+  html.theme-transitioning,
+  html.theme-transitioning body,
+  html.theme-transitioning * {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+  }
+
+  /* High contrast keyboard outline for accessibility */
   :focus-visible {
-    outline: 2px solid #38bdf8;
+    outline: 2px solid var(--theme-accent);
     outline-offset: 2px;
   }
 
@@ -45,23 +105,51 @@
   }
 }
 
-/* Custom scrollbar for clean dark UI */
+/* ==========================================================================
+   Light Mode Contrast Guards
+   Ensures headings are dark on light backgrounds while buttons on colored
+   backgrounds (indigo, emerald, amber, rose) strictly maintain crisp white text.
+   ========================================================================== */
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] .text-white:not([class*="bg-indigo"]):not([class*="bg-amber"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-sky"]):not([class*="bg-teal"]) {
+  color: var(--theme-text-heading) !important;
+}
+
+[data-theme="light"] [class*="bg-indigo-600"],
+[data-theme="light"] [class*="bg-amber-600"],
+[data-theme="light"] [class*="bg-emerald-600"],
+[data-theme="light"] [class*="bg-rose-600"] {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] [class*="bg-indigo-600"] *,
+[data-theme="light"] [class*="bg-amber-600"] *,
+[data-theme="light"] [class*="bg-emerald-600"] *,
+[data-theme="light"] [class*="bg-rose-600"] * {
+  color: #ffffff !important;
+}
+
+/* Custom accessible scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--theme-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--theme-scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  filter: brightness(1.2);
 }
 
 /* KaTeX custom responsive styling */

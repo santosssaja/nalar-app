@@ -6,6 +6,8 @@ import {
   Volume2,
   VolumeX,
   Eye,
+  Sun,
+  Moon,
   Type,
   Keyboard,
   Award,
@@ -21,7 +23,7 @@ export function AccessibilityBar() {
     preferences,
     isSpeaking,
     toggleAudioNarration,
-    toggleHighContrast,
+    cycleTheme,
     setFontScale,
     toggleSubtitles,
     stopSpeech,
@@ -41,7 +43,7 @@ export function AccessibilityBar() {
       }
 
       if (e.key === "c" || e.key === "C") {
-        toggleHighContrast();
+        cycleTheme();
       } else if (e.key === "?") {
         setShowShortcuts((prev) => !prev);
       }
@@ -49,7 +51,7 @@ export function AccessibilityBar() {
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [toggleHighContrast]);
+  }, [cycleTheme]);
 
   const cycleFontSize = () => {
     if (preferences.fontScale === "normal") setFontScale("large");
@@ -64,7 +66,7 @@ export function AccessibilityBar() {
         aria-label="Panel Aksesibilitas dan Status Pembelajaran"
         className="w-full bg-neutral-900/90 border-b border-neutral-800 backdrop-blur-md px-4 py-2.5 flex items-center justify-between text-neutral-200 text-sm z-40 sticky top-0"
       >
-        {/* Left: Brand + SDG 4 badge */}
+        {/* Left: Brand + Theme badge */}
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -77,7 +79,7 @@ export function AccessibilityBar() {
             <span className="text-base tracking-normal font-extrabold">NALAR</span>
           </Link>
           <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            SDG 4: Edukasi Inklusif
+            Pendidikan Berkualitas
           </span>
         </div>
 
@@ -86,6 +88,7 @@ export function AccessibilityBar() {
           {/* Audio narration toggle */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={preferences.audioNarrationEnabled ? stopSpeech : toggleAudioNarration}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition ${
               preferences.audioNarrationEnabled
@@ -102,12 +105,12 @@ export function AccessibilityBar() {
             {preferences.audioNarrationEnabled ? (
               <>
                 <Volume2 className={`w-4 h-4 ${isSpeaking ? "animate-pulse text-sky-400" : ""}`} />
-                <span className="hidden md:inline">Suara: On</span>
+                <span suppressHydrationWarning className="hidden md:inline">Suara: On</span>
               </>
             ) : (
               <>
                 <VolumeX className="w-4 h-4 text-neutral-400" />
-                <span className="hidden md:inline">Suara: Off</span>
+                <span suppressHydrationWarning className="hidden md:inline">Suara: Off</span>
               </>
             )}
           </button>
@@ -115,6 +118,7 @@ export function AccessibilityBar() {
           {/* Subtitles toggle */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={toggleSubtitles}
             className={`p-1.5 rounded-lg border transition ${
               preferences.subtitlesEnabled
@@ -127,32 +131,54 @@ export function AccessibilityBar() {
             <Subtitles className="w-4 h-4" />
           </button>
 
-          {/* High contrast toggle */}
+          {/* Theme mode toggle: Dark -> Light -> High-Contrast */}
           <button
             type="button"
-            onClick={toggleHighContrast}
-            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg border text-xs font-medium transition ${
+            suppressHydrationWarning
+            onClick={cycleTheme}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition ${
               preferences.theme === "high-contrast"
-                ? "bg-amber-400 text-black font-bold border-amber-300"
+                ? "bg-amber-400 text-black font-bold border-amber-300 shadow-sm"
+                : preferences.theme === "light"
+                ? "bg-amber-500/10 border-amber-500/30 text-amber-600 hover:bg-amber-500/20"
                 : "bg-neutral-800/80 border-neutral-700 text-neutral-300 hover:bg-neutral-700"
             }`}
-            aria-label="Alihkan mode kontras tinggi"
-            title="Mode kontras tinggi (Shortcut: C)"
+            aria-label={`Ganti tema, saat ini: ${
+              preferences.theme === "dark"
+                ? "Gelap"
+                : preferences.theme === "light"
+                ? "Terang"
+                : "Kontras Tinggi"
+            }`}
+            title="Ganti tema: Gelap / Terang / Kontras (Shortcut: C)"
           >
-            <Eye className="w-4 h-4" />
-            <span className="hidden sm:inline">Kontras</span>
+            {preferences.theme === "light" ? (
+              <Sun className="w-4 h-4 text-amber-500" />
+            ) : preferences.theme === "high-contrast" ? (
+              <Eye className="w-4 h-4 text-black" />
+            ) : (
+              <Moon className="w-4 h-4 text-sky-400" />
+            )}
+            <span suppressHydrationWarning className="hidden sm:inline">
+              {preferences.theme === "light"
+                ? "Terang"
+                : preferences.theme === "high-contrast"
+                ? "Kontras"
+                : "Gelap"}
+            </span>
           </button>
 
           {/* Font scale cycle */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={cycleFontSize}
             className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-neutral-800/80 border border-neutral-700 text-xs font-medium text-neutral-300 hover:bg-neutral-700 transition"
             aria-label={`Ubah ukuran teks, saat ini: ${preferences.fontScale}`}
             title="Ubah ukuran teks"
           >
             <Type className="w-4 h-4" />
-            <span className="uppercase text-[10px] font-bold">
+            <span suppressHydrationWarning className="uppercase text-[10px] font-bold">
               {preferences.fontScale === "normal"
                 ? "1x"
                 : preferences.fontScale === "large"
@@ -177,23 +203,25 @@ export function AccessibilityBar() {
 
           {/* Gamification XP badge */}
           <div
+            suppressHydrationWarning
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold"
             aria-label={`Skor XP kamu: ${progress.xp} XP`}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>{progress.xp} XP</span>
+            <span suppressHydrationWarning>{progress.xp} XP</span>
           </div>
 
           {/* Badge count indicator */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => setShowBadgeDrawer((prev) => !prev)}
             className="flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold hover:bg-indigo-500/20 transition"
             aria-label={`Lencana diperoleh: ${unlockedBadgeList.length}`}
             title="Lihat Lencana"
           >
             <Award className="w-3.5 h-3.5 text-indigo-400" />
-            <span>{unlockedBadgeList.length}</span>
+            <span suppressHydrationWarning>{unlockedBadgeList.length}</span>
           </button>
         </div>
       </header>

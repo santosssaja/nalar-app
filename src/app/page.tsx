@@ -18,7 +18,7 @@ export default function Home() {
       <section className="w-full max-w-6xl px-4 pt-12 pb-14 text-center flex flex-col items-center space-y-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wide">
           <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>SDG 4: Platform Edukasi STEM Terbuka & Inklusif</span>
+          <span>Pendidikan Berkualitas: menyediakan pendidikan yang inklusif, merata, dan berkualitas.</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-4xl leading-tight">

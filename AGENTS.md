@@ -4,7 +4,7 @@
 
 ## 1. Project Overview & Mission
 
-Platform web edukasi STEM (Sains dan Matematika) interaktif, visual, dan inklusif untuk mendukung **SDG 4 (Pendidikan Berkualitas)**. Fokus utama adalah menyederhanakan materi konsep rumit menjadi intuitif melalui simulasi kanvas langsung, dilengkapi fitur aksesibilitas ramah difabel (*low vision*, tunarungu, asistensi audio), serta tutor AI hemat token (*on-demand*).
+Platform web edukasi STEM (Sains dan Matematika) interaktif, visual, dan inklusif dengan tema **Pendidikan Berkualitas: menyediakan pendidikan yang inklusif, merata, dan berkualitas**. Fokus utama adalah menyederhanakan materi konsep rumit menjadi intuitif melalui simulasi kanvas langsung, dilengkapi fitur aksesibilitas ramah difabel (*low vision*, tunarungu, asistensi audio), serta tutor AI hemat token (*on-demand*).
 
 ---
 
