@@ -1,0 +1,23 @@
+# Modul Interaktif: Algoritma Euclid & Pengubinan FPB
+
+Modul ini memvisualisasikan algoritma pembagian Euclid klasik melalui partisi geometris persegi panjang $A \times B$ menggunakan bujur sangkar terbesar berulang.
+
+## Komponen Interaktif
+
+import { InteractiveLesson } from "@/modules/math/math-euclid/InteractiveLesson";
+import { Canvas } from "@/modules/math/math-euclid/Canvas";
+import { KaTeXFormula } from "@/modules/math/math-euclid/KaTeXFormula";
+
+<InteractiveLesson />
+
+## Teorema Pembagian Euclid
+
+Untuk setiap dua bilangan bulat positif $a$ dan $b$ dengan $a \ge b$, terdapat bilangan bulat unik $q$ (hasil bagi) dan $r$ (sisa) sedemikian rupa sehingga:
+
+$$a = q \times b + r \quad (0 \le r < b)$$
+
+Secara geometris, persamaan ini bermakna:
+- Memasang $q$ buah bujur sangkar berukuran $b \times b$.
+- Menyisakan ruang persegi panjang berukuran $b \times r$.
+
+Proses ini diulang pada persegi panjang sisa $b \times r$ hingga sisa $r = 0$. Ukuran bujur sangkar terakhir yang menutup seluruh ruangan adalah Faktor Persekutuan Terbesar ($\gcd(a, b)$).

@@ -22,7 +22,7 @@ export function Tooltip({
     top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
     bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
     left: "right-full top-1/2 -translate-y-1/2 mr-2",
-    right: "left-full top-1/2 -translate-y-1/2 ml-2",
+    right: "left-full top-1/2 -translate-y-1/2 ml-3",
   };
 
   return (
@@ -43,7 +43,7 @@ export function Tooltip({
           role="tooltip"
           className={twMerge(
             clsx(
-              "absolute z-50 whitespace-nowrap rounded-lg bg-neutral-900 border border-neutral-700 px-2.5 py-1 text-xs font-medium text-neutral-200 shadow-xl backdrop-blur-sm animate-fade-in pointer-events-none select-none",
+              "absolute z-[100] whitespace-nowrap rounded-lg bg-neutral-900/95 border border-neutral-700 px-3 py-1.5 text-xs font-semibold text-neutral-100 shadow-2xl backdrop-blur-md animate-fade-in pointer-events-none select-none",
               positionClasses[position],
               className
             )

@@ -3,6 +3,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
   ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
   Background,
   Controls,
   Node,
@@ -39,7 +41,20 @@ const edgeTypes = {
   prereqEdge: PrereqEdge,
 };
 
-export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
+function FitViewOnChange({ triggerKey }: { triggerKey: string }) {
+  const { fitView } = useReactFlow();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fitView({ padding: 0.18, duration: 450 });
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [triggerKey, fitView]);
+
+  return null;
+}
+
+function SkillTreeInner({ domain = "all", stage = "all" }: SkillTreeProps) {
   const { progress } = useGamification();
   const { say } = useNai();
   const [selectedTopic, setSelectedTopic] = useState<TopicCurriculumItem | null>(null);
@@ -88,20 +103,28 @@ export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
 
   // Convert to React Flow Edges
   const rfEdges: Edge[] = useMemo(() => {
-    return filteredEdges.map((e) => ({
-      id: e.id,
-      source: e.source,
-      target: e.target,
-      type: "prereqEdge",
-      animated: true,
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 14,
-        height: 14,
-        color: "#6366f1",
-      },
-    }));
-  }, [filteredEdges]);
+    return filteredEdges.map((e) => {
+      const targetNode = filteredNodes.find((n) => n.id === e.target);
+      const isTargetActive =
+        targetNode &&
+        calculateTopicStatus(targetNode, progress.completedTopics, treeData) ===
+          "active";
+
+      return {
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        type: "prereqEdge",
+        animated: isTargetActive,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 16,
+          height: 16,
+          color: "#6366f1",
+        },
+      };
+    });
+  }, [filteredEdges, filteredNodes, progress.completedTopics, treeData]);
 
   // Suggest best starting topic via Nai on first render
   useEffect(() => {
@@ -109,13 +132,13 @@ export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
       (n) => n.isAvailable && !progress.completedTopics.includes(n.slug)
     );
     if (recommended) {
-      say(`Coba mulai dari topik "${recommended.title}" ini! Visualisasi interaktifnya sudah siap dieksplorasi.`, {
+      say(`Mulai dari topik "${recommended.title}"! Visualisasi interaktifnya sudah siap dieksplorasi.`, {
         expression: "hinting",
         actionText: "Buka Topik",
         onAction: () => setSelectedTopic(recommended),
       });
     } else {
-      say("Selamat datang di Peta Kurikulum! Pilih modul mana pun untuk melihat peta prasyaratnya.", {
+      say("Peta Kurikulum siap dieksplorasi! Klik modul mana pun untuk mempelajari prasyaratnya.", {
         expression: "happy",
       });
     }
@@ -130,6 +153,8 @@ export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
     );
   }, [selectedTopic, progress.completedTopics, treeData]);
 
+  const filterKey = `${domain}-${stage}`;
+
   return (
     <div className="relative w-full h-[650px] lg:h-[750px] rounded-3xl overflow-hidden border border-neutral-800 bg-neutral-950 shadow-2xl">
       <ReactFlow
@@ -138,17 +163,17 @@ export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.3}
+        fitViewOptions={{ padding: 0.18 }}
+        minZoom={0.25}
         maxZoom={1.8}
-        proOptions={{ hideAttribution: true }}
       >
-        <Background color="#27272a" gap={24} size={1.5} />
+        <Background color="#27272a" gap={28} size={1.5} />
         <Controls
           showInteractive={false}
           className="!bg-neutral-900 !border !border-neutral-700 !rounded-2xl !p-1 !shadow-xl !top-4 !left-4"
         />
         <SkillTreeMinimap />
+        <FitViewOnChange triggerKey={filterKey} />
       </ReactFlow>
 
       {/* Topic Detail Modal */}
@@ -158,5 +183,13 @@ export function SkillTree({ domain = "all", stage = "all" }: SkillTreeProps) {
         onClose={() => setSelectedTopic(null)}
       />
     </div>
+  );
+}
+
+export function SkillTree(props: SkillTreeProps) {
+  return (
+    <ReactFlowProvider>
+      <SkillTreeInner {...props} />
+    </ReactFlowProvider>
   );
 }

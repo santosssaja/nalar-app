@@ -8,7 +8,7 @@ import { Network, Sparkles, CheckCircle2 } from "lucide-react";
 import { useGamification } from "@/context/GamificationContext";
 
 export default function ExplorePage() {
-  const [domain, setDomain] = useState<CurriculumDomain>("all");
+  const [domain, setDomain] = useState<CurriculumDomain>("math");
   const [stage, setStage] = useState<CurriculumStage>("all");
   const { progress } = useGamification();
 

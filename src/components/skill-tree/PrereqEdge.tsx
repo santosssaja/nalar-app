@@ -34,9 +34,8 @@ export function PrereqEdge({
       markerEnd={markerEnd}
       style={{
         stroke: "#6366f1",
-        strokeWidth: 2,
-        opacity: 0.7,
-        strokeDasharray: "4 4",
+        strokeWidth: 2.5,
+        opacity: 0.85,
         ...style,
       }}
     />

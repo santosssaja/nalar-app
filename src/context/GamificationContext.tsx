@@ -1,24 +1,34 @@
 "use client";
 
-import React, { createContext, useContext, useCallback } from "react";
+import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import {
-  AVAILABLE_BADGES,
+  ALL_BADGES,
   Badge,
   INITIAL_PROGRESS_STATE,
   UserProgressState,
-} from "@/types/gamification";
+  RankTitle,
+  UserRankInfo,
+  calculateUserRank,
+  checkLevelUp,
+  evaluateBadges,
+  updateDailyStreak,
+} from "@/lib/gamification";
 import { useLocalStorage, STORAGE_KEYS } from "@/lib/storage";
 
 interface GamificationContextType {
   progress: UserProgressState;
+  rankInfo: UserRankInfo;
   unlockedBadgeList: Badge[];
+  levelUpModalRank: RankTitle | null;
+  closeLevelUpModal: () => void;
   completeChallenge: (params: {
     topicSlug: string;
     challengeId: string;
     xpReward: number;
     badgeToUnlock?: string;
   }) => { isNewSuccess: boolean; earnedXp: number };
+  completeModule: (topicSlug: string) => void;
   triggerCelebration: () => void;
   resetProgress: () => void;
 }
@@ -31,17 +41,44 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     INITIAL_PROGRESS_STATE
   );
 
+  const [levelUpModalRank, setLevelUpModalRank] = useState<RankTitle | null>(null);
+
+  // Daily streak check on initial mount
+  useEffect(() => {
+    setProgress((prev) => {
+      const streakResult = updateDailyStreak(
+        prev.lastActiveDate,
+        prev.consecutiveDays,
+        prev.activityDates
+      );
+
+      if (streakResult.isNewDay) {
+        return {
+          ...prev,
+          consecutiveDays: streakResult.consecutiveDays,
+          lastActiveDate: streakResult.lastActiveDate,
+          activityDates: streakResult.activityDates,
+        };
+      }
+      return prev;
+    });
+  }, [setProgress]);
+
   const triggerCelebration = useCallback(() => {
     try {
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 90,
+        spread: 75,
         origin: { y: 0.6 },
-        colors: ["#6366f1", "#38bdf8", "#facc15", "#10b981"],
+        colors: ["#6366f1", "#38bdf8", "#facc15", "#10b981", "#ec4899"],
       });
     } catch (e) {
-      console.warn("[Confetti] could not launch:", e);
+      console.warn("[Confetti] launch error:", e);
     }
+  }, []);
+
+  const closeLevelUpModal = useCallback(() => {
+    setLevelUpModalRank(null);
   }, []);
 
   const completeChallenge = useCallback(
@@ -66,28 +103,39 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
         isNewSuccess = true;
         const newSolved = [...prev.solvedChallenges, challengeId];
-        const newBadges = [...prev.unlockedBadges];
+        const newXp = prev.xp + xpReward;
 
-        // Unlock first-step badge on any first challenge
-        if (!newBadges.includes("first-step")) {
-          newBadges.push("first-step");
+        // Check level up
+        const levelUpCheck = checkLevelUp(prev.xp, newXp);
+        if (levelUpCheck.leveledUp && levelUpCheck.newRank) {
+          setLevelUpModalRank(levelUpCheck.newRank);
         }
 
-        if (badgeToUnlock && !newBadges.includes(badgeToUnlock)) {
-          newBadges.push(badgeToUnlock);
-        }
+        // Daily streak update
+        const streakUpdate = updateDailyStreak(
+          prev.lastActiveDate,
+          prev.consecutiveDays,
+          prev.activityDates
+        );
 
-        const newCompletedTopics = [...prev.completedTopics];
-        if (!newCompletedTopics.includes(topicSlug)) {
-          newCompletedTopics.push(topicSlug);
-        }
+        // Evaluate Badges
+        const tempState: UserProgressState = {
+          ...prev,
+          xp: newXp,
+          solvedChallenges: newSolved,
+          consecutiveDays: streakUpdate.consecutiveDays,
+          lastActiveDate: streakUpdate.lastActiveDate,
+          activityDates: streakUpdate.activityDates,
+        };
+
+        const badgeEval = evaluateBadges(tempState, {
+          completedTopicSlug: topicSlug,
+          requestedBadgeId: badgeToUnlock,
+        });
 
         return {
-          ...prev,
-          xp: prev.xp + xpReward,
-          solvedChallenges: newSolved,
-          unlockedBadges: newBadges,
-          completedTopics: newCompletedTopics,
+          ...tempState,
+          unlockedBadges: badgeEval.updatedUnlockedBadges,
         };
       });
 
@@ -97,11 +145,39 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     [triggerCelebration, setProgress]
   );
 
+  const completeModule = useCallback(
+    (topicSlug: string) => {
+      setProgress((prev) => {
+        if (prev.completedTopics.includes(topicSlug)) return prev;
+
+        const newCompleted = [...prev.completedTopics, topicSlug];
+        const tempState: UserProgressState = {
+          ...prev,
+          completedTopics: newCompleted,
+        };
+
+        const badgeEval = evaluateBadges(tempState, {
+          completedTopicSlug: topicSlug,
+        });
+
+        return {
+          ...tempState,
+          unlockedBadges: badgeEval.updatedUnlockedBadges,
+        };
+      });
+      triggerCelebration();
+    },
+    [triggerCelebration, setProgress]
+  );
+
   const resetProgress = useCallback(() => {
     setProgress(INITIAL_PROGRESS_STATE);
+    setLevelUpModalRank(null);
   }, [setProgress]);
 
-  const unlockedBadgeList = AVAILABLE_BADGES.filter((b) =>
+  const rankInfo = calculateUserRank(progress.xp);
+
+  const unlockedBadgeList = ALL_BADGES.filter((b) =>
     progress.unlockedBadges.includes(b.id)
   );
 
@@ -109,8 +185,12 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     <GamificationContext.Provider
       value={{
         progress,
+        rankInfo,
         unlockedBadgeList,
+        levelUpModalRank,
+        closeLevelUpModal,
         completeChallenge,
+        completeModule,
         triggerCelebration,
         resetProgress,
       }}

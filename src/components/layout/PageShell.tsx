@@ -1,39 +1,31 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
+import { useLocalStorage } from "@/lib/storage";
 
 export interface PageShellProps {
   children: React.ReactNode;
   showSidebar?: boolean;
 }
 
-function getInitialDesktopCollapsed(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return localStorage.getItem("nalar_sidebar_collapsed") === "true";
-  } catch {
-    return false;
-  }
-}
-
 export function PageShell({ children, showSidebar = true }: PageShellProps) {
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
+  const shouldShowSidebar = showSidebar && !isLandingPage;
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState<boolean>(getInitialDesktopCollapsed);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useLocalStorage<boolean>(
+    "nalar_sidebar_collapsed",
+    false
+  );
 
   const toggleDesktopCollapse = useCallback(() => {
-    setIsDesktopCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem("nalar_sidebar_collapsed", String(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }, []);
+    setIsDesktopCollapsed((prev) => !prev);
+  }, [setIsDesktopCollapsed]);
 
   const handleToggleSidebar = useCallback(() => {
     if (typeof window !== "undefined" && window.innerWidth >= 768) {
@@ -46,12 +38,12 @@ export function PageShell({ children, showSidebar = true }: PageShellProps) {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100">
       <TopBar
-        onToggleSidebar={handleToggleSidebar}
+        onToggleSidebar={shouldShowSidebar ? handleToggleSidebar : undefined}
         isSidebarOpen={isSidebarOpen}
       />
 
       <div className="flex-1 flex w-full">
-        {showSidebar && (
+        {shouldShowSidebar && (
           <Sidebar
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}

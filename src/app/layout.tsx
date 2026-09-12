@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { NaiProvider } from "@/components/nai/NaiContext";
 import { Nai } from "@/components/nai/Nai";
 import { PageShell } from "@/components/layout/PageShell";
+import { LevelUpModal } from "@/components/gamification/LevelUpModal";
 
 export const metadata: Metadata = {
   title: "Nalar | Platform Belajar STEM Interaktif & Inklusif",
@@ -54,7 +56,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeInitializerScript }}
         />
       </head>
@@ -64,6 +68,7 @@ export default function RootLayout({
             <NaiProvider>
               <PageShell>{children}</PageShell>
               <Nai />
+              <LevelUpModal />
             </NaiProvider>
           </GamificationProvider>
         </AccessibilityProvider>

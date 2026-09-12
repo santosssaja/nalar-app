@@ -26,7 +26,6 @@ export function AccessibilityBar() {
     cycleTheme,
     setFontScale,
     toggleSubtitles,
-    stopSpeech,
   } = useAccessibility();
 
   const { progress, unlockedBadgeList } = useGamification();
@@ -89,7 +88,7 @@ export function AccessibilityBar() {
           <button
             type="button"
             suppressHydrationWarning
-            onClick={preferences.audioNarrationEnabled ? stopSpeech : toggleAudioNarration}
+            onClick={toggleAudioNarration}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition ${
               preferences.audioNarrationEnabled
                 ? "bg-indigo-600/30 border-indigo-500 text-indigo-300"

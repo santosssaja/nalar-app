@@ -1,0 +1,27 @@
+# Modul Interaktif: Jumlah Riemann & Kalkulus Integral
+
+Modul ini memvisualisasikan bagaimana integral tentu didefinisikan sebagai limit dari jumlahan luas partisi persegi panjang berhingga ketika jumlah partisi $n \to \infty$ dan lebar partisi $\Delta x \to 0$.
+
+## Komponen Interaktif
+
+import { InteractiveLesson } from "@/modules/math/math-calculus-riemann/InteractiveLesson";
+import { Canvas } from "@/modules/math/math-calculus-riemann/Canvas";
+import { KaTeXFormula } from "@/modules/math/math-calculus-riemann/KaTeXFormula";
+
+<InteractiveLesson />
+
+## Definisi Formal Integral Riemann
+
+Untuk suatu fungsi kontinu $f(x)$ pada interval $[a, b]$, interval dipartisi menjadi $n$ sub-interval dengan lebar $\Delta x = \frac{b - a}{n}$.
+
+Jumlah Riemann didefinisikan sebagai:
+
+$$S_n = \sum_{i=1}^n f(x_i^*) \Delta x$$
+
+Integral tentu adalah limit dari jumlah tersebut:
+
+$$\int_a^b f(x) \, dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i^*) \Delta x$$
+
+Menurut Teorema Dasar Kalkulus, jika $F'(x) = f(x)$:
+
+$$\int_a^b f(x) \, dx = F(b) - F(a)$$

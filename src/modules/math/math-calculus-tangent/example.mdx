@@ -1,0 +1,25 @@
+# Modul Interaktif: Garis Singgung & Turunan Kalkulus
+
+Modul ini memvisualisasikan bagaimana garis sekan yang melalui dua titik $(a, f(a))$ dan $(a+\Delta x, f(a+\Delta x))$ bertransformasi menjadi garis singgung sesaat ketika jarak interval $\Delta x \to 0$.
+
+## Komponen Interaktif
+
+import { InteractiveLesson } from "@/modules/math/math-calculus-tangent/InteractiveLesson";
+import { Canvas } from "@/modules/math/math-calculus-tangent/Canvas";
+import { KaTeXFormula } from "@/modules/math/math-calculus-tangent/KaTeXFormula";
+
+<InteractiveLesson />
+
+## Definisi Formal Turunan
+
+Kemiringan garis sekan adalah laju perubahan rata-rata:
+
+$$m_{\text{sekan}} = \frac{f(a+\Delta x) - f(a)}{\Delta x}$$
+
+Turunan pertama $f'(a)$ adalah limit ketika $\Delta x$ mendekati nol:
+
+$$f'(a) = \lim_{\Delta x \to 0} \frac{f(a+\Delta x) - f(a)}{\Delta x}$$
+
+Persamaan garis singgung di titik $(a, f(a))$ diberikan oleh:
+
+$$y - f(a) = f'(a)(x - a)$$

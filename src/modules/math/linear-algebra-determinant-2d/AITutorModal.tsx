@@ -75,7 +75,7 @@ export function AITutorModal({ topicSlug, currentState }: AITutorModalProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white font-bold text-xs shadow-xl shadow-indigo-600/30 transition hover:scale-105"
+        className="fixed bottom-20 md:bottom-24 right-4 sm:right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 text-white font-bold text-xs shadow-xl shadow-indigo-600/30 transition hover:scale-105"
         aria-label="Buka AI Tutor Tanya Jawab"
       >
         <Bot className="w-4 h-4 animate-bounce" />

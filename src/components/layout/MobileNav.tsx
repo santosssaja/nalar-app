@@ -12,9 +12,9 @@ export function MobileNav() {
   const navItems = [
     {
       label: "Beranda",
-      href: "/",
+      href: "/dashboard",
       icon: Home,
-      isActive: pathname === "/",
+      isActive: pathname.startsWith("/dashboard"),
     },
     {
       label: "Skill Tree",

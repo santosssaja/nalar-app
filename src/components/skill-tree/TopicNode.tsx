@@ -37,7 +37,7 @@ export function TopicNode({ data }: { data: TopicNodeData }) {
         }
       }}
       className={clsx(
-        "group relative w-64 p-4 rounded-2xl border transition-all duration-200 text-left select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-indigo-400",
+        "group relative w-[260px] p-4 rounded-2xl border transition-all duration-200 text-left select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-indigo-400",
         statusBorderColor,
         isActive && "hover:scale-105",
         isDone && "hover:scale-102"
@@ -50,7 +50,7 @@ export function TopicNode({ data }: { data: TopicNodeData }) {
       <Handle
         type="target"
         position={Position.Top}
-        className="!w-2.5 !h-2.5 !bg-neutral-600 !border-2 !border-neutral-900"
+        className="!w-3 !h-3 !bg-indigo-400 !border-2 !border-neutral-950 shadow-md"
       />
 
       {/* Header with status icon and domain badge */}
@@ -96,7 +96,7 @@ export function TopicNode({ data }: { data: TopicNodeData }) {
 
       {/* Interactive Badge indicator */}
       {topic.isAvailable && (
-        <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-black text-[9px] uppercase tracking-wider rounded-full shadow-md">
+        <span className="absolute -top-2.5 -right-2 px-2.5 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-black text-[9px] uppercase tracking-wider rounded-full shadow-lg shadow-amber-500/30 border border-amber-300">
           Demo Siap
         </span>
       )}
@@ -105,7 +105,7 @@ export function TopicNode({ data }: { data: TopicNodeData }) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!w-2.5 !h-2.5 !bg-indigo-500 !border-2 !border-neutral-900"
+        className="!w-3 !h-3 !bg-indigo-500 !border-2 !border-neutral-950 shadow-md"
       />
     </div>
   );

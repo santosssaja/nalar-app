@@ -157,147 +157,88 @@
 
 ---
 
-## Fase 1: Sistem Pembelajaran *(Sprint 4–6)*
+## Fase 1: Sistem Pembelajaran *(Sprint 4–6)* — ✅ Selesai
 
-### Sprint 4: Arsitektur Level & Langkah (Duolingo × Brilliant)
+### Sprint 4: Arsitektur Level & Langkah (Duolingo × Brilliant) — ✅ Selesai
 **Tujuan:** Struktur Topik → Level → Langkah yang bisa digunakan semua modul.
 
-**Tugas:**
-```
-1. src/types/
-   ├── topic.ts (update TopicLesson → TopicModule)
-   └── level.ts (baru: Level, Step, StepType)
-
-   interface TopicModule {
-     id: string;
-     slug: string;
-     title: string;
-     category: "math" | "physics" | "chemistry" | "biology" | "softskill";
-     levels: Level[];
-   }
-
-   interface Level {
-     index: number;
-     title: string;
-     tier: 1 | 2 | 3;  // ⭐ / ⭐⭐ / ⭐⭐⭐
-     steps: Step[];
-   }
-
-   interface Step {
-     type: "explanation" | "playground" | "challenge" | "validation";
-     content: ExplanationContent | PlaygroundConfig | ChallengeConfig;
-   }
-
-2. src/components/learning/
-   ├── LevelMap.tsx          — tampilan level path (Duolingo-style vertikal)
-   ├── StepRenderer.tsx      — router: render step berdasarkan type
-   ├── ExplanationStep.tsx   — Nai menjelaskan konsep (klik untuk lanjut)
-   ├── PlaygroundStep.tsx    — wrapper playground tanpa penilaian
-   ├── ChallengeStep.tsx     — soal + validasi + hint integration
-   └── ValidationStep.tsx    — rumus KaTeX + rangkuman oleh Nai
-
-3. src/app/topics/[slug]/page.tsx    — halaman topik (tampilkan LevelMap)
-4. src/app/topics/[slug]/[level]/page.tsx — halaman level (render steps)
-
-5. Verifikasi: navigasi Topik → Level → Step berfungsi end-to-end
-```
+**Implementasi:**
+- `src/types/level.ts`: Skema `Level`, `Step`, `StepType`, `ExplanationContent`, `PlaygroundConfig`, `ChallengeConfig`, `ValidationConfig`.
+- `src/types/topic.ts`: Definisi `TopicModule` dengan dukungan multi-level.
+- `src/components/learning/LevelMap.tsx`: Jalur visual stepping-stone Duolingo-style vertikal dengan status bintang tier, konektor, status aktif/terkunci.
+- `src/components/learning/StepRenderer.tsx`: Orkestrator langkah dinamis dengan indikator progress bar dan navigasi bertahap.
+- `src/components/learning/ExplanationStep.tsx`: Presentasi konsep oleh Nai dengan KaTeX dan Web Speech API.
+- `src/components/learning/PlaygroundStep.tsx`: Eksplorasi kanvas interaktif tanpa penilaian.
+- `src/components/learning/ChallengeStep.tsx`: Tantangan logika dengan evaluasi targetCondition, pelacak attempt, integrasi 4-hint, dan reward XP.
+- `src/components/learning/ValidationStep.tsx`: Rangkuman pemahaman, KaTeX takeaway, selebrasi kembang api, dan unlock lencana.
+- `src/components/learning/TopicModuleView.tsx` & `LevelPlayerClient.tsx`: Dual-mode (Jalur Level Duolingo vs Sandbox Penuh) serta penanganan serialisasi RSC.
+- Routes: `/topics/[slug]` dan dynamic player `/topics/[slug]/[level]`.
+- Modul Duolingo-style 3 tingkat: `arithmetic-modular-clock` dan `linear-algebra-determinant-2d`.
 
 ---
 
-### Sprint 5: Sistem 4-Hint Progressive
-**Tujuan:** Nai memberikan hint bertingkat saat user menjawab salah.
+### Sprint 5: Sistem 4-Hint Progressive — ✅ Selesai
+**Tujuan:** Nai memberikan hint bertingkat saat user menjawab salah atau meminta bantuan.
 
-**Tugas:**
-```
-1. src/lib/hints/
-   ├── hint-engine.ts      — logika eskalasi hint 1→2→3→4
-   ├── hint-static.ts      — template hint 1 & 2 (rule-based, 0 token)
-   ├── hint-ai.ts          — panggilan LLM untuk hint 3 & 4
-   ├── hint-mock.ts        — mock LLM untuk dev/demo
-   └── types.ts            — HintRequest, HintResponse interfaces
-
-2. src/components/learning/
-   ├── HintPanel.tsx        — panel hint (Nai + teks + progres bar 1-4)
-   └── CanvasAutoSolver.tsx — animasi kanvas bergerak ke jawaban (hint 4)
-
-3. Integrasi dengan ChallengeStep.tsx:
-   - Jawaban salah → increment hint level
-   - Hint 1: Nai 🤗 "Belum tepat" (statis)
-   - Hint 2: Nai 🤔 arahan ringan (statis, dari content.ts)
-   - Hint 3: Nai 💡 penjelasan (LLM API / mock)
-   - Hint 4: Nai 📖 jawaban + kanvas bergerak otomatis
-
-4. src/lib/hints/hint-ai.ts:
-   - Interface HintRequest (topicSlug, levelIndex, canvasSnapshot, dll)
-   - POST ke /api/hints endpoint
-   - Fallback ke mock jika API gagal (graceful degradation)
-
-5. Verifikasi: test hint escalation, mock mode berfungsi tanpa API
-```
+**Implementasi:**
+- `src/lib/hints/types.ts`: Antarmuka `HintRequest` dan `HintResponse`.
+- `src/lib/hints/hint-static.ts`: Generator Hint 1 (motivasi) & Hint 2 (pointer terarah) rule-based 0 token.
+- `src/lib/hints/hint-mock.ts`: Fallback offline deterministik untuk Hint 3 & 4.
+- `src/lib/hints/hint-ai.ts`: Klien fetch `/api/hints` dengan batas waktu 6s & graceful fallback ke mock lokal.
+- `src/lib/hints/hint-engine.ts`: Dispatcher eskalasi bertingkat 1→2→3→4.
+- `src/app/api/hints/route.ts`: API endpoint dengan dukungan Gemini Flash dan fallback lokal.
+- `src/components/learning/HintPanel.tsx`: Panel UI petunjuk dengan indikator 4-dot progress, avatar ekspresi Nai, dan voice reader.
+- `src/components/learning/CanvasAutoSolver.tsx`: Animasi interpolasi parameter kanvas halus via `requestAnimationFrame` untuk Hint 4.
 
 ---
 
-### Sprint 6: Gamifikasi (XP, Badge, Streak, Dashboard)
-**Tujuan:** Sistem progres lengkap yang memotivasi belajar.
+### Sprint 6: Gamifikasi (XP, Badge, Streak, Dashboard) — ✅ Selesai
+**Tujuan:** Sistem progres lengkap yang memotivasi belajar secara berkelanjutan.
 
-**Tugas:**
-```
-1. src/lib/gamification/
-   ├── xp-engine.ts        — kalkulasi XP per tier tantangan
-   ├── badge-engine.ts     — deteksi & pemberian badge
-   ├── streak-engine.ts    — penghitung streak harian
-   └── types.ts            — UserProgress, Badge, StreakData
-
-2. Update GamificationContext.tsx:
-   - XP total, level (Explorer→Master), streak
-   - Badge collection
-   - Persist ke localStorage
-   - Event: onChallengeComplete, onLevelComplete, onModuleComplete
-
-3. src/components/gamification/
-   ├── XPBar.tsx            — bar XP di topbar
-   ├── LevelUpModal.tsx     — animasi level up + Nai selebrasi
-   ├── BadgeCard.tsx        — kartu lencana
-   ├── StreakCounter.tsx     — 🔥 counter di topbar
-   ├── ConfettiCelebration.tsx — konfeti saat modul selesai
-   └── Dashboard.tsx        — halaman dashboard progres personal
-
-4. src/app/dashboard/page.tsx — halaman dashboard
-
-5. Verifikasi: selesaikan tantangan → XP naik, badge muncul, streak terhitung
-```
+**Implementasi:**
+- `src/lib/gamification/xp-engine.ts`: Kalkulasi reward XP per tier (30, 60, 100 XP), rank title (Explorer, Navigator, Scholar, Master), dan deteksi level-up.
+- `src/lib/gamification/badge-engine.ts`: Sistem evaluasi lencana (`first-step`, `modular-master`, `matrix-master`, `streak-3`, `polymath`).
+- `src/lib/gamification/streak-engine.ts`: Penghitung streak harian dengan pelacakan tanggal aktivitas.
+- `src/context/GamificationContext.tsx`: State manager terintegrasi `localStorage` dengan trigger event dan modal level-up.
+- `src/components/gamification/XPBar.tsx`: Bar progres XP dan tingkat penjelajah.
+- `src/components/gamification/StreakCounter.tsx`: Badge streak 🔥 interaktif.
+- `src/components/gamification/BadgeCard.tsx`: Kartu lencana dengan status terkunci/terbuka.
+- `src/components/gamification/LevelUpModal.tsx`: Modal pop-up animasi level-up dengan ekspresi meriah Nai.
+- `src/components/gamification/ConfettiCelebration.tsx`: Konfeti kembang api/meriam saat level dan modul tuntas.
+- `src/components/gamification/Dashboard.tsx` & `/dashboard`: Halaman profil progres personal dengan grid aktivitas harian dan ringkasan statistik belajar.
+- Unit testing: 29 unit tests lulus di `number-theory`, `linear-algebra`, `hint-engine`, dan `gamification`.
 
 ---
 
 ## Fase 2: Konten MVP *(Sprint 7–10)*
 
-### Sprint 7–8: 6 Playground Matematika MVP
-Bangun 6 playground math MVP satu per satu, setiap playground = 1 sub-sprint:
+### Sprint 7–8: 6 Playground Matematika MVP — ✅ Selesai
+Semua 6 playground matematika MVP telah dibangun lengkap dengan sistem 3-level Duolingo-style, mode Sandbox, formula KaTeX reaktif, kontrol parameter dinamis, dan unit test matematika murni:
 
-| # | Playground | Teknologi | Estimasi |
-|---|-----------|-----------|----------|
-| 1 | Jam Modular *(sudah ada, perlu upgrade ke level system)* | SVG | Kecil |
-| 2 | Pengubinan Euclid | SVG | Sedang |
-| 3 | Lingkaran Satuan Trigonometri | Mafs | Sedang |
-| 4 | Garis Singgung Kalkulus | Mafs | Sedang |
-| 5 | Jumlah Riemann | Mafs | Sedang |
-| 6 | Transformasi Matriks 2D *(sudah ada, perlu upgrade)* | Mafs | Kecil |
+| # | Playground | Slug | Teknologi | Status |
+|---|-----------|------|-----------|--------|
+| 1 | Jam Modular | `arithmetic-modular-clock` | SVG | ✅ Selesai (3 level + sandbox) |
+| 2 | Pengubinan Euclid | `math-euclid` | SVG | ✅ Selesai (3 level + sandbox) |
+| 3 | Lingkaran Satuan Trigonometri | `math-trig-unit-circle` | Mafs | ✅ Selesai (3 level + sandbox) |
+| 4 | Garis Singgung Kalkulus | `math-calculus-tangent` | Mafs | ✅ Selesai (3 level + sandbox) |
+| 5 | Jumlah Riemann | `math-calculus-riemann` | Mafs | ✅ Selesai (3 level + sandbox) |
+| 6 | Transformasi Matriks 2D | `linear-algebra-determinant-2d` | Mafs | ✅ Selesai (3 level + sandbox) |
 
-**Per playground, tugas agent:**
-```
-Untuk setiap playground, buat:
-1. src/modules/math/<slug>/
-   ├── content.ts       — data TopicModule (levels, steps, challenges)
-   ├── engine.ts         — pure math functions
-   ├── Canvas.tsx        — visualisasi Mafs/SVG
-   ├── Controls.tsx      — panel slider/input
-   ├── Challenge.tsx     — tantangan per level
-   ├── example.mdx       — contoh penggunaan
-   └── index.ts          — barrel export
-2. src/lib/math-engine/<topic>.ts — fungsi matematika murni + unit test
-3. src/app/topics/<slug>/page.tsx — route halaman
-4. Verifikasi: pnpm typecheck && pnpm test
-```
+**Implementasi Per Playground:**
+- `src/lib/math-engine/`: Pure mathematical engine functions + unit tests (48 unit test suite lulus 100%).
+- `src/modules/math/<slug>/`:
+  - `content.ts`: Metadata pelajaran & skema tantangan logika.
+  - `engine.ts`: Re-export & state definitions.
+  - `Canvas.tsx`: Visualisasi interaktif kanvas 2D (Mafs / SVG) dengan atribut aksesibilitas ARIA.
+  - `Controls.tsx`: Slider parameter dinamis, preset cepat, dan animasi halus.
+  - `KaTeXFormula.tsx`: Formula matematika sinkron reaktif.
+  - `Challenge.tsx`: Tantangan logika gamifikasi dengan sistem petunjuk Nai & reward XP.
+  - `InteractiveLesson.tsx`: Dual-column sandbox layout view.
+  - `module.ts`: Struktur 3-Level Duolingo-style (Explanation, Playground, Challenge, Validation).
+  - `example.mdx` & `index.ts`: Dokumentasi MDX & barrel exports.
+- `src/modules/registry.ts`: Pendaftaran modul dan alias rute navigasi.
+- `src/app/topics/<slug>/page.tsx`: Halaman rute topik Next.js App Router dengan dukungan dual-mode.
+- `src/lib/curriculum/math-tree.ts`: Status unlocked dan rute aktif di Skill Tree.
 
 ---
 

@@ -2,7 +2,7 @@ import { CurriculumTreeData } from "./types";
 
 export const softskillsTreeData: CurriculumTreeData = {
   nodes: [
-    // A: Critical Thinking
+    // Column 1: Penalaran Logis & Argumen (Critical Thinking)
     {
       id: "soft-argument-anatomy",
       slug: "soft-argument-anatomy",
@@ -14,7 +14,7 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Premis, kesimpulan, perbedaan argumen valid vs sound, dan silogisme penalaran.",
       xp: 40,
       isAvailable: false,
-      position: { x: 100, y: 50 },
+      position: { x: 60, y: 60 },
     },
     {
       id: "soft-fallacy-spotter",
@@ -27,8 +27,10 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Mengenali ad hominem, strawman, false dichotomy, dan sesat pikir argumentasi.",
       xp: 55,
       isAvailable: false,
-      position: { x: 100, y: 200 },
+      position: { x: 60, y: 240 },
     },
+
+    // Column 2: Dekomposisi & Estimasi (Problem Solving)
     {
       id: "soft-decomposition",
       slug: "soft-decomposition",
@@ -40,7 +42,7 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Memecah persoalan besar menjadi sub-masalah independen yang terkelola.",
       xp: 50,
       isAvailable: false,
-      position: { x: 350, y: 50 },
+      position: { x: 380, y: 60 },
     },
     {
       id: "soft-fermi-problems",
@@ -53,9 +55,10 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Berpikir kuantitatif berbasis orde besaran dan batas atas/bawah tanpa data presisi.",
       xp: 75,
       isAvailable: false,
-      position: { x: 350, y: 200 },
+      position: { x: 380, y: 240 },
     },
-    // B: Data Literacy
+
+    // Column 3: Literasi Data & Etika AI (Data Literacy & AI Ethics)
     {
       id: "soft-graph-literacy",
       slug: "soft-graph-literacy",
@@ -67,7 +70,7 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Membaca sumbu, skala linear vs logaritmik, dan mendeteksi grafik yang menyesatkan.",
       xp: 60,
       isAvailable: false,
-      position: { x: 600, y: 50 },
+      position: { x: 700, y: 60 },
     },
     {
       id: "soft-correlation-causation",
@@ -80,34 +83,7 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Menghindari bias korelasi spurious dan memahami variabel perancu (confounding).",
       xp: 70,
       isAvailable: false,
-      position: { x: 600, y: 200 },
-    },
-    // F: Learning Strategies
-    {
-      id: "soft-growth-mindset",
-      slug: "soft-growth-mindset",
-      title: "Growth Mindset",
-      domain: "softskill",
-      stage: "explorer",
-      phase: "v1.1",
-      level: 1,
-      description: "Membangun ketahanan belajar matematika tanpa rasa cemas dan takut salah.",
-      xp: 45,
-      isAvailable: false,
-      position: { x: 850, y: 50 },
-    },
-    {
-      id: "soft-spaced-repetition",
-      slug: "soft-spaced-repetition",
-      title: "Recall Aktif & Feynman",
-      domain: "softskill",
-      stage: "navigator",
-      phase: "v1.1",
-      level: 2,
-      description: "Teknik mengajarkan konsep dengan bahasa sederhana dan repetisi terencana.",
-      xp: 65,
-      isAvailable: false,
-      position: { x: 850, y: 200 },
+      position: { x: 700, y: 240 },
     },
     {
       id: "soft-ai-ethics",
@@ -120,7 +96,35 @@ export const softskillsTreeData: CurriculumTreeData = {
       description: "Bias algoritma, transparansi model, dan tanggung jawab sosial pemodelan AI.",
       xp: 90,
       isAvailable: false,
-      position: { x: 600, y: 350 },
+      position: { x: 700, y: 440 },
+    },
+
+    // Column 4: Strategi Belajar & Metakognisi (Learning Strategies)
+    {
+      id: "soft-growth-mindset",
+      slug: "soft-growth-mindset",
+      title: "Growth Mindset",
+      domain: "softskill",
+      stage: "explorer",
+      phase: "v1.1",
+      level: 1,
+      description: "Membangun ketahanan belajar matematika tanpa rasa cemas dan takut salah.",
+      xp: 45,
+      isAvailable: false,
+      position: { x: 1020, y: 60 },
+    },
+    {
+      id: "soft-spaced-repetition",
+      slug: "soft-spaced-repetition",
+      title: "Recall Aktif & Feynman",
+      domain: "softskill",
+      stage: "navigator",
+      phase: "v1.1",
+      level: 2,
+      description: "Teknik mengajarkan konsep dengan bahasa sederhana dan repetisi terencana.",
+      xp: 65,
+      isAvailable: false,
+      position: { x: 1020, y: 240 },
     },
   ],
   edges: [

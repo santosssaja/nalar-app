@@ -1,0 +1,102 @@
+---
+title: Contoh Penggunaan Komponen Pembelajaran (Level & Steps)
+description: Panduan dan contoh integrasi LevelMap, StepRenderer, HintPanel, dan CanvasAutoSolver dalam format MDX interaktif.
+---
+
+# Modul Pembelajaran STEM Interaktif
+
+Dokumentasi ini mendemonstrasikan cara pemanggilan komponen pembelajaran modular pada platform **NALAR**.
+
+## 1. Peta Jalur Belajar (LevelMap)
+
+Komponen `LevelMap` menampilkan jalur stepping-stone bertingkat vertikal ala Duolingo dengan indikator status bintang tier (1–3 bintang), status terkunci/terbuka, dan progres persentase.
+
+```tsx
+import { LevelMap } from "@/components/learning/LevelMap";
+import { getTopicModule } from "@/modules/registry";
+
+export default function ModularClockTopicPage() {
+  const moduleData = getTopicModule("arithmetic-modular-clock");
+  const completedLevelIndices = [1]; // Diambil dari localStorage gamification
+
+  return (
+    <LevelMap
+      module={moduleData}
+      completedLevels={completedLevelIndices}
+    />
+  );
+}
+```
+
+---
+
+## 2. Pengatur Langkah Interaktif (StepRenderer)
+
+`StepRenderer` bertindak sebagai orkestrator yang merender 4 tipe langkah pembelajaran secara mulus:
+1. **ExplanationStep**: Penjelasan konsep oleh Nai disertai rumus KaTeX dan voice narration.
+2. **PlaygroundStep**: Eksplorasi manipulasi parameter tanpa batasan target.
+3. **ChallengeStep**: Tantangan logika dengan evaluasi otomatis, deteksi kesalahan, dan 4-hint scaffolding.
+4. **ValidationStep**: Rangkuman pencapaian, rumus KaTeX, unlock lencana, dan selebrasi kembang api.
+
+```tsx
+import { StepRenderer } from "@/components/learning/StepRenderer";
+import { getTopicModule } from "@/modules/registry";
+
+export default function LevelPlayer() {
+  const moduleData = getTopicModule("arithmetic-modular-clock");
+  const currentLevel = moduleData.levels[0]; // Level 1
+
+  return (
+    <StepRenderer
+      level={currentLevel}
+      topicSlug={moduleData.slug}
+      onLevelComplete={() => {
+        console.log("Level selesai! Navigasi kembali ke LevelMap.");
+      }}
+    />
+  );
+}
+```
+
+---
+
+## 3. Sistem 4-Hint Progressive & CanvasAutoSolver
+
+Pada komponen `ChallengeStep`, sistem scaffolding 4-hint tereskalasi secara otomatis saat pengguna salah menjawab:
+- **Hint 1**: Motivasi & pengingat konsep (0 token, respon instan).
+- **Hint 2**: Arahan variabel target spesifik (0 token, dari modul).
+- **Hint 3**: Penjelasan mendalam logika atau bantuan AI tutor hemat token.
+- **Hint 4**: Solusi eksplisit dengan tombol `Terapkan Solusi ke Kanvas Otomatis`.
+
+Ketika tombol Hint 4 ditekan, `CanvasAutoSolver` menginterpolasikan nilai slider kanvas secara halus menggunakan kurva *cubic-bezier* dengan `requestAnimationFrame`:
+
+```tsx
+import { CanvasAutoSolver } from "@/components/learning/CanvasAutoSolver";
+
+<CanvasAutoSolver
+  isSolving={isAutoSolving}
+  currentVariables={currentVariables}
+  targetVariables={{ clockHour: 2, modBase: 12 }}
+  duration={1000}
+  onUpdateVariables={(interpolated) => setCanvasVars(interpolated)}
+  onComplete={() => {
+    console.log("Variabel kanvas telah diselaraskan ke posisi solusi!");
+  }}
+/>
+```
+
+---
+
+## 4. Selebrasi Modul (ConfettiCelebration)
+
+Ditempatkan pada `ValidationStep` untuk memberikan umpan balik visual positif tanpa membebani thread peramban:
+
+```tsx
+import { ConfettiCelebration } from "@/components/gamification/ConfettiCelebration";
+
+<ConfettiCelebration
+  mode="fireworks"
+  duration={2500}
+  onComplete={() => console.log("Selebrasi kembang api selesai")}
+/>
+```
