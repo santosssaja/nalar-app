@@ -1,0 +1,53 @@
+---
+title: "Panduan Penggunaan Komponen Maskot Nai"
+category: "core"
+description: "Cara mengintegrasikan maskot panda merah Nai dan memicu ekspresi dinamis dari komponen MDX atau React."
+---
+
+import { NaiExpressions } from "./NaiExpressions";
+import { NaiSpeechBubble } from "./NaiSpeechBubble";
+
+# Nai — Teman Belajar & Tutor AI STEM
+
+Nai adalah maskot panda merah interaktif yang hadir untuk mendampingi pengguna memahami konsep STEM dengan sabar dan menyenangkan.
+
+## 1. Menampilkan Pose & Ekspresi Nai
+
+Komponen `NaiExpressions` dapat dirender dalam ukuran dan ekspresi apapun:
+
+```tsx
+<NaiExpressions expression="happy" size={96} />
+<NaiExpressions expression="thinking" size={96} />
+<NaiExpressions expression="celebrating" size={96} />
+<NaiExpressions expression="hinting" size={96} />
+<NaiExpressions expression="teaching" size={96} />
+```
+
+<div className="flex flex-wrap gap-4 items-center justify-center p-6 bg-neutral-900 rounded-2xl">
+  <NaiExpressions expression="happy" size={80} />
+  <NaiExpressions expression="thinking" size={80} />
+  <NaiExpressions expression="celebrating" size={80} />
+  <NaiExpressions expression="hinting" size={80} />
+  <NaiExpressions expression="teaching" size={80} />
+</div>
+
+## 2. Mengontrol Nai dari Komponen React
+
+Gunakan hook `useNai` untuk memicu balon dialog dan ekspresi baru:
+
+```tsx
+import { useNai } from "@/components/nai/NaiContext";
+
+export function CustomChallenge() {
+  const { say, setExpression } = useNai();
+
+  const handleCorrect = () => {
+    say("Hebat! Kamu menemukan polanya!", {
+      expression: "celebrating",
+      readAloud: true,
+    });
+  };
+
+  return <button onClick={handleCorrect}>Jawab</button>;
+}
+```

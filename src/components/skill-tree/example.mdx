@@ -1,0 +1,31 @@
+---
+title: "Panduan Penggunaan Komponen Skill Tree"
+category: "curriculum"
+description: "Visualisasi graf prasyarat kurikulum berbasis React Flow."
+---
+
+import { SkillTree } from "./SkillTree";
+import { SkillTreeFilters } from "./SkillTreeFilters";
+
+# Skill Tree Kurikulum Nalar
+
+Skill Tree adalah antarmuka navigasi utama platform Nalar yang menampilkan relasi prasyarat (*directed acyclic graph*) antartopik.
+
+## 1. Menyematkan Skill Tree
+
+```tsx
+import { SkillTree } from "@/components/skill-tree/SkillTree";
+
+export function CurriculumSection() {
+  return (
+    <div className="w-full h-[600px]">
+      <SkillTree domain="math" stage="all" />
+    </div>
+  );
+}
+```
+
+## 2. Status Node
+- **Locked** (Abu-abu / Gembok): Prasyarat belum terpenuhi.
+- **Active** (Aksen Indigo / Denyut): Siap dipelajari saat ini.
+- **Done** (Hijau Emerald / Centang): Pengguna telah menyelesaikan tantangan topik.

@@ -2,13 +2,23 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { GamificationProvider } from "@/context/GamificationContext";
-import { AccessibilityBar } from "@/components/accessibility/AccessibilityBar";
+import { NaiProvider } from "@/components/nai/NaiContext";
+import { Nai } from "@/components/nai/Nai";
+import { PageShell } from "@/components/layout/PageShell";
 
 export const metadata: Metadata = {
   title: "Nalar | Platform Belajar STEM Interaktif & Inklusif",
   description:
     "Pendidikan Berkualitas: menyediakan pendidikan yang inklusif, merata, dan berkualitas melalui simulasi kanvas interaktif dan aksesibilitas ramah difabel.",
-  keywords: ["STEM", "Matematika Interaktif", "Pendidikan Berkualitas", "Aljabar Linear", "Aksesibilitas", "Edukasi Visual"],
+  keywords: [
+    "STEM",
+    "Matematika Interaktif",
+    "Pendidikan Berkualitas",
+    "Aljabar Linear",
+    "Aksesibilitas",
+    "Edukasi Visual",
+    "Nai",
+  ],
 };
 
 /**
@@ -51,8 +61,10 @@ export default function RootLayout({
       <body className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         <AccessibilityProvider>
           <GamificationProvider>
-            <AccessibilityBar />
-            <div className="flex-1 flex flex-col">{children}</div>
+            <NaiProvider>
+              <PageShell>{children}</PageShell>
+              <Nai />
+            </NaiProvider>
           </GamificationProvider>
         </AccessibilityProvider>
       </body>
