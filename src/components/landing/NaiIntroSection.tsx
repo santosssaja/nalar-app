@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, MessageSquare, Volume2, Lightbulb, Compass, Award, CheckCircle2 } from "lucide-react";
+import { Sparkles, Volume2, Lightbulb, Compass, Award } from "lucide-react";
 import { NaiExpressions } from "@/components/nai/NaiExpressions";
 import { NaiExpression } from "@/components/nai/nai-sprites";
 import { useNai } from "@/components/nai/NaiContext";
