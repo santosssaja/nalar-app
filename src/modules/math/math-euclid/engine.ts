@@ -6,6 +6,8 @@
 export {
   computeEuclideanDivisionSteps,
   computeEuclideanTiles,
+  computeLCM,
+  extendedEuclidBezout,
 } from "@/lib/math-engine/euclidean-tiling";
 
 export type {

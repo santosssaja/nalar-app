@@ -25,77 +25,86 @@ export function ExplanationStep({ content, onNext }: ExplanationStepProps) {
   }, [content, say]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6 animate-fade-in">
-      {/* Header with Nai Avatar */}
-      <div className="flex items-center gap-4 p-5 rounded-3xl bg-gradient-to-r from-neutral-900 via-neutral-900 to-indigo-950/40 border border-neutral-800 shadow-xl">
-        <div className="shrink-0 p-1.5 rounded-2xl bg-neutral-950/70 border border-neutral-800">
-          <NaiExpressions expression="teaching" size={68} />
-        </div>
-        <div className="flex-1 space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">
-              Konsep Dipandu oleh Nai
-            </span>
-            <button
-              type="button"
-              onClick={() => speakText(content.audioNarrationText || content.conceptText)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold transition"
-              aria-label="Dengarkan penjelasan audio"
-            >
-              <Volume2 className={`w-3.5 h-3.5 ${isSpeaking ? "text-sky-400 animate-pulse" : ""}`} />
-              <span>Dengarkan</span>
-            </button>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            {content.title}
-          </h2>
-        </div>
-      </div>
-
-      {/* Concept Body */}
-      <div className="p-6 rounded-3xl bg-neutral-900/90 border border-neutral-800 space-y-4 shadow-lg text-sm text-neutral-200 leading-relaxed">
-        <p className="text-base font-medium text-neutral-100">{content.conceptText}</p>
-
-        {/* Analogy Box */}
-        {content.analogyText && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-300 block">
-                Analogi Intuitif
+    <div className="w-full max-w-5xl mx-auto h-full flex flex-col justify-center animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch p-4 sm:p-5 rounded-3xl bg-neutral-900/90 border border-neutral-800 shadow-xl overflow-hidden">
+        {/* Left Column: Avatar + Title + Audio + Analogy */}
+        <div className="md:col-span-5 flex flex-col justify-between gap-3 p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800/80">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="p-1 rounded-xl bg-neutral-900 border border-neutral-800">
+                <NaiExpressions expression="teaching" size={54} />
+              </div>
+              <button
+                type="button"
+                onClick={() => speakText(content.audioNarrationText || content.conceptText)}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold transition"
+                aria-label="Dengarkan penjelasan audio"
+              >
+                <Volume2 className={`w-3.5 h-3.5 ${isSpeaking ? "text-sky-400 animate-pulse" : ""}`} />
+                <span>Dengarkan</span>
+              </button>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">
+                Konsep Dipandu oleh Nai
               </span>
-              <p className="text-xs sm:text-sm text-amber-100">{content.analogyText}</p>
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight leading-snug">
+                {content.title}
+              </h2>
             </div>
           </div>
-        )}
 
-        {/* Key Formulas */}
-        {content.keyFormulas && content.keyFormulas.length > 0 && (
-          <div className="p-4 rounded-2xl bg-neutral-950/80 border border-neutral-800/90 space-y-2">
-            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block">
-              Rumus Kunci
-            </span>
-            <div className="flex flex-col gap-2 overflow-x-auto py-1">
-              {content.keyFormulas.map((formula, idx) => (
-                <div key={idx} className="text-center py-1">
-                  <KaTeXView math={formula} displayMode />
+          {/* Analogy Box */}
+          {content.analogyText && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 flex items-start gap-2.5">
+              <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 block">
+                  Analogi Intuitif
+                </span>
+                <p className="text-xs text-amber-100/90 leading-relaxed">{content.analogyText}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Concept Text + Key Formulas + Action CTA */}
+        <div className="md:col-span-7 flex flex-col justify-between gap-3 p-4 rounded-2xl bg-neutral-950/50 border border-neutral-800/60">
+          <div className="space-y-3 overflow-y-auto max-h-[360px] pr-1">
+            <p className="text-sm font-medium text-neutral-200 leading-relaxed">
+              {content.conceptText}
+            </p>
+
+            {/* Key Formulas */}
+            {content.keyFormulas && content.keyFormulas.length > 0 && (
+              <div className="p-3 rounded-xl bg-neutral-900/90 border border-neutral-800 space-y-1.5">
+                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                  Rumus Kunci
+                </span>
+                <div className="flex flex-col gap-1 overflow-x-auto py-0.5">
+                  {content.keyFormulas.map((formula, idx) => (
+                    <div key={idx} className="text-center py-0.5 text-sm">
+                      <KaTeXView math={formula} displayMode />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Action CTA */}
-      <div className="flex justify-end pt-2">
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={onNext}
-          rightIcon={<ArrowRight className="w-4 h-4" />}
-        >
-          {content.actionText || "Lanjut ke Simulasi"}
-        </Button>
+          {/* Action CTA */}
+          <div className="flex justify-end pt-1 border-t border-neutral-800/80">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onNext}
+              rightIcon={<ArrowRight className="w-4 h-4" />}
+              className="text-xs font-bold px-6 shadow-md shadow-indigo-600/30"
+            >
+              {content.actionText || "Lanjut ke Eksplorasi"}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

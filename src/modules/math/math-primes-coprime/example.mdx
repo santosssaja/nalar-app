@@ -1,0 +1,37 @@
+# Faktorisasi Prima & Bilangan Koprima
+
+Modul ini mengimplementasikan visualisasi faktorisasi prima, Saringan Eratosthenes, dan garis pandang 2D bilangan koprima.
+
+## Penggunaan Komponen
+
+```tsx
+import { Canvas } from "@/modules/math/math-primes-coprime/Canvas";
+import { Controls } from "@/modules/math/math-primes-coprime/Controls";
+import { KaTeXFormula } from "@/modules/math/math-primes-coprime/KaTeXFormula";
+
+export default function DemoPrimesPage() {
+  const [state, setState] = useState({
+    numberN: 12,
+    coprimeA: 8,
+    coprimeB: 9,
+    sieveLimit: 60,
+    fermatBase: 3,
+    fermatPrime: 7,
+  });
+
+  return (
+    <div>
+      <KaTeXFormula state={state} />
+      <Canvas state={state} />
+      <Controls state={state} onChange={setState} onReset={() => {}} />
+    </div>
+  );
+}
+```
+
+## Fitur Utama
+
+1. **Susunan Balok Faktor:** Visualisasi kisi balok persegi panjang untuk bilangan komposit vs baris lurus $1 \times N$ untuk bilangan prima.
+2. **Saringan Eratosthenes:** Grid bilangan 1-60 interaktif yang memfilter kelipatan prima secara visual.
+3. **Garis Pandang Koprima:** Eksplorasi bidang koordinat 2D di mana $\gcd(A, B) = 1$ menghasilkan garis pandang bebas hambatan.
+4. **Totient Euler & Fermat:** Kalkulasi nilai $\phi(N)$ dan simulasi keteraturan siklus $a^{p-1} \equiv 1 \pmod p$.

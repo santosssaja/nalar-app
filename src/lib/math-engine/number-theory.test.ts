@@ -6,6 +6,7 @@ import {
   isPrimeNumber,
   generateClockNodes,
   generateModularChords,
+  findModularInverse,
 } from "./number-theory";
 
 describe("Number Theory & Modular Arithmetic Engine", () => {
@@ -57,5 +58,15 @@ describe("Number Theory & Modular Arithmetic Engine", () => {
     expect(chords[3]).toEqual({ fromIndex: 3, toIndex: 6 });
     // Node 7 connects to (7 * 2) mod 10 = 14 mod 10 = 4
     expect(chords[7]).toEqual({ fromIndex: 7, toIndex: 4 });
+  });
+
+  it("calculates modular inverse correctly", () => {
+    // 3 * 5 = 15 = 1 mod 7 -> inverse of 3 mod 7 is 5
+    expect(findModularInverse(3, 7)).toBe(5);
+    // 2 * 3 = 6 = 1 mod 5 -> inverse of 2 mod 5 is 3
+    expect(findModularInverse(2, 5)).toBe(3);
+    // Inverse does not exist if gcd(a, m) !== 1
+    expect(findModularInverse(2, 6)).toBeNull();
+    expect(findModularInverse(4, 10)).toBeNull();
   });
 });

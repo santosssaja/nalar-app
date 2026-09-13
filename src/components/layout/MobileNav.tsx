@@ -17,16 +17,10 @@ export function MobileNav() {
       isActive: pathname.startsWith("/dashboard"),
     },
     {
-      label: "Skill Tree",
+      label: "Katalog Modul",
       href: "/explore",
-      icon: Network,
-      isActive: pathname.startsWith("/explore"),
-    },
-    {
-      label: "Topik",
-      href: "/#katalog",
       icon: BookOpen,
-      isActive: pathname.startsWith("/topics"),
+      isActive: pathname.startsWith("/explore") || pathname.startsWith("/topics"),
     },
   ];
 

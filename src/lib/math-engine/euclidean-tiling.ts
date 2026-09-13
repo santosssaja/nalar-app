@@ -136,3 +136,53 @@ export function computeEuclideanTiles(
     tiles,
   };
 }
+
+/**
+ * Computes the Least Common Multiple (LCM) of two numbers via GCD duality:
+ * lcm(a, b) = (|a * b|) / gcd(a, b).
+ */
+export function computeLCM(a: number, b: number): number {
+  const safeA = Math.abs(Math.round(a));
+  const safeB = Math.abs(Math.round(b));
+  if (safeA === 0 || safeB === 0) return 0;
+  const steps = computeEuclideanDivisionSteps(safeA, safeB);
+  const gcd = steps.length > 0 ? steps[steps.length - 1].divisor : 1;
+  return (safeA * safeB) / gcd;
+}
+
+/**
+ * Extended Euclidean Algorithm to find Bézout coefficients:
+ * Returns { gcd, x, y } such that a*x + b*y = gcd(a, b).
+ */
+export function extendedEuclidBezout(
+  a: number,
+  b: number
+): { gcd: number; x: number; y: number } {
+  let oldR = Math.round(a);
+  let r = Math.round(b);
+  let oldS = 1;
+  let s = 0;
+  let oldT = 0;
+  let t = 1;
+
+  while (r !== 0) {
+    const q = Math.floor(oldR / r);
+    let temp = oldR - q * r;
+    oldR = r;
+    r = temp;
+
+    temp = oldS - q * s;
+    oldS = s;
+    s = temp;
+
+    temp = oldT - q * t;
+    oldT = t;
+    t = temp;
+  }
+
+  return {
+    gcd: oldR,
+    x: oldS,
+    y: oldT,
+  };
+}

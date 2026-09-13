@@ -6,6 +6,7 @@ import { Level } from "@/types/level";
 import { CheckCircle2, Lock, Star, ChevronRight } from "lucide-react";
 import { clsx } from "clsx";
 import { Button } from "@/components/ui/Button";
+import { getLevelToken } from "@/lib/curriculum/level-token";
 
 export interface LevelMapProps {
   topicSlug: string;
@@ -27,7 +28,7 @@ export function LevelMap({
           Alur Progresi Belajar
         </span>
         <h3 className="text-xl sm:text-2xl font-black text-white">
-          Peta Level Duolingo-Style
+          Peta Penjelajahan Konsep
         </h3>
         <p className="text-xs text-neutral-400">
           Selesaikan setiap tingkat bertahap untuk membuka materi dan tantangan berikutnya.
@@ -41,7 +42,7 @@ export function LevelMap({
           const isActive = level.index === currentLevelIndex;
           const isLocked = level.index > currentLevelIndex && !isCompleted;
 
-          // Alternate slightly left/right for Duolingo curve effect
+          // Alternate slightly left/right for stepping-stone curve effect
           const offsetClass = idx % 2 === 0 ? "sm:-translate-x-6" : "sm:translate-x-6";
 
           return (
@@ -118,7 +119,7 @@ export function LevelMap({
               <div>
                 {!isLocked ? (
                   <Link
-                    href={`/topics/${topicSlug}/${level.index}`}
+                    href={`/topics/${topicSlug}/${getLevelToken(topicSlug, level.index)}`}
                     className="inline-block w-full"
                   >
                     <Button

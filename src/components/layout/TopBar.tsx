@@ -32,13 +32,13 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
     <>
       <header
         role="banner"
-        className="w-full h-16 bg-neutral-900/95 border-b border-neutral-800 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between gap-4 text-neutral-200 text-sm z-40 sticky top-0"
+        className="w-full max-w-full overflow-x-hidden h-16 bg-neutral-900/95 border-b border-neutral-800 backdrop-blur-md px-2.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 text-neutral-200 text-sm z-40 sticky top-0"
       >
         {/* Left: Brand, Mobile Toggle & Landing Nav */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {onToggleSidebar && (
             <Tooltip
-              content={isSidebarOpen ? "Tutup sidebar" : "Alihkan sidebar"}
+              content={isSidebarOpen ? "Tutup menu" : "Menu navigasi"}
               position="bottom"
             >
               <button
@@ -54,14 +54,14 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
 
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-black tracking-tight text-white hover:text-indigo-400 transition"
+            className="flex items-center gap-2 sm:gap-2.5 font-black tracking-tight text-white hover:text-indigo-400 transition"
             aria-label="Beranda Nalar"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-400 flex items-center justify-center text-white text-sm font-black shadow-md shadow-indigo-500/25">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-400 flex items-center justify-center text-white text-xs sm:text-sm font-black shadow-md shadow-indigo-500/25">
               N
             </div>
             <div className="flex flex-col">
-              <span className="text-base tracking-tight font-black leading-none">NALAR</span>
+              <span className="text-sm sm:text-base tracking-tight font-black leading-none">NALAR</span>
               <span className="text-[10px] text-neutral-400 font-medium tracking-normal hidden lg:inline">
                 STEM Interaktif & Inklusif
               </span>
@@ -78,13 +78,7 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
                 href="/explore"
                 className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
               >
-                Skill Tree
-              </Link>
-              <Link
-                href="/#katalog"
-                className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
-              >
-                Katalog Topik
+                Katalog Modul
               </Link>
               <Link
                 href="/dashboard"
@@ -97,26 +91,26 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
         </div>
 
         {/* Center: Gamification Stats (Streak & XP) */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Streak Counter */}
           <Tooltip content="Streak belajar berturut-turut" position="bottom">
             <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold"
               aria-label={`Streak belajar: ${progress.consecutiveDays} hari`}
             >
               <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              <span>{progress.consecutiveDays} hr</span>
+              <span className="text-[11px] sm:text-xs font-bold">{progress.consecutiveDays}<span className="hidden sm:inline"> hr</span></span>
             </div>
           </Tooltip>
 
           {/* XP Counter */}
           <Tooltip content="Total poin pengalaman (XP) yang diraih" position="bottom">
             <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold font-mono"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold font-mono"
               aria-label={`Poin pengalaman: ${progress.xp} XP`}
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>{progress.xp} XP</span>
+              <span className="text-[11px] sm:text-xs font-bold">{progress.xp}<span className="hidden sm:inline"> XP</span></span>
             </div>
           </Tooltip>
 

@@ -13,6 +13,7 @@ import {
 import { Card, CardTitle, CardDescription, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { NaiIntroSection } from "@/components/landing/NaiIntroSection";
 
 export default function Home() {
   return (
@@ -24,16 +25,15 @@ export default function Home() {
           <span>Pendidikan Berkualitas: Inklusif, Merata, dan Berkualitas</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-4xl leading-tight">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-neutral-100 max-w-4xl leading-tight">
           Pahami STEM Rumit Lewat{" "}
-          <span className="bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">
-            Intuisi Visual & Kanvas
+          <span className="text-blue-600">
+            Intuisi Visual &amp; Kanvas
           </span>
         </h1>
 
         <p className="text-base sm:text-lg text-neutral-300 max-w-2xl leading-relaxed">
-          Alternatif terbuka dan gratis seperti Brilliant. Tanpa hambatan login di awal,
-          dilengkapi visualisasi kanvas dinamis 60 FPS, maskot teman belajar Nai, dan aksesibilitas ramah difabel.
+          Platform pembelajaran interaktif yang membantu setiap siswa memahami konsep melalui visualisasi, AI Tutor, dan pengalaman belajar yang adaptif serta inklusif.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -68,6 +68,9 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Nai Mascot Introduction Showcase */}
+      <NaiIntroSection />
 
       {/* Featured Lessons Grid */}
       <section className="w-full max-w-6xl px-4 mb-16 space-y-6">
@@ -197,25 +200,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Skill Tree Showcase Banner */}
+      {/* Module Catalog Showcase Banner */}
       <section id="katalog" className="w-full max-w-6xl px-4 py-12 border-t border-neutral-800/80 mb-12">
         <div className="p-8 rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-900 to-indigo-950/60 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-2 text-left">
             <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase">
               <Network className="w-4 h-4" />
-              <span>Skill Tree Interaktif</span>
+              <span>Katalog Kurikulum STEM</span>
             </div>
             <h3 className="text-2xl font-black text-white">
-              Jelajahi Peta Prasyarat Matematika, Sains & Soft Skills
+              Jelajahi 50+ Topik Matematika, Sains & Penalaran Kritis
             </h3>
             <p className="text-sm text-neutral-300 max-w-xl">
-              Lihat bagaimana setiap topik saling terhubung melalui graf relasi. Filter domain, cek status terkunci atau selesai, dan rencanakan petualangan belajarmu.
+              Telusuri materi terstruktur dari tingkat dasar (Explorer) hingga lanjutan (Scholar). Dilengkapi filter domain, pencarian instan, dan prasyarat konsep.
             </p>
           </div>
 
           <Link href="/explore" className="shrink-0">
             <Button variant="primary" size="lg" rightIcon={<ArrowRight className="w-4 h-4" />}>
-              Buka Peta Kurikulum
+              Buka Katalog Modul
             </Button>
           </Link>
         </div>

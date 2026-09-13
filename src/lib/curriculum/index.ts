@@ -90,3 +90,13 @@ export function calculateTopicStatus(
 
   return allPrereqsMet ? "active" : "locked";
 }
+
+export function getTopicPrerequisites(
+  topicId: string,
+  treeData: CurriculumTreeData
+): TopicCurriculumItem[] {
+  const incoming = treeData.edges.filter((e) => e.target === topicId);
+  const sourceIds = new Set(incoming.map((e) => e.source));
+  return treeData.nodes.filter((n) => sourceIds.has(n.id));
+}
+

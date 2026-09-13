@@ -242,18 +242,41 @@ Semua 6 playground matematika MVP telah dibangun lengkap dengan sistem 3-level D
 
 ---
 
-### Sprint 9–10: 7 Playground Sains MVP
-| # | Playground | Teknologi |
-|---|-----------|-----------|
-| 1 | Kanon Proyektil | Canvas 2D / Mafs |
-| 2 | Bidang Miring Newton | Canvas 2D |
-| 3 | Roller Coaster Energi | Canvas 2D |
-| 4 | GHS (Bandul & Pegas) | Canvas 2D + Mafs |
-| 5 | Simulator Gelombang | Canvas 2D |
-| 6 | Medan Listrik | Canvas 2D |
-| 7 | Pembangun Rangkaian DC | React Flow / Canvas 2D |
+### Sprint 9–10: 7 Playground Sains MVP — ✅ Selesai
+Semua 7 playground sains MVP telah dibangun lengkap dengan sistem 3-level bertingkat, mode Sandbox, formula KaTeX reaktif, kontrol parameter dinamis, dan unit test fisika murni:
 
-Sama seperti Sprint 7–8, tapi buat di `src/modules/science/<slug>/`.
+| # | Playground | Slug | Teknologi | Status |
+|---|-----------|------|-----------|--------|
+| 1 | Kanon Proyektil | `physics-projectile-motion` | Canvas 2D / Kinematika | ✅ Selesai (3 level + sandbox) |
+| 2 | Bidang Miring Newton | `physics-newton-incline` | Canvas 2D / Dinamika | ✅ Selesai (3 level + sandbox) |
+| 3 | Roller Coaster Energi | `physics-roller-coaster` | Canvas 2D / Usaha & Energi | ✅ Selesai (3 level + sandbox) |
+| 4 | GHS (Bandul & Pegas) | `physics-harmonic-oscillator` | Canvas 2D / Osilasi Harmonik | ✅ Selesai (3 level + sandbox) |
+| 5 | Simulator Gelombang | `physics-wave-simulator` | Canvas 2D / Gelombang & Interferensi | ✅ Selesai (3 level + sandbox) |
+| 6 | Medan Listrik | `physics-electric-field` | Canvas 2D / Hukum Coulomb & Vektor E | ✅ Selesai (3 level + sandbox) |
+| 7 | Pembangun Rangkaian DC | `physics-dc-circuits` | Canvas 2D / Hukum Ohm & Kirchhoff | ✅ Selesai (3 level + sandbox) |
+
+**Implementasi Per Playground Sains:**
+- `src/lib/science-engine/`: Pure physics engine functions + unit tests (28 unit test suite sains lulus 100%, total 76 unit test).
+  - `projectile.ts`: $x(t) = v_0 \cos\theta \cdot t$, $y(t) = v_0 \sin\theta \cdot t - \frac{1}{2}gt^2$, jangkauan & waktu terbang.
+  - `newton-incline.ts`: $a = g(\sin\theta - \mu_k \cos\theta)$, gaya normal $N = mg\cos\theta$, batas gesek statis.
+  - `roller-coaster.ts`: Kekekalan $E_m = E_k + E_p$, kelajuan loop minimum $v_{\text{top}} = \sqrt{gr}$, gaya sentripetal normal.
+  - `harmonic-oscillator.ts`: Bandul $T = 2\pi\sqrt{L/g}$ dan pegas $T = 2\pi\sqrt{m/k}$, osilasi redaman $\gamma$.
+  - `wave-simulator.ts`: Cepat rambat $v = \lambda f$, superposisi interferensi konstruktif & destruktif.
+  - `electric-field.ts`: Hukum Coulomb $F = k\frac{|q_1 q_2|}{r^2}$, vektor kuat medan $\vec{E}$, dipol listrik, dan gaya pada muatan uji.
+  - `dc-circuits.ts`: Hukum Ohm $V = IR$, hambatan seri/paralel/campuran, percabangan Kirchhoff, dan disipasi daya Joule $P = VI = I^2R$.
+- `src/modules/science/<slug>/`:
+  - `content.ts`: Metadata pelajaran & skema tantangan logika (3 misi per topik).
+  - `engine.ts`: Re-export & penentuan interface state simulasi.
+  - `Canvas.tsx`: Visualisasi interaktif kanvas 2D dengan atribut aksesibilitas ARIA & keyboard/pointer interaction.
+  - `Controls.tsx`: Slider parameter dinamis, preset cepat, dan reset konfigurasi.
+  - `KaTeXFormula.tsx`: Formula fisika sinkron reaktif yang berubah otomatis mengikuti slider.
+  - `Challenge.tsx`: Tantangan logika gamifikasi dengan sistem petunjuk AI Tutor Nai & reward XP.
+  - `InteractiveLesson.tsx`: Dual-column sandbox layout view dengan audio narasi Web Speech API.
+  - `module.ts`: Struktur 3-Level bertingkat (Explanation, Playground, Challenge, Validation).
+  - `example.mdx` & `index.ts`: Dokumentasi MDX & barrel exports.
+- `src/modules/registry.ts`: Pendaftaran modul dan alias rute navigasi.
+- `src/app/topics/<slug>/page.tsx`: Halaman rute topik Next.js App Router dengan dukungan dual-mode.
+- `src/lib/curriculum/science-tree.ts`: Status unlocked dan rute aktif di Skill Tree & katalog `/explore`.
 
 ---
 

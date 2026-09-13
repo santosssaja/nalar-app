@@ -117,3 +117,35 @@ export function generateModularChords(
 
   return chords;
 }
+
+/**
+ * Computes modular multiplicative inverse of a mod m:
+ * Finds x such that (a * x) mod m === 1. Returns null if gcd(a, m) !== 1.
+ */
+export function findModularInverse(a: number, m: number): number | null {
+  const safeA = safeModulo(a, m);
+  const safeM = Math.abs(Math.round(m));
+  if (safeM <= 1 || calculateGCD(safeA, safeM) !== 1) {
+    return null;
+  }
+
+  // Extended Euclidean Algorithm
+  let m0 = safeM;
+  let y = 0, x = 1;
+
+  if (safeM === 1) return 0;
+  let currentA = safeA;
+
+  while (currentA > 1) {
+    const q = Math.floor(currentA / m0);
+    let t = m0;
+    m0 = currentA % m0;
+    currentA = t;
+    t = y;
+    y = x - q * y;
+    x = t;
+  }
+
+  if (x < 0) x += safeM;
+  return x;
+}

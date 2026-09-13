@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
-import { useLocalStorage } from "@/lib/storage";
 
 export interface PageShellProps {
   children: React.ReactNode;
@@ -17,38 +16,33 @@ export function PageShell({ children, showSidebar = true }: PageShellProps) {
   const isLandingPage = pathname === "/";
   const shouldShowSidebar = showSidebar && !isLandingPage;
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useLocalStorage<boolean>(
-    "nalar_sidebar_collapsed",
-    false
-  );
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const toggleDesktopCollapse = useCallback(() => {
-    setIsDesktopCollapsed((prev) => !prev);
-  }, [setIsDesktopCollapsed]);
+  const handleToggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
 
-  const handleToggleSidebar = useCallback(() => {
-    if (typeof window !== "undefined" && window.innerWidth >= 768) {
-      toggleDesktopCollapse();
-    } else {
-      setIsSidebarOpen((prev) => !prev);
-    }
-  }, [toggleDesktopCollapse]);
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
+
+  const handleOpenDrawer = useCallback(() => {
+    setIsDrawerOpen(true);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100">
       <TopBar
-        onToggleSidebar={shouldShowSidebar ? handleToggleSidebar : undefined}
-        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={shouldShowSidebar ? handleToggleDrawer : undefined}
+        isSidebarOpen={isDrawerOpen}
       />
 
       <div className="flex-1 flex w-full">
         {shouldShowSidebar && (
           <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            isCollapsed={isDesktopCollapsed}
-            onToggleCollapse={toggleDesktopCollapse}
+            isDrawerOpen={isDrawerOpen}
+            onCloseDrawer={handleCloseDrawer}
+            onOpenDrawer={handleOpenDrawer}
           />
         )}
 

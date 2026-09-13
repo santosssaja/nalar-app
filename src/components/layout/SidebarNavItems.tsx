@@ -31,17 +31,11 @@ export function SidebarNavItems({
       isActive: pathname.startsWith("/dashboard"),
     },
     {
-      label: "Skill Tree (Peta)",
-      href: "/explore",
-      icon: Network,
-      isActive: pathname.startsWith("/explore"),
-      badge: "Graf",
-    },
-    {
       label: "Katalog Modul",
-      href: "/#katalog",
+      href: "/explore",
       icon: BookOpen,
-      isActive: pathname.startsWith("/topics"),
+      isActive: pathname.startsWith("/explore") || pathname.startsWith("/topics"),
+      badge: "50+ Topik",
     },
   ];
 

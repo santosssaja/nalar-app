@@ -5,6 +5,7 @@ import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { NaiProvider } from "@/components/nai/NaiContext";
 import { Nai } from "@/components/nai/Nai";
+import { NaiPageWatcher } from "@/components/nai/NaiPageWatcher";
 import { PageShell } from "@/components/layout/PageShell";
 import { LevelUpModal } from "@/components/gamification/LevelUpModal";
 
@@ -66,6 +67,7 @@ export default function RootLayout({
         <AccessibilityProvider>
           <GamificationProvider>
             <NaiProvider>
+              <NaiPageWatcher />
               <PageShell>{children}</PageShell>
               <Nai />
               <LevelUpModal />

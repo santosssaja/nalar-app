@@ -6,9 +6,11 @@ import { useNai } from "./NaiContext";
 import { NaiExpressions } from "./NaiExpressions";
 import { NaiSpeechBubble } from "./NaiSpeechBubble";
 import { NAI_EXPRESSIONS, NaiExpression } from "./nai-sprites";
+import { usePathname } from "next/navigation";
 import { useAccessibility } from "@/context/AccessibilityContext";
 
 export function Nai() {
+  const pathname = usePathname();
   const {
     expression,
     message,
@@ -52,19 +54,45 @@ export function Nai() {
     if (message) {
       clearMessage();
     } else {
-      // Cycle a friendly tip or greeting
-      say(expData.defaultMessage, { expression });
+      // Dynamic page-specific tip when clicked
+      if (pathname === "/") {
+        say(
+          "Ingin rekomendasi? Coba mulai dari 'Operasi Bilangan Riil' atau 'Kanon Proyektil' untuk melihat simulasi visual seru!",
+          { expression: "happy", autoDismissMs: 8000 }
+        );
+      } else if (pathname === "/explore") {
+        say(
+          "Tips: Gunakan filter kategori Matematika atau Fisika di atas untuk menyaring topik yang ingin kamu dalami!",
+          { expression: "curious", autoDismissMs: 8000 }
+        );
+      } else if (pathname === "/skill-tree") {
+        say(
+          "Tips: Geser kanvas atau gunakan scroll mouse untuk menjelajahi peta. Simpul yang menyala hijau menandakan modul yang siap dipelajari!",
+          { expression: "thinking", autoDismissMs: 8000 }
+        );
+      } else if (pathname.startsWith("/topics/")) {
+        say(
+          "Tips: Jangan terburu-buru mencari jawaban! Geser parameter simulasi perlahan dan perhatikan apa yang berubah di kanvas grafis.",
+          { expression: "teaching", autoDismissMs: 8000 }
+        );
+      } else {
+        say(expData.defaultMessage, { expression });
+      }
     }
   };
 
   return (
     <aside
       aria-label="Teman Belajar AI Nai"
-      className="fixed bottom-16 md:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2 pointer-events-none select-none"
+      className="fixed bottom-3 md:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-1.5 pointer-events-none select-none"
     >
       {/* Speech Bubble */}
       {message && !isMinimized && (
-        <div className="pointer-events-auto max-w-[280px] sm:max-w-xs mb-1">
+        <div
+          onClick={clearMessage}
+          className="pointer-events-auto max-w-[230px] sm:max-w-xs mb-0.5 cursor-pointer"
+          title="Klik untuk menutup pesan"
+        >
           <NaiSpeechBubble
             message={message}
             onClose={clearMessage}
@@ -143,7 +171,7 @@ export function Nai() {
             onClick={handleNaiClick}
             className={`relative rounded-3xl p-1 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 ${
               isMinimized
-                ? "bg-neutral-900 border border-indigo-500/40 p-1.5 shadow-lg hover:scale-110"
+                ? "bg-neutral-900 border border-indigo-500/40 p-1 shadow-lg hover:scale-110"
                 : "animate-float hover:scale-105 active:scale-95 drop-shadow-2xl"
             }`}
             aria-label={`${expData.ariaLabel}. Klik untuk berinteraksi dengan Nai.`}
@@ -151,7 +179,8 @@ export function Nai() {
           >
             <NaiExpressions
               expression={expression}
-              size={isMinimized ? 44 : 88}
+              size={isMinimized ? 36 : 72}
+              className={isMinimized ? "w-7 h-7 sm:w-9 sm:h-9" : "w-11 h-11 sm:w-16 sm:h-16"}
               isHighContrast={isHighContrast}
             />
 

@@ -1,5 +1,5 @@
 import { TopicModule } from "@/types/topic";
-import { computeEuclideanTiles } from "./engine";
+import { computeEuclideanTiles, computeLCM } from "./engine";
 
 export const euclidModule: TopicModule = {
   id: "math-euclid",
@@ -7,9 +7,9 @@ export const euclidModule: TopicModule = {
   title: "Algoritma Euclid & Pengubinan FPB",
   category: "math",
   summary:
-    "Memvisualisasikan pencarian Faktor Persekutuan Terbesar (FPB) melalui pengubinan geometris persegi panjang dengan bujur sangkar terbesar secara rekursif.",
+    "Memvisualisasikan pencarian Faktor Persekutuan Terbesar (FPB) melalui pengubinan geometris lantai persegi panjang dengan bujur sangkar terbesar secara rekursif hingga bersisa nol.",
   audioNarrationText:
-    "Selamat datang di modul Algoritma Euclid. Kamu akan mempelajari bagaimana pembagian bersisa dapat divisualisasikan sebagai pengubinan lantai geometris.",
+    "Selamat datang di modul Algoritma Euclid. Kamu akan mempelajari bagaimana pembagian bersisa dapat divisualisasikan sebagai pengubinan lantai geometris tanpa perlu menghafal pohon faktor.",
   initialVariables: {
     width: 84,
     height: 52,
@@ -21,65 +21,184 @@ export const euclidModule: TopicModule = {
       tier: 1,
       title: "Konsep Dasar Pengubinan Bujur Sangkar",
       description: "Memahami bilangan bulat sebagai dimensi persegi panjang yang dipartisi bujur sangkar.",
+      ahaMoment: "FPB dari dua bilangan adalah ukuran ubin bujur sangkar terbesar yang bisa memasang lantai secara pas tanpa perlu memotong ubin!",
       steps: [
         {
-          id: "e1-step-1",
-          type: "explanation",
-          title: "Analogi Memasang Ubin Lantai",
-          explanation: {
-            title: "Bagaimana Mencari Ubin Terbesar yang Pas?",
-            conceptText:
-              "Bayangkan kamu memiliki lantai berukuran 84 × 52 meter dan ingin menutupinya seluruhnya dengan ubin bujur sangkar terbesar yang seragam tanpa perlu memotong ubin.",
-            analogyText:
-              "Kita mulai dengan memasang bujur sangkar terbesar yang muat: satu bujur sangkar 52 × 52. Sisanya adalah lantai berukuran 32 × 52. Proses ini diulangi terus hingga tidak ada sisa celah!",
-            keyFormulas: [
-              "a = q_1 \\times b + r_1",
-              "\\gcd(a, b) = \\gcd(b, a \\pmod b)",
+          id: "e1-s1",
+          type: "provoke",
+          title: "Tukang Keramik yang Bingung",
+          naiExpression: "curious",
+          naiDialogue: "Tukang ingin menutup lantai 42 × 30 dengan ubin bujur sangkar tanpa memotong satu pun ubin. Berapa ukuran ubin terbesar yang pas?",
+          provoke: {
+            hookTitle: "Memasang Ubin Lantai Tanpa Memotong",
+            hookText: "Sebuah ruangan berukuran 42 cm × 30 cm. Ubin harus berbentuk bujur sangkar seragam dan membagi habis panjang maupun lebar sekaligus.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+            question: "Berapa ukuran bujur sangkar TERBESAR yang muat pertama kali?",
+            options: [
+              {
+                id: "opt-30",
+                text: "Bujur sangkar 30 × 30 cm (sebesar sisi terpendek ruangan)",
+                responseText: "Tepat sekali! Kita mulai dengan memotong satu bujur sangkar sebesar 30 × 30 cm, menyisakan area lantai yang lebih kecil.",
+              },
+              {
+                id: "opt-42",
+                text: "Bujur sangkar 42 × 42 cm",
+                responseText: "Terlalu besar! Lebar ruangan hanya 30 cm, jadi ubin 42 cm tidak akan muat.",
+              },
             ],
-            audioNarrationText:
-              "Bujur sangkar terbesar yang pertama kali muat selalu memiliki panjang sisi yang sama dengan sisi terpendek persegi panjang.",
           },
         },
         {
-          id: "e1-step-2",
-          type: "playground",
-          title: "Eksplorasi Bujur Sangkar Pertama",
-          playground: {
-            title: "Simulasi Pengubinan Euclid Interaktif",
+          id: "e1-s2",
+          type: "predict",
+          title: "Berapa Ukuran Sisa Lantai?",
+          naiExpression: "thinking",
+          naiDialogue: "Setelah bujur sangkar 30 × 30 dipasang di lantai 42 × 30, berapa ukuran lantai sisa yang belum tertutup?",
+          predict: {
+            scenarioTitle: "Langkah Pertama Pemotongan Lantai",
+            scenarioText: "Panjang awal 42 cm, dipotong oleh bujur sangkar bersisi 30 cm.",
+            question: "Berapakah ukuran sisa lantai yang belum tertutup?",
+            options: [
+              {
+                id: "pred-30-12",
+                text: "30 cm × 12 cm (karena 42 - 30 = 12)",
+                isCorrect: true,
+                feedback: "Benar! Panjang lantai bersisa 12 cm, sedangkan lebarnya tetap 30 cm.",
+              },
+              {
+                id: "pred-30-20",
+                text: "30 cm × 20 cm",
+                isCorrect: false,
+                feedback: "42 - 30 = 12, bukan 20.",
+              },
+            ],
+            simulationLabel: "Pasang Ubin Pertama!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+            simulationVariables: { width: 42, height: 30 },
+          },
+        },
+        {
+          id: "e1-s3",
+          type: "guided",
+          title: "Simulator Pengubinan Rekursif Euclid",
+          naiExpression: "happy",
+          naiDialogue: "Amati bagaimana sisa lantai terus dipartisi hingga tidak bersisa celah sedikit pun!",
+          guided: {
+            instructionTitle: "Langkah-Langkah Pengubinan Euclid",
+            instructionText: "Perhatikan bagaimana lantai 42 × 30 dipotong bertahap: 30×30 (sisa 12) -> dua ubin 12×12 (sisa 6) -> dua ubin 6×6 (sisa 0).",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+            observationTable: {
+              headers: ["Tahap Pemotongan", "Ukuran Ubin Dipasang", "Sisa Area"],
+              rows: [
+                { parameter: "Langkah 1", expectedValue: "1 buah ubin 30 × 30", unit: "sisa 30 × 12" },
+                { parameter: "Langkah 2", expectedValue: "2 buah ubin 12 × 12", unit: "sisa 12 × 6" },
+                { parameter: "Langkah 3", expectedValue: "2 buah ubin 6 × 6", unit: "sisa 0 (selesai!)" },
+              ],
+            },
+            discoveryQuestion: {
+              prompt: "Berapakah ukuran ubin terakhir yang menutup lantai sempurna tanpa sisa?",
+              options: [
+                "6 × 6 cm (ini adalah FPB dari 42 dan 30)",
+                "12 × 12 cm",
+                "30 × 30 cm",
+              ],
+              correctOption: "6 × 6 cm (ini adalah FPB dari 42 dan 30)",
+              insight: "Ukuran bujur sangkar terakhir yang menutup sempurna tanpa sisa celah adalah FPB dari kedua dimensi!",
+            },
+          },
+        },
+        {
+          id: "e1-s4",
+          type: "formalize",
+          title: "Formulasi Langkah Pembagian Euclid",
+          naiExpression: "neutral",
+          naiDialogue: "Mari tuliskan proses pengubinan geometris tadi ke dalam bentuk persamaan pembagian bersisa.",
+          formalize: {
+            title: "Pembagian Berulang Euclid",
+            prompt: "Lengkapi deret pembagian berulang dari lantai 42 × 30:",
+            formulaTemplate: "42 = 1 \\times 30 + 12 \\implies 30 = 2 \\times 12 + [blank1] \\implies 12 = 2 \\times 6 + 0 \\implies \\gcd(42, 30) = [blank2]",
+            blanks: [
+              { id: "blank1", label: "Sisa Langkah 2", options: ["6", "10", "4"], correctOption: "6" },
+              { id: "blank2", label: "Nilai FPB", options: ["6", "12", "30"], correctOption: "6" },
+            ],
+            resolvedFormulaKaTeX: "42 = 1 \\times 30 + 12 \\implies 30 = 2 \\times 12 + 6 \\implies 12 = 2 \\times 6 + 0 \\implies \\gcd(42, 30) = 6",
+            explanation: "Sisa pembagian bukan nol yang terakhir selalu merupakan Faktor Persekutuan Terbesar (FPB / GCD).",
+          },
+        },
+        {
+          id: "e1-s5",
+          type: "check",
+          title: "Cek Pemahaman Pengubinan",
+          naiExpression: "thinking",
+          naiDialogue: "Uji nalarmu pada persegi panjang berukuran 20 × 15!",
+          check: {
+            question: "Jika lantai berukuran 20 × 15, berapa ukuran bujur sangkar pertama yang dipotong, dan berapa sisa lantainya?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-15-5", text: "Potong 15 × 15, sisa lantai 15 × 5", isCorrect: true, explanation: "Tepat sekali! Sisi terpendek adalah 15, jadi dipotong ubin 15 × 15, menyisakan 20 - 15 = 5 cm." },
+              { id: "opt-20-5", text: "Potong 20 × 20, sisa 5", isCorrect: false, explanation: "Lebar lantai hanya 15, tidak muat bujur sangkar 20." },
+            ],
+            explanation: "Langkah 1 selalu mengambil bujur sangkar dengan sisi min(panjang, lebar).",
+          },
+        },
+        {
+          id: "e1-s6",
+          type: "sandbox",
+          title: "Playground Pengubinan Bebas",
+          naiExpression: "happy",
+          naiDialogue: "Ubah panjang dan lebar ruangan di kanvas untuk melihat partisi ubin secara langsung.",
+          sandbox: {
+            title: "Simulasi Pengubinan Euclid",
             instructions: "Geser sisi A dan B, lalu amati ukuran ubin bujur sangkar pertama yang diletakkan.",
             interactiveComponentSlug: "math-euclid",
-            initialVariables: { width: 84, height: 52 },
+            initialVariables: { width: 60, height: 24 },
           },
         },
         {
-          id: "e1-step-3",
+          id: "e1-s7",
           type: "challenge",
           title: "Misi: Ubin Pertama Berukuran 24",
+          naiExpression: "neutral",
+          naiDialogue: "Atur ukuran persegi panjang sehingga sisi terpendek bernilai tepat 24 dan sisi terpanjang bernilai 60!",
           challenge: {
             id: "challenge-euclid-1",
             title: "Sisi Terpendek sebagai Ubin Pertama",
-            question: "Atur dimensi persegi panjang sehingga bujur sangkar pertama berukuran tepat 24 × 24.",
-            targetCondition: (vars: Record<string, number>) => {
-              return Math.min(vars.width, vars.height) === 24;
+            question:
+              "Atur ukuran persegi panjang sehingga sisi terpendek bernilai tepat 24 dan sisi terpanjang bernilai 60!",
+            targetCondition: (vars) => {
+              const w = Math.round(vars.width || 0);
+              const h = Math.round(vars.height || 0);
+              return (w === 60 && h === 24) || (w === 24 && h === 60);
             },
-            hint1Static: "Perhatikan bahwa ubin bujur sangkar pertama selalu memiliki sisi sama dengan sisi terpendek.",
-            hint2Static: "Ubah salah satu sisi (lebar atau tinggi) ke nilai 24.",
-            solutionVariables: { width: 24, height: 60 },
-            solutionExplanation: "Dengan sisi terpendek bernilai 24, bujur sangkar pertama yang terbentuk berukuran 24 × 24.",
+            hint1Static: "Ubah salah satu slider (panjang atau lebar) menjadi 60 dan yang lainnya menjadi 24.",
+            hint2Static: "Ubin bujur sangkar pertama yang terbentuk akan berukuran 24x24.",
+            solutionVariables: { width: 60, height: 24 },
+            solutionExplanation:
+              "Pada persegi panjang 60 x 24, bujur sangkar terbesar yang muat pertama kali berukuran 24 x 24 sebanyak 2 buah (2 x 24 = 48), menyisakan area 24 x 12.",
             xpReward: 30,
           },
         },
         {
-          id: "e1-step-4",
-          type: "validation",
-          title: "Pemahaman Tuntas: Ubin Pertama",
-          validation: {
-            title: "Ubin Pertama Berhasil Dipasang",
-            summaryText:
-              "Algoritma pembagian Euclid a = q · b + r secara geometris berarti memasang q buah bujur sangkar b × b, menyisakan persegi panjang baru b × r.",
-            keyTakeaway: "Bujur sangkar terbesar pertama selalu berukuran min(a, b).",
-            formulaKaTeX: "\\text{Ubin}_1 = \\min(a, b) \\times \\min(a, b)",
-            badgeToUnlock: "first-step",
+          id: "e1-s8",
+          type: "reflect",
+          title: "Refleksi Level 1: FPB Adalah Geometri",
+          naiExpression: "celebrating",
+          naiDialogue: "Selamat! Kamu telah memahami bahwa FPB adalah ukuran ubin bujur sangkar terbesar di dunia fisik!",
+          reflect: {
+            title: "Level 1 Tuntas: Geometri Pengubinan Lantai",
+            takeaways: [
+              "FPB dari dua bilangan bulat setara dengan ukuran bujur sangkar terbesar yang menutup persegi panjang tanpa celah.",
+              "Ukuran ubin pertama selalu sama dengan sisi terpendek min(a, b).",
+              "Sisa lantai yang belum tertutup terus dipartisi ulang hingga bersisa nol.",
+            ],
+            connectionText: "Di Level 2, kita akan membuktikan MENGAPA algoritma pemotongan ini selalu berhasil!",
+            nextLevelTitle: "Level 2: Teorema Reduksi Euclid",
+            badgeToUnlock: "tile-master",
+            xpReward: 30,
+            formulaKaTeX: "\\gcd(a, b) = \\gcd(b, a \\pmod b)",
           },
         },
       ],
@@ -87,68 +206,183 @@ export const euclidModule: TopicModule = {
     {
       id: "euclid-level-2",
       index: 2,
-      tier: 2,
-      title: "Rantai Sisa Bagi & FPB Terbesar",
-      description: "Menemukan ukuran bujur sangkar terkecil yang menutup sisa ruangan tanpa celah.",
+      tier: 1,
+      title: "Teorema Reduksi: Mengapa Euclid Selalu Bekerja",
+      description: "Memahami sifat pengurangan berulang bahwa gcd(a, b) = gcd(b, a mod b).",
+      ahaMoment: "Jika sebuah bilangan membagi A dan B, ia PASTI membagi selisihnya (A - B) dan sisanya (A mod B)!",
       steps: [
         {
-          id: "e2-step-1",
-          type: "explanation",
-          title: "Mengapa Sisanya Berkurang Terus?",
-          explanation: {
-            title: "Prinsip Penurunan Sisa Bagi",
-            conceptText:
-              "Setiap kali kita memotong bujur sangkar dari persegi panjang sisa, sisa ruangan yang tersisa selalu memiliki luas lebih kecil dari sebelumnya ($r_i < b_i$).",
-            analogyText:
-              "Karena bilangan bulat positif tidak dapat mengecil selamanya, proses ini dijamin akan berhenti pada sisa nol. Ukuran ubin saat sisa bernilai nol adalah FPB dari kedua bilangan mula-mula.",
-            keyFormulas: [
-              "\\gcd(a, b) = \\gcd(b, r)",
-              "r = a - q \\times b",
-            ],
-            audioNarrationText:
-              "Karena sisa selalu lebih kecil dari pembagi, proses pengubinan pasti akan berakhir pada sisa nol.",
-          },
-        },
-        {
-          id: "e2-step-2",
-          type: "playground",
-          title: "Uji Pasangan Bilangan",
-          playground: {
-            title: "Laboratorium Pengubinan Sisa Bagi",
-            instructions: "Pilih pasangan bilangan yang saling membagi untuk melihat proses selesai cepat.",
+          id: "e2-s1",
+          type: "provoke",
+          title: "Misteri Pengurangan Penggaris",
+          naiExpression: "curious",
+          naiDialogue: "Penggaris 7 cm bisa mengukur balok 35 cm dan balok 14 cm secara pas. Jika balok 35 dipotong 14 cm, apakah penggaris 7 cm masih pas?",
+          provoke: {
+            hookTitle: "Faktor Bersama Tidak Hilang Saat Dipotong",
+            hookText: "Dua balok kayu berukuran 35 cm dan 14 cm. Penggaris 7 cm mengukur balok 35 cm (5 kali pas) dan balok 14 cm (2 kali pas).",
             interactiveComponentSlug: "math-euclid",
-            initialVariables: { width: 60, height: 24 },
+            initialVariables: { width: 35, height: 14 },
+            question: "Apakah penggaris 7 cm masih bisa mengukur sisa potongan 35 - 14 = 21 cm secara pas?",
+            options: [
+              {
+                id: "opt-exact",
+                text: "Pasti bisa! 21 cm diukur tepat 3 kali oleh penggaris 7 cm (21 = 3 × 7).",
+                responseText: "Tepat sekali! Jika d membagi A dan B, maka d pasti membagi selisihnya A - B. Inilah fondasi kokoh Algoritma Euclid!",
+              },
+              {
+                id: "opt-lost",
+                text: "Tidak, faktor bersamanya bisa hilang karena terpotong.",
+                responseText: "Faktor bersama tidak pernah hilang; sifat distributif aljabar menjamin kelipatannya tetap utuh.",
+              },
+            ],
           },
         },
         {
-          id: "e2-step-3",
-          type: "challenge",
-          title: "Misi: Hasilkan FPB = 12",
-          challenge: {
-            id: "challenge-euclid-2",
-            title: "Menemukan Pasangan Ber-FPB 12",
-            question: "Temukan pasangan bilangan tidak sama (a ≠ b) yang menghasilkan FPB (ubin terkecil) tepat 12.",
-            targetCondition: (vars: Record<string, number>) => {
-              if (vars.width === vars.height) return false;
-              const res = computeEuclideanTiles(vars.width, vars.height);
-              return res.gcd === 12;
+          id: "e2-s2",
+          type: "predict",
+          title: "FPB dari Dua Bilangan Berdekatan",
+          naiExpression: "thinking",
+          naiDialogue: "Berapakah FPB dari 1.000.003 dan 1.000.000? Apakah kamu harus membuat pohon faktor raksasa?",
+          predict: {
+            scenarioTitle: "Reduksi Angka Raksasa Berdekatan",
+            scenarioText: "Teorema reduksi menyatakan: gcd(A, B) = gcd(B, A - B).",
+            question: "Berapakah nilai gcd(1.000.003, 1.000.000)?",
+            options: [
+              {
+                id: "pred-1-giant",
+                text: "1 (karena selisihnya adalah 3, dan 1.000.000 tidak habis dibagi 3)",
+                isCorrect: true,
+                feedback: "Brilian! gcd(1.000.000, 3) = 1 karena jumlah digit 1.000.000 adalah 1 (tidak habis dibagi 3). Selesai dalam 2 detik tanpa pohon faktor!",
+              },
+              {
+                id: "pred-3-giant",
+                text: "3",
+                isCorrect: false,
+                feedback: "1.000.000 tidak habis dibagi 3 (bersisa 1).",
+              },
+            ],
+            simulationLabel: "Uji Teorema Reduksi!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+            simulationVariables: { width: 42, height: 30 },
+          },
+        },
+        {
+          id: "e2-s3",
+          type: "guided",
+          title: "Simulator Reduksi Persegi Panjang",
+          naiExpression: "happy",
+          naiDialogue: "Atur lebar = 42 dan tinggi = 30 untuk melihat sisa lantai mengecil dari 12 menjadi 6.",
+          guided: {
+            instructionTitle: "Penelusuran Rantai Reduksi Euclid",
+            instructionText: "Perhatikan bagaimana gcd(42, 30) = gcd(30, 12) = gcd(12, 6) = 6.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+            observationTable: {
+              headers: ["Pasangan Nilai (A, B)", "Sisa Modulo A mod B", "Nilai FPB Dipertahankan"],
+              rows: [
+                { parameter: "gcd(42, 30)", expectedValue: "12", unit: "FPB = 6" },
+                { parameter: "gcd(30, 12)", expectedValue: "6", unit: "FPB = 6" },
+                { parameter: "gcd(12, 6)", expectedValue: "0", unit: "FPB = 6" },
+              ],
             },
-            hint1Static: "FPB 12 berarti kedua bilangan harus merupakan kelipatan dari 12.",
-            hint2Static: "Cobalah kombinasi seperti 48 dan 36, atau 60 dan 24.",
-            solutionVariables: { width: 48, height: 36 },
-            solutionExplanation: "48 = 1 × 36 + 12, lalu 36 = 3 × 12 + 0. Sisa non-nol terakhir adalah 12.",
-            xpReward: 60,
+            discoveryQuestion: {
+              prompt: "Mengapa nilai FPB tidak pernah berubah di setiap baris pembagian?",
+              options: [
+                "Karena setiap faktor pembagi A dan B otomatis membagi sisanya A mod B",
+                "Karena angkanya selalu bilangan genap",
+                "Hanya terjadi pada bilangan di bawah 100",
+              ],
+              correctOption: "Karena setiap faktor pembagi A dan B otomatis membagi sisanya A mod B",
+              insight: "Teorema Euclid menjamin bahwa himpunan pembagi bersama dari (A, B) identik dengan pembagi bersama dari (B, A mod B).",
+            },
           },
         },
         {
-          id: "e2-step-4",
-          type: "validation",
-          title: "Pemahaman Tuntas: Rantai Pembagian",
-          validation: {
-            title: "Hebat! Rantai FPB Dikuasai",
-            summaryText:
-              "Algoritma Euclid adalah salah satu algoritma tertua di dunia yang sangat efisien dengan kompleksitas logaritmik O(log(min(a, b))).",
-            keyTakeaway: "FPB dari dua bilangan sama dengan sisa pembagian non-nol terakhir.",
+          id: "e2-s4",
+          type: "formalize",
+          title: "Teorema Reduksi Euclid",
+          naiExpression: "neutral",
+          naiDialogue: "Mari kita tuangkan teorema reduksi ke dalam formula KaTeX yang elegan.",
+          formalize: {
+            title: "Teorema Reduksi FPB",
+            prompt: "Lengkapi teorema reduksi pembagian Euclid berikut:",
+            formulaTemplate: "\\gcd(a, b) = \\gcd(b, a - b) = \\gcd(b, [blank1])",
+            blanks: [
+              { id: "blank1", label: "Sisa Pembagian", options: ["a \\pmod b", "a + b", "a \\times b"], correctOption: "a \\pmod b" },
+            ],
+            resolvedFormulaKaTeX: "\\gcd(a, b) = \\gcd(b, a \\pmod b)",
+            explanation: "Algoritma Euclid mereduksi angka raksasa menjadi sisa kerdil secara eksponensial dalam sedikit langkah pembagian.",
+          },
+        },
+        {
+          id: "e2-s5",
+          type: "check",
+          title: "Sifat FPB Bilangan Berurutan",
+          naiExpression: "thinking",
+          naiDialogue: "Gunakan teorema reduksi untuk menjawab teka-teki bilangan berurutan!",
+          check: {
+            question: "Berapakah FPB dari dua bilangan bulat positif yang berurutan, yaitu gcd(n, n + 1)?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-always-1", text: "Selalu bernilai 1 (misal gcd(14, 15) = 1, gcd(99, 100) = 1)", isCorrect: true, explanation: "Tepat sekali! gcd(n+1, n) = gcd(n, (n+1) - n) = gcd(n, 1) = 1. Dua bilangan berurutan selalu saling prima!" },
+              { id: "opt-dep-n", text: "Tergantung apakah n genap atau ganjil", isCorrect: false, explanation: "Selisihnya selalu 1, dan pembagi dari 1 hanyalah 1." },
+            ],
+            explanation: "gcd(n+1, n) = gcd(n, 1) = 1 untuk semua bilangan bulat positif n.",
+          },
+        },
+        {
+          id: "e2-s6",
+          type: "sandbox",
+          title: "Playground Reduksi Cepat",
+          naiExpression: "happy",
+          naiDialogue: "Masukkan berbagai pasangan bilangan untuk melihat kecepatan reduksi algoritma Euclid.",
+          sandbox: {
+            title: "Simulasi Reduksi Cepat",
+            instructions: "Atur lebar dan tinggi untuk melihat rantai reduksi FPB secara real-time.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 42, height: 30 },
+          },
+        },
+        {
+          id: "e2-s7",
+          type: "challenge",
+          title: "Misi: FPB Berukuran 6",
+          naiExpression: "neutral",
+          naiDialogue: "Atur persegi panjang lebar = 42 dan tinggi = 30. Sisa ubin bukan nol terakhir harus bernilai 6!",
+          challenge: {
+            id: "challenge-euclid-gcd6",
+            title: "Temukan Pengubinan Berakhir di Ukuran 6",
+            question:
+              "Atur persegi panjang berukuran lebar = 42 dan tinggi = 30. Berapakah ukuran ubin bujur sangkar terakhir yang menutup sempurna tanpa sisa (FPB)?",
+            targetCondition: (vars) => {
+              const res = computeEuclideanTiles(vars.width, vars.height);
+              return res.gcd === 6 && (vars.width === 42 || vars.height === 42);
+            },
+            hint1Static: "Atur width = 42 dan height = 30.",
+            hint2Static: "42 = 1 x 30 + 12 -> 30 = 2 x 12 + 6 -> 12 = 2 x 6 + 0. Ubin terakhir adalah 6x6.",
+            solutionVariables: { width: 42, height: 30 },
+            solutionExplanation: "42 = 1*30 + 12, 30 = 2*12 + 6, 12 = 2*6 + 0. Sisa bukan nol terakhir adalah 6.",
+            xpReward: 40,
+          },
+        },
+        {
+          id: "e2-s8",
+          type: "reflect",
+          title: "Refleksi Level 2: Keanggunan Reduksi",
+          naiExpression: "celebrating",
+          naiDialogue: "Hebat! Kamu memahami MENGAPA Algoritma Euclid bekerja, bukan cuma menghafal langkahnya!",
+          reflect: {
+            title: "Level 2 Tuntas: Teorema Reduksi Euclid",
+            takeaways: [
+              "Faktor bersama selalu membagi habis selisih (a - b) dan sisa (a mod b).",
+              "gcd(a, b) = gcd(b, a mod b) mereduksi angka raksasa menjadi kerdil secara instan.",
+              "Dua bilangan bulat berurutan n dan n + 1 selalu memiliki FPB = 1.",
+            ],
+            connectionText: "Di Level 3, kita akan mengungkap rahasia hubungan emas antara FPB dan saudaranya: KPK!",
+            nextLevelTitle: "Level 3: Dualitas FPB & KPK",
+            badgeToUnlock: "pattern-seeker",
+            xpReward: 40,
             formulaKaTeX: "\\gcd(a, b) = r_{\\text{terakhir}}",
           },
         },
@@ -157,71 +391,741 @@ export const euclidModule: TopicModule = {
     {
       id: "euclid-level-3",
       index: 3,
-      tier: 3,
-      title: "Rasio Emas & Bilangan Fibonacci",
-      description: "Menganalisis kasus terburuk algoritma Euclid melalui pasangan bilangan Fibonacci berurutan.",
+      tier: 2,
+      title: "Dualitas FPB & KPK (Dua Saudara)",
+      description: "Menghubungkan perkalian dua bilangan dengan hasil kali FPB dan KPK-nya.",
+      ahaMoment: "Hasil kali dua bilangan selalu sama dengan hasil kali FPB dan KPK-nya: a × b = gcd(a,b) × lcm(a,b)!",
       steps: [
         {
-          id: "e3-step-1",
-          type: "explanation",
-          title: "Teorema Lamé & Barisan Fibonacci",
-          explanation: {
-            title: "Pasangan Bilangan Paling Lambat Selesai",
-            conceptText:
-              "Dua bilangan Fibonacci berurutan Fn dan Fn-1 (seperti 144 dan 89) membutuhkan jumlah langkah terbanyak karena hasil bagi selalu qi = 1 di setiap langkah!",
-            analogyText:
-              "Setiap kali ubin diletakkan, hanya muat tepat 1 buah bujur sangkar, menciptakan spiral pengubinan rasio emas φ ≈ 1.618. Mereka selalu saling prima (FPB = 1).",
-            keyFormulas: [
-              "F_n = 1 \\times F_{n-1} + F_{n-2}",
-              "\\gcd(F_n, F_{n-1}) = 1 \\quad \\forall n \\ge 2",
-            ],
-            audioNarrationText:
-              "Dua bilangan Fibonacci berurutan selalu menghasilkan FPB 1 dan membutuhkan iterasi pengubinan paling banyak.",
-          },
-        },
-        {
-          id: "e3-step-2",
-          type: "playground",
-          title: "Eksplorasi Spiral Pengubinan Fibonacci",
-          playground: {
-            title: "Pengubinan Rasio Emas",
-            instructions: "Atur dimensi 144 × 89 dan perhatikan rantai langkah 1 ubin per iterasi.",
+          id: "e3-s1",
+          type: "provoke",
+          title: "Kapan Dua Lampu Menyala Bersama?",
+          naiExpression: "curious",
+          naiDialogue: "Lampu hijau berkedip tiap 6 detik, lampu merah tiap 8 detik. Kapan detik pertama mereka menyala bersamaan lagi?",
+          provoke: {
+            hookTitle: "Pertemuan Ritme Kelipatan",
+            hookText: "Kedua lampu mulai menyala bersama di detik 0. Lampu hijau menyala di detik 6, 12, 18, 24... Lampu merah di detik 8, 16, 24...",
             interactiveComponentSlug: "math-euclid",
-            initialVariables: { width: 144, height: 89 },
+            initialVariables: { width: 60, height: 45 },
+            question: "Di detik ke berapakah kedua lampu pertama kali menyala serentak?",
+            options: [
+              {
+                id: "opt-24-lcm",
+                text: "Detik ke-24 (Kelipatan Persekutuan Terkecil / KPK)",
+                responseText: "Tepat sekali! KPK(6, 8) = 24. Sekarang perhatikan: FPB(6, 8) = 2. Kalikan keduanya: 2 × 24 = 48 = 6 × 8!",
+              },
+              {
+                id: "opt-48-mul",
+                text: "Detik ke-48 (hasil kali langsung 6 × 8)",
+                responseText: "Di detik 48 memang menyala bersama, tapi detik PERTAMA adalah detik ke-24.",
+              },
+            ],
           },
         },
         {
-          id: "e3-step-3",
-          type: "challenge",
-          title: "Misi: Buktikan FPB(144, 89) = 1",
-          challenge: {
-            id: "challenge-euclid-3",
-            title: "Uji Pasangan Fibonacci 144 × 89",
-            question: "Atur persegi panjang 144 × 89 untuk membuktikan bahwa FPB dari dua bilangan Fibonacci ini adalah 1.",
-            targetCondition: (vars: Record<string, number>) => {
-              return (
-                (vars.width === 144 && vars.height === 89) ||
-                (vars.width === 89 && vars.height === 144)
-              );
+          id: "e3-s2",
+          type: "predict",
+          title: "Hubungan Perkalian Emas",
+          naiExpression: "thinking",
+          naiDialogue: "Jika FPB(a, b) × KPK(a, b) = a × b, bisakah kita mencari KPK angka besar tanpa daftar kelipatan?",
+          predict: {
+            scenarioTitle: "Mencari KPK Lewat Euclid",
+            scenarioText: "Diketahui dua bilangan 60 dan 45 memiliki FPB = 15. Kita ingin mencari KPK(60, 45).",
+            question: "Berapakah nilai KPK(60, 45)?",
+            options: [
+              {
+                id: "pred-180",
+                text: "180 (karena (60 × 45) / 15 = 60 × 3 = 180)",
+                isCorrect: true,
+                feedback: "Benar! Mencari KPK angka besar sekarang sangat cepat: cari FPB dengan Euclid, lalu bagi hasil kalinya!",
+              },
+              {
+                id: "pred-2700",
+                text: "2700 (hasil kali langsung 60 × 45)",
+                isCorrect: false,
+                feedback: "2700 belum dibagi dengan faktor persekutuan bersamanya (FPB = 15).",
+              },
+            ],
+            simulationLabel: "Buktikan KPK = 180!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 60, height: 45 },
+            simulationVariables: { width: 60, height: 45 },
+          },
+        },
+        {
+          id: "e3-s3",
+          type: "guided",
+          title: "Simulator FPB & KPK Interaktif",
+          naiExpression: "happy",
+          naiDialogue: "Atur lebar = 60 dan tinggi = 45. Amati nilai FPB dan hasil KPK-nya di kanvas!",
+          guided: {
+            instructionTitle: "Laboratorium Dualitas FPB & KPK",
+            instructionText: "Ubah dimensi untuk melihat bagaimana irisan balok faktor prima membentuk FPB dan gabungannya membentuk KPK.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 60, height: 45 },
+            observationTable: {
+              headers: ["Pasangan (a, b)", "FPB gcd(a,b)", "KPK lcm(a,b) = (a·b)/gcd"],
+              rows: [
+                { parameter: "60 dan 45", expectedValue: "15", unit: "KPK = 180" },
+                { parameter: "24 dan 18", expectedValue: "6", unit: "KPK = 72" },
+              ],
             },
-            hint1Static: "Gunakan preset Fibonacci atau geser slider langsung ke 144 dan 89.",
-            hint2Static: "Perhatikan bagaimana setiap langkah hanya menghasilkan tepat satu bujur sangkar.",
-            solutionVariables: { width: 144, height: 89 },
-            solutionExplanation: "144 dan 89 adalah bilangan Fibonacci berurutan yang saling prima (FPB = 1).",
+            discoveryQuestion: {
+              prompt: "Mengapa rumus lcm(a, b) = (a · b) / gcd(a, b) selalu berlaku?",
+              options: [
+                "Karena faktor bersama dihitung dua kali saat a dikali b, sehingga harus dibagi satu kali dengan FPB",
+                "Hanya berlaku jika salah satu bilangan prima",
+                "Karena KPK selalu kelipatan ganjil",
+              ],
+              correctOption: "Karena faktor bersama dihitung dua kali saat a dikali b, sehingga harus dibagi satu kali dengan FPB",
+              insight: "Mirip teori himpunan: |A ∪ B| = |A| + |B| - |A ∩ B|. Pada dekomposisi prima: max(a,b) + min(a,b) = a + b.",
+            },
+          },
+        },
+        {
+          id: "e3-s4",
+          type: "formalize",
+          title: "Rumus Sakti KPK Lewat Euclid",
+          naiExpression: "neutral",
+          naiDialogue: "Mari formulasikan kaitan dualitas FPB dan KPK ke dalam KaTeX.",
+          formalize: {
+            title: "Identitas Perkalian FPB & KPK",
+            prompt: "Lengkapi persamaan hubungan perkalian berikut:",
+            formulaTemplate: "a \\cdot b = \\gcd(a, b) \\cdot [blank1] \\implies \\operatorname{lcm}(a, b) = \\frac{a \\cdot b}{[blank2]}",
+            blanks: [
+              { id: "blank1", label: "Faktor KPK", options: ["\\operatorname{lcm}(a, b)", "\\gcd(a, b)", "a + b"], correctOption: "\\operatorname{lcm}(a, b)" },
+              { id: "blank2", label: "Pembagi FPB", options: ["\\gcd(a, b)", "a \\cdot b", "2"], correctOption: "\\gcd(a, b)" },
+            ],
+            resolvedFormulaKaTeX: "a \\cdot b = \\gcd(a, b) \\cdot \\operatorname{lcm}(a, b) \\implies \\operatorname{lcm}(a, b) = \\frac{a \\cdot b}{\\gcd(a, b)}",
+            explanation: "KPK dari bilangan raksasa mana pun selalu dapat dihitung secara instan berkat kecepatan Algoritma Euclid.",
+          },
+        },
+        {
+          id: "e3-s5",
+          type: "check",
+          title: "Cek Cepat Angka Misterius",
+          naiExpression: "thinking",
+          naiDialogue: "Dua bilangan memiliki FPB = 6 dan KPK = 90. Jika salah satu bilangannya 18, berapakah bilangan lainnya?",
+          check: {
+            question: "Dua bilangan a dan b memiliki FPB = 6 dan KPK = 90. Jika a = 18, berapakah nilai b?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-30-ans", text: "b = 30 (karena 18 × b = 6 × 90 = 540 -> b = 540 / 18 = 30)", isCorrect: true, explanation: "Brilian! 18 × 30 = 540 = 6 × 90. Rumus perkalian emas langsung menyelesaikan soal ini tanpa tebak-tebak!" },
+              { id: "opt-15-ans", text: "b = 15", isCorrect: false, explanation: "18 × 15 = 270, bukan 540." },
+              { id: "opt-45-ans", text: "b = 45", isCorrect: false, explanation: "FPB(18, 45) = 9, bukan 6." },
+            ],
+            explanation: "a · b = gcd · lcm -> 18 · b = 6 · 90 = 540 -> b = 30.",
+          },
+        },
+        {
+          id: "e3-s6",
+          type: "sandbox",
+          title: "Playground FPB & KPK Bebas",
+          naiExpression: "happy",
+          naiDialogue: "Uji berbagai kombinasi angka untuk memverifikasi perkalian emas a · b = gcd · lcm.",
+          sandbox: {
+            title: "Simulasi FPB & KPK Bebas",
+            instructions: "Atur lebar = 60 dan tinggi = 45 untuk mengamati nilai FPB dan KPK.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 60, height: 45 },
+          },
+        },
+        {
+          id: "e3-s7",
+          type: "challenge",
+          title: "Tantangan: Pasangan dengan KPK = 180",
+          naiExpression: "neutral",
+          naiDialogue: "Atur ukuran lantai sehingga FPB bernilai 15 dan KPK bernilai 180 (misal: 60 × 45)!",
+          challenge: {
+            id: "challenge-euclid-lcm",
+            title: "Konfigurasi FPB = 15 dan KPK = 180",
+            question:
+              "Atur ukuran lantai sehingga FPB bernilai 15 dan KPK bernilai 180 (misal: 60 × 45)!",
+            targetCondition: (vars) => {
+              const res = computeEuclideanTiles(vars.width, vars.height);
+              const lcm = computeLCM(vars.width, vars.height);
+              return res.gcd === 15 && lcm === 180;
+            },
+            hint1Static: "Coba pasang lebar 60 dan tinggi 45.",
+            hint2Static: "60 = 1 x 45 + 15 -> 45 = 3 x 15 + 0. FPB = 15. KPK = (60 x 45)/15 = 180.",
+            solutionVariables: { width: 60, height: 45 },
+            solutionExplanation: "FPB(60, 45) = 15. KPK(60, 45) = (60 * 45) / 15 = 180.",
+            xpReward: 50,
+          },
+        },
+        {
+          id: "e3-s8",
+          type: "reflect",
+          title: "Refleksi Level 3: Dualitas Sempurna",
+          naiExpression: "celebrating",
+          naiDialogue: "FPB dan KPK adalah dua sisi dari satu koin yang sama!",
+          reflect: {
+            title: "Level 3 Tuntas: Dualitas FPB & KPK",
+            takeaways: [
+              "Hasil kali dua bilangan selalu sama dengan perkalian FPB dan KPK-nya: a · b = gcd · lcm.",
+              "KPK adalah gabungan seluruh faktor prima, sedangkan FPB adalah irisannya.",
+              "Kita tidak perlu lagi mencari KPK dengan mendaftar kelipatan panjang berbaris.",
+            ],
+            connectionText: "Di Level 4, kita akan memecahkan teka-teki ember air lewat Algoritma Euclid Diperluas & Identitas Bézout!",
+            nextLevelTitle: "Level 4: Identitas Bézout & Ember Air",
+            badgeToUnlock: "pattern-seeker",
+            xpReward: 50,
+            formulaKaTeX: "\\operatorname{lcm}(a, b) = \\frac{a \\cdot b}{\\gcd(a, b)}",
+          },
+        },
+      ],
+    },
+    {
+      id: "euclid-level-4",
+      index: 4,
+      tier: 2,
+      title: "Algoritma Euclid Diperluas & Identitas Bézout",
+      description: "Menyatakan FPB sebagai kombinasi linear ax + by = gcd(a, b).",
+      ahaMoment: "FPB selalu bisa dibentuk dari kombinasi penjumlahan dan pengurangan kedua bilangan: ax + by = gcd(a,b)!",
+      steps: [
+        {
+          id: "e4-s1",
+          type: "provoke",
+          title: "Teka-Teki Ember Air (Die Hard Puzzle)",
+          naiExpression: "curious",
+          naiDialogue: "Bagaimana cara menakar tepat 1 liter air hanya dengan ember 5 liter dan ember 3 liter tanpa garis skala?",
+          provoke: {
+            hookTitle: "Teka-Teki Dua Ember Air",
+            hookText: "Kamu memiliki keran air tak terbatas, satu ember 5 liter, dan satu ember 3 liter. Kamu diminta menghasilkan tepat 1 liter air.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 7, height: 5 },
+            question: "Operasi manakah yang menghasilkan tepat 1 liter air?",
+            options: [
+              {
+                id: "opt-bezout-water",
+                text: "Isi ember 3L dua kali (6L), lalu tuang ke ember 5L hingga penuh: sisa 1L! (2 × 3 - 1 × 5 = 1)",
+                responseText: "Tepat sekali! 2 × (3L) - 1 × (5L) = 1 Liter. Secara matematis, kamu baru saja menggunakan kombinasi linear Bézout!",
+              },
+              {
+                id: "opt-half-water",
+                text: "Isi ember 3 liter setengahnya saja.",
+                responseText: "Tanpa garis skala, menebak setengah ember tidak akurat dalam matematika!",
+              },
+            ],
+          },
+        },
+        {
+          id: "e4-s2",
+          type: "predict",
+          title: "Kapan Takaran Air Mustahil Dibuat?",
+          naiExpression: "thinking",
+          naiDialogue: "Jika embernya berukuran 4 liter dan 6 liter, apakah mungkin menakar tepat 1 liter air?",
+          predict: {
+            scenarioTitle: "Eksistensi Solusi Bézout",
+            scenarioText: "Teorema Bézout: ax + by = c hanya memiliki solusi bilangan bulat jika c adalah kelipatan dari gcd(a, b).",
+            question: "Berapakah FPB(4, 6), dan bisakah kita mengukur 1 liter?",
+            options: [
+              {
+                id: "pred-no-1l",
+                text: "Mustahil! Karena FPB(4, 6) = 2, semua kombinasi ember pasti menghasilkan bilangan genap (kelipatan 2)",
+                isCorrect: true,
+                feedback: "Luar biasa! 4x + 6y = 2(2x + 3y) selalu genap, sehingga mustahil menghasilkan 1 liter (angka ganjil).",
+              },
+              {
+                id: "pred-yes-1l",
+                text: "Pasti bisa jika kita memindahkan airnya berulang-ulang",
+                isCorrect: false,
+                feedback: "Tidak akan pernah bisa! FPB membatasi nilai terkecil yang bisa dibentuk.",
+              },
+            ],
+            simulationLabel: "Buktikan dengan FPB!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 7, height: 5 },
+            simulationVariables: { width: 7, height: 5 },
+          },
+        },
+        {
+          id: "e4-s3",
+          type: "guided",
+          title: "Simulator Pasangan Bézout",
+          naiExpression: "happy",
+          naiDialogue: "Atur lebar = 7 dan tinggi = 5 untuk melihat pengubinan dengan FPB = 1.",
+          guided: {
+            instructionTitle: "Identitas Bézout ax + by = gcd(a, b)",
+            instructionText: "Untuk a = 7 dan b = 5, kita punya 7 × 3 - 5 × 4 = 21 - 20 = 1. Pasangannya adalah x = 3 dan y = -4.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 7, height: 5 },
+            observationTable: {
+              headers: ["Nilai a dan b", "FPB gcd(a,b)", "Koefisien (x, y)"],
+              rows: [
+                { parameter: "a = 7, b = 5", expectedValue: "1", unit: "7(3) + 5(-4) = 1" },
+                { parameter: "a = 5, b = 3", expectedValue: "1", unit: "5(-1) + 3(2) = 1" },
+              ],
+            },
+            discoveryQuestion: {
+              prompt: "Berapakah nilai bilangan bulat positif TERKECIL yang bisa dibentuk oleh kombinasi linear ax + by?",
+              options: [
+                "Tepat sama dengan FPB(a, b)",
+                "Selalu angka 1",
+                "Tergantung nilai x dan y",
+              ],
+              correctOption: "Tepat sama dengan FPB(a, b)",
+              insight: "Identitas Bézout membuktikan bahwa FPB adalah nilai positif terkecil dari seluruh kombinasi bilangan bulat ax + by.",
+            },
+          },
+        },
+        {
+          id: "e4-s4",
+          type: "formalize",
+          title: "Identitas Bézout & Persamaan Diophantine",
+          naiExpression: "neutral",
+          naiDialogue: "Mari formulasikan Identitas Bézout ke dalam notasi aljabar.",
+          formalize: {
+            title: "Identitas Bézout",
+            prompt: "Lengkapi persamaan kombinasi linier Bézout berikut:",
+            formulaTemplate: "a \\cdot x + b \\cdot y = [blank1] \\quad \\text{dan ada solusi untuk } ax+by=1 \\iff \\gcd(a,b) = [blank2]",
+            blanks: [
+              { id: "blank1", label: "Kombinasi FPB", options: ["\\gcd(a, b)", "a \\cdot b", "0"], correctOption: "\\gcd(a, b)" },
+              { id: "blank2", label: "Syarat Solusi 1", options: ["1", "0", "a"], correctOption: "1" },
+            ],
+            resolvedFormulaKaTeX: "a \\cdot x + b \\cdot y = \\gcd(a, b) \\quad \\text{dan ada solusi untuk } ax+by=1 \\iff \\gcd(a, b) = 1",
+            explanation: "Identitas Bézout adalah jembatan emas yang menghubungkan aritmetika pembagian dengan pencarian invers modular dan kriptografi RSA.",
+          },
+        },
+        {
+          id: "e4-s5",
+          type: "check",
+          title: "Cek Pasangan Bézout",
+          naiExpression: "thinking",
+          naiDialogue: "Periksa apakah pasangan x = 3 dan y = -4 memenuhi persamaan 7x + 5y = 1!",
+          check: {
+            question: "Hitung nilai dari 7(3) + 5(-4). Apakah menghasilkan FPB(7, 5)?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-bezout-ok", text: "21 - 20 = 1 (Tepat sama dengan FPB(7, 5) = 1)", isCorrect: true, explanation: "Tepat sekali! Ini membuktikan x = 3 dan y = -4 adalah salah satu pasangan solusi Bézout." },
+              { id: "opt-bezout-wrong", text: "21 + 20 = 41", isCorrect: false, explanation: "Ingat bahwa y = -4 adalah bilangan negatif." },
+            ],
+            explanation: "7 × 3 + 5 × (-4) = 21 - 20 = 1.",
+          },
+        },
+        {
+          id: "e4-s6",
+          type: "sandbox",
+          title: "Playground Ember & Bézout",
+          naiExpression: "happy",
+          naiDialogue: "Atur lebar = 7 dan tinggi = 5 untuk melihat pengubinan dengan FPB = 1.",
+          sandbox: {
+            title: "Simulasi Pasangan Bézout",
+            instructions: "Atur lebar = 7 dan tinggi = 5 untuk melihat pengubinan dengan FPB = 1.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 7, height: 5 },
+          },
+        },
+        {
+          id: "e4-s7",
+          type: "challenge",
+          title: "Misi: Pasangan Koprima Bézout",
+          naiExpression: "neutral",
+          naiDialogue: "Atur dimensi lantai menjadi 7 × 5 sehingga FPB = 1!",
+          challenge: {
+            id: "challenge-euclid-bezout",
+            title: "Konfigurasi Ember 7 dan 5 (FPB = 1)",
+            question:
+              "Atur dimensi lantai menjadi 7 × 5 sehingga FPB = 1 (memungkinkan persamaan 7x + 5y = 1 terselesaikan dengan x = 3, y = -4)!",
+            targetCondition: (vars) => {
+              const res = computeEuclideanTiles(vars.width, vars.height);
+              return (vars.width === 7 && vars.height === 5) || (vars.width === 5 && vars.height === 7);
+            },
+            hint1Static: "Atur satu slider ke 7 dan slider satunya ke 5.",
+            hint2Static: "7 x 3 - 5 x 4 = 21 - 20 = 1. Ini membuktikan FPB(7, 5) = 1.",
+            solutionVariables: { width: 7, height: 5 },
+            solutionExplanation: "7 * 3 + 5 * (-4) = 21 - 20 = 1 = gcd(7, 5).",
+            xpReward: 50,
+          },
+        },
+        {
+          id: "e4-s8",
+          type: "reflect",
+          title: "Refleksi Level 4: Menembus Persamaan Diophantine",
+          naiExpression: "celebrating",
+          naiDialogue: "Luar biasa! Kamu telah menguasai identitas Bézout yang menjadi pilar aljabar modern!",
+          reflect: {
+            title: "Level 4 Tuntas: Identitas Bézout",
+            takeaways: [
+              "FPB selalu dapat dibentuk sebagai kombinasi linear: ax + by = gcd(a, b).",
+              "Persamaan ax + by = c hanya memiliki solusi bulat jika c kelipatan FPB(a, b).",
+              "Algoritma Euclid Diperluas adalah metode tercepat mencari invers modular perkalian.",
+            ],
+            connectionText: "Di Level 5, kita akan menyelidiki KASUS TERBURUK yang dihadapi Algoritma Euclid: Deret Fibonacci & Rasio Emas!",
+            nextLevelTitle: "Level 5: Kasus Terburuk Euclid & Fibonacci",
+            badgeToUnlock: "pattern-seeker",
+            xpReward: 50,
+            formulaKaTeX: "a \\cdot x + b \\cdot y = \\gcd(a, b)",
+          },
+        },
+      ],
+    },
+    {
+      id: "euclid-level-5",
+      index: 5,
+      tier: 3,
+      title: "Kasus Terburuk Euclid & Rasio Emas Fibonacci",
+      description: "Mempelajari mengapa pasangan bilangan Fibonacci membutuhkan langkah pembagian terbanyak.",
+      ahaMoment: "Angka yang paling lambat diselesaikan oleh Euclid adalah deret bilangan Fibonacci berturutan: hasil baginya selalu 1 dan ubinnya selalu persegi tunggal!",
+      steps: [
+        {
+          id: "e5-s1",
+          type: "provoke",
+          title: "Siapa Lawan Terberat Algoritma Euclid?",
+          naiExpression: "curious",
+          naiDialogue: "Algoritma Euclid sangat cepat. Tapi pasangan bilangan manakah yang memaksa Euclid bekerja paling keras?",
+          provoke: {
+            hookTitle: "Pasangan Pembagian Terpanjang",
+            hookText: "Jika hasil bagi bernilai besar (misal 100/10 = 10 sisa 0), pembagian langsung selesai dalam 1 langkah. Pasangan terburuk adalah yang hasil baginya SELALU 1!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 34, height: 21 },
+            question: "Deret bilangan manakah yang setiap pembagiannya selalu menghasilkan q = 1?",
+            options: [
+              {
+                id: "opt-fibo",
+                text: "Deret Bilangan Fibonacci (1, 1, 2, 3, 5, 8, 13, 21, 34...)",
+                responseText: "Tepat sekali! Karena F(n+1) = 1 × F(n) + F(n-1), setiap ubin yang dipasang selalu bujur sangkar tunggal dan membutuhkan langkah terbanyak!",
+              },
+              {
+                id: "opt-two",
+                text: "Deret perpangkatan 2 (2, 4, 8, 16...)",
+                responseText: "Pangkat dua justru sangat cepat selesai karena saling membagi kelipatan genap.",
+              },
+            ],
+          },
+        },
+        {
+          id: "e5-s2",
+          type: "predict",
+          title: "Spiral Emas dari Pengubinan Terpanjang",
+          naiExpression: "thinking",
+          naiDialogue: "Jika ubin Fibonacci 13, 8, 5, 3, 2, 1, 1 disusun berputar, bentuk apakah yang terlahir?",
+          predict: {
+            scenarioTitle: "Pengubinan 21 × 13",
+            scenarioText: "Setiap ubin dipasang bersebelahan memutar secara berurutan.",
+            question: "Kurva alami apakah yang membungkus ubin-ubin Fibonacci ini?",
+            options: [
+              {
+                id: "pred-spiral",
+                text: "Spiral Rasio Emas (mirip cangkang nautilus dan galaksi)",
+                isCorrect: true,
+                feedback: "Benar! Rasio dua bilangan Fibonacci berurutan mendekati Rasio Emas phi ≈ 1.618.",
+              },
+              {
+                id: "pred-circle",
+                text: "Lingkaran simetris sempurna",
+                isCorrect: false,
+                feedback: "Jari-jarinya terus bertambah secara eksponensial membentuk spiral, bukan lingkaran statis.",
+              },
+            ],
+            simulationLabel: "Buka Spiral Fibonacci!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 21, height: 13 },
+            simulationVariables: { width: 21, height: 13 },
+          },
+        },
+        {
+          id: "e5-s3",
+          type: "guided",
+          title: "Simulator Deret Fibonacci",
+          naiExpression: "happy",
+          naiDialogue: "Atur dimensi 21 × 13 atau 34 × 21 untuk melihat spiral ubin persegi tunggal berputar!",
+          guided: {
+            instructionTitle: "Eksplorasi Kasus Terburuk Lamé",
+            instructionText: "Perhatikan bagaimana setiap langkah hanya memotong satu bujur sangkar saja: 21 = 1×13 + 8 -> 13 = 1×8 + 5 -> 8 = 1×5 + 3 -> 5 = 1×3 + 2 -> 3 = 1×2 + 1 -> 2 = 2×1 + 0.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 21, height: 13 },
+            observationTable: {
+              headers: ["Pasangan Fibonacci", "Jumlah Langkah Euclid", "Rasio Panjang / Lebar"],
+              rows: [
+                { parameter: "21 × 13", expectedValue: "6 langkah", unit: "21/13 ≈ 1.615" },
+                { parameter: "34 × 21", expectedValue: "7 langkah", unit: "34/21 ≈ 1.619" },
+              ],
+            },
+            discoveryQuestion: {
+              prompt: "Mengapa kasus terburuk Euclid tetap tergolong sangat cepat dalam ilmu komputer?",
+              options: [
+                "Karena jumlah langkahnya dibatasi oleh jumlah digit angka (kompleksitas logaritmik O(log n))",
+                "Karena komputer bisa menebak jawabannya",
+                "Hanya cepat untuk angka Fibonacci",
+              ],
+              correctOption: "Karena jumlah langkahnya dibatasi oleh jumlah digit angka (kompleksitas logaritmik O(log n))",
+              insight: "Teorema Lamé (1844): Jumlah langkah Euclid tidak akan pernah melebihi 5 kali jumlah digit bilangan terkecil!",
+            },
+          },
+        },
+        {
+          id: "e5-s4",
+          type: "formalize",
+          title: "Teorema Lamé & Rasio Emas",
+          naiExpression: "neutral",
+          naiDialogue: "Mari tuangkan relasi Fibonacci dan Rasio Emas ke dalam formula KaTeX.",
+          formalize: {
+            title: "Konvergensi Rasio Emas",
+            prompt: "Lengkapi limit rasio bilangan Fibonacci berikut:",
+            formulaTemplate: "\\lim_{n \\to \\infty} \\frac{F_{n+1}}{F_n} = [blank1] = \\frac{1 + \\sqrt{5}}{2} \\approx 1.618",
+            blanks: [
+              { id: "blank1", label: "Simbol Rasio Emas", options: ["\\phi", "\\pi", "e"], correctOption: "\\phi" },
+            ],
+            resolvedFormulaKaTeX: "\\lim_{n \\to \\infty} \\frac{F_{n+1}}{F_n} = \\phi = \\frac{1 + \\sqrt{5}}{2} \\approx 1.6180339",
+            explanation: "Pasangan Fibonacci adalah input paling menantang bagi Euclid, namun tetap diselesaikan dalam waktu logaritmik O(log min(a,b)).",
+          },
+        },
+        {
+          id: "e5-s5",
+          type: "check",
+          title: "Cek Langkah Fibonacci",
+          naiExpression: "thinking",
+          naiDialogue: "Uji kejelianmu menghitung langkah reduksi deret Fibonacci!",
+          check: {
+            question: "Berapa ubin bujur sangkar yang dipasang pada setiap tahap pengubinan bilangan Fibonacci berturutan sebelum tahap akhir?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-1-tile", text: "Selalu tepat 1 ubin bujur sangkar tunggal pada setiap tahap", isCorrect: true, explanation: "Tepat! Karena F(n+1) < 2 × F(n), bujur sangkar yang muat selalu hanya 1 buah saja." },
+              { id: "opt-2-tile", text: "Selalu 2 ubin", isCorrect: false, explanation: "Jika muat 2 ubin, itu bukan deret Fibonacci." },
+            ],
+            explanation: "Hasil bagi q = 1 pada setiap langkah adalah ciri khas deret Fibonacci.",
+          },
+        },
+        {
+          id: "e5-s6",
+          type: "sandbox",
+          title: "Playground Spiral Fibonacci",
+          naiExpression: "happy",
+          naiDialogue: "Atur dimensi 21 × 13 atau 34 × 21 untuk melihat spiral berputar indah di kanvas.",
+          sandbox: {
+            title: "Simulasi Spiral Fibonacci Bebas",
+            instructions: "Atur dimensi 21 × 13 atau 34 × 21 untuk melihat spiral ubin persegi tunggal berputar.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 34, height: 21 },
+          },
+        },
+        {
+          id: "e5-s7",
+          type: "challenge",
+          title: "Tantangan: Pengubinan Fibonacci 21 × 13",
+          naiExpression: "neutral",
+          naiDialogue: "Atur dimensi persegi panjang menjadi tepat 21 × 13 untuk menghasilkan pengubinan bertingkat Fibonacci dengan FPB = 1!",
+          challenge: {
+            id: "challenge-euclid-fibonacci",
+            title: "Konfigurasi Spiral Fibonacci",
+            question:
+              "Atur dimensi persegi panjang menjadi tepat 21 × 13 untuk menghasilkan pengubinan bertingkat Fibonacci dengan FPB = 1!",
+            targetCondition: (vars) => {
+              return (vars.width === 21 && vars.height === 13) || (vars.width === 13 && vars.height === 21);
+            },
+            hint1Static: "Atur panjang = 21 dan lebar = 13 (dua bilangan Fibonacci berurutan).",
+            hint2Static: "Ubin yang terbentuk akan berukuran 13x13, 8x8, 5x5, 3x3, 2x2, 1x1, 1x1.",
+            solutionVariables: { width: 21, height: 13 },
+            solutionExplanation: "21 = 1*13 + 8 -> 13 = 1*8 + 5 -> 8 = 1*5 + 3 -> 5 = 1*3 + 2 -> 3 = 1*2 + 1 -> 2 = 2*1 + 0.",
+            xpReward: 60,
+          },
+        },
+        {
+          id: "e5-s8",
+          type: "reflect",
+          title: "Refleksi Level 5: Keindahan Kasus Terburuk",
+          naiExpression: "celebrating",
+          naiDialogue: "Menakjubkan! Bahkan dalam kasus terburuknya, Algoritma Euclid terbukti sangat efisien!",
+          reflect: {
+            title: "Level 5 Tuntas: Kasus Terburuk & Fibonacci",
+            takeaways: [
+              "Pasangan Fibonacci berturutan membutuhkan langkah pembagian terbanyak pada Algoritma Euclid.",
+              "Setiap langkah pengubinan Fibonacci memotong bujur sangkar tunggal yang membungkus spiral rasio emas phi.",
+              "Teorema Lamé membuktikan batas efisiensi logaritmik yang menjadi standar algoritma komputer modern.",
+            ],
+            connectionText: "Saatnya menguji seluruh keahlian geometri dan aljabar ini di Boss Level Pamungkas!",
+            nextLevelTitle: "Boss Level: Ujian Modul Pengubinan Euclid",
+            badgeToUnlock: "pattern-seeker",
+            xpReward: 60,
+            formulaKaTeX: "\\frac{F_{n+1}}{F_n} \\to \\phi = \\frac{1 + \\sqrt{5}}{2}",
+          },
+        },
+      ],
+    },
+    {
+      id: "euclid-level-6",
+      index: 6,
+      tier: 3,
+      title: "Boss Level: Ujian Modul Pengubinan Euclid",
+      description: "Ujian komprehensif menguji reduksi, FPB, KPK, Bézout, dan pengubinan persegi panjang.",
+      ahaMoment: "Pengubinan Euclid mengubah aritmetika menjadi seni spasial yang indah dan logis!",
+      steps: [
+        {
+          id: "e6-s1",
+          type: "provoke",
+          title: "Ujian Akhir Modul Euclid",
+          naiExpression: "thinking",
+          naiDialogue: "Kamu telah menyelesaikan pembagian ubin, teorema reduksi, KPK, Bézout, hingga spiral Fibonacci. Saatnya menuntaskan Boss Level!",
+          provoke: {
+            hookTitle: "Ujian Akhir Pengubinan Euclid",
+            hookText: "Sebuah aula pertemuan berukuran 78 meter × 48 meter akan dipasangi karpet bujur sangkar terbesar tanpa memotong karpet.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 78, height: 48 },
+            question: "Berapa meter ukuran sisi karpet bujur sangkar terbesar yang pas (FPB dari 78 dan 48)?",
+            options: [
+              {
+                id: "opt-6m",
+                text: "6 meter (karena 78 = 1×48 + 30 -> 48 = 1×30 + 18 -> 30 = 1×18 + 12 -> 18 = 1×12 + 6 -> sisa 0)",
+                responseText: "Tepat sekali! Rantai reduksi Euclid menemukan FPB = 6 meter hanya dalam 4 baris perhitungan sederhana.",
+              },
+              {
+                id: "opt-12m",
+                text: "12 meter",
+                responseText: "48 habis dibagi 12, tapi 78 / 12 = 6.5 (bersisa 6 meter celah karpet).",
+              },
+            ],
+          },
+        },
+        {
+          id: "e6-s2",
+          type: "predict",
+          title: "Berapa Total Karpet yang Dibutuhkan?",
+          naiExpression: "thinking",
+          naiDialogue: "Jika karpet berukuran 6 × 6 meter, berapa total karpet untuk menutup aula 78 × 48 meter?",
+          predict: {
+            scenarioTitle: "Kalkulasi Total Ubin Karpet",
+            scenarioText: "Panjang 78 m memuat 78 / 6 = 13 karpet. Lebar 48 m memuat 48 / 6 = 8 karpet.",
+            question: "Berapa total karpet yang dibutuhkan?",
+            options: [
+              {
+                id: "pred-104",
+                text: "104 karpet (13 × 8 = 104 karpet)",
+                isCorrect: true,
+                feedback: "Benar! Luas total 3744 m² dibagi luas ubin 36 m² = 104 karpet.",
+              },
+              {
+                id: "pred-80",
+                text: "80 karpet",
+                isCorrect: false,
+                feedback: "13 baris dikali 8 kolom menghasilkan 104 karpet.",
+              },
+            ],
+            simulationLabel: "Pasang Karpet Aula!",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 78, height: 48 },
+            simulationVariables: { width: 78, height: 48 },
+          },
+        },
+        {
+          id: "e6-s3",
+          type: "guided",
+          title: "Simulator Penuh Pengubinan",
+          naiExpression: "happy",
+          naiDialogue: "Uji coba berbagai dimensi persegi panjang untuk menguji hipotesis FPB sebelum menjawab misi akhir.",
+          guided: {
+            instructionTitle: "Laboratorium Pengubinan Aula 78 × 48",
+            instructionText: "Amati bagaimana sisa lantai mengecil: 30 -> 18 -> 12 -> 6 -> 0.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 78, height: 48 },
+            observationTable: {
+              headers: ["Langkah", "Pembagian Bersisa", "Sisa Area"],
+              rows: [
+                { parameter: "Langkah 1", expectedValue: "78 = 1 × 48 + 30", unit: "sisa 30" },
+                { parameter: "Langkah 2", expectedValue: "48 = 1 × 30 + 18", unit: "sisa 18" },
+                { parameter: "Langkah 3", expectedValue: "30 = 1 × 18 + 12", unit: "sisa 12" },
+                { parameter: "Langkah 4", expectedValue: "18 = 1 × 12 + 6", unit: "sisa 6" },
+                { parameter: "Langkah 5", expectedValue: "12 = 2 × 6 + 0", unit: "selesai!" },
+              ],
+            },
+            discoveryQuestion: {
+              prompt: "Berapakah nilai KPK dari 78 dan 48 menggunakan rumus emas (a · b) / gcd?",
+              options: [
+                "624 (karena (78 × 48) / 6 = 78 × 8 = 624)",
+                "3744",
+                "1248",
+              ],
+              correctOption: "624 (karena (78 × 48) / 6 = 78 × 8 = 624)",
+              insight: "KPK(78, 48) = (78 × 48) / 6 = 624 meter.",
+            },
+          },
+        },
+        {
+          id: "e6-s4",
+          type: "formalize",
+          title: "Teorema Fundamental Pengubinan Euclid",
+          naiExpression: "neutral",
+          naiDialogue: "Mari formulasikan hukum pamungkas Algoritma Euclid ke dalam KaTeX.",
+          formalize: {
+            title: "Formula Universal Euclid",
+            prompt: "Lengkapi persamaan keterbagian pembagian berulang:",
+            formulaTemplate: "r_{k-1} = q_{k+1} \\cdot r_k + 0 \\implies \\gcd(a, b) = [blank1]",
+            blanks: [
+              { id: "blank1", label: "Sisa Terakhir", options: ["r_k", "r_0", "q_k"], correctOption: "r_k" },
+            ],
+            resolvedFormulaKaTeX: "r_{k-1} = q_{k+1} \\cdot r_k + 0 \\implies \\gcd(a, b) = r_k",
+            explanation: "Sisa bukan nol terakhir r_k selalu membagi habis seluruh sisa sebelumnya dan kedua bilangan awal a dan b.",
+          },
+        },
+        {
+          id: "e6-s5",
+          type: "check",
+          title: "Cek Evaluasi Komprehensif",
+          naiExpression: "thinking",
+          naiDialogue: "Pertanyaan evaluasi terakhir sebelum mengeksekusi misi penutupan!",
+          check: {
+            question: "Jika gcd(a, b) = 4, berapakah nilai dari gcd(a², b²)?",
+            checkType: "multiple_choice",
+            options: [
+              { id: "opt-16-ans", text: "16 (karena semua faktor prima terkuadratkan: 4² = 16)", isCorrect: true, explanation: "Tepat sekali! Menguadratkan bilangan melipatgandakan eksponen seluruh faktor primanya, sehingga FPB kuadratnya adalah 4² = 16." },
+              { id: "opt-8-ans", text: "8", isCorrect: false, explanation: "Eksponen prima dikalikan 2, bukan dikalikan 2 pada nilai FPB-nya." },
+            ],
+            explanation: "gcd(a², b²) = (gcd(a, b))² = 4² = 16.",
+          },
+        },
+        {
+          id: "e6-s6",
+          type: "sandbox",
+          title: "Playground Boss Level",
+          naiExpression: "happy",
+          naiDialogue: "Uji coba konfigurasi dimensi sebelum menyelesaikan misi akhir.",
+          sandbox: {
+            title: "Simulasi Bebas Boss Level",
+            instructions: "Atur dimensi persegi panjang untuk memverifikasi nilai FPB aula.",
+            interactiveComponentSlug: "math-euclid",
+            initialVariables: { width: 78, height: 48 },
+          },
+        },
+        {
+          id: "e6-s7",
+          type: "challenge",
+          title: "Misi Terakhir: Aula 78 × 48 (FPB = 6)",
+          naiExpression: "neutral",
+          naiDialogue: "Atur dimensi lantai menjadi 78 × 48 meter. Sisi ubin bujur sangkar terbesar yang mengubin aula secara pas adalah FPB = 6!",
+          challenge: {
+            id: "challenge-euclid-boss",
+            title: "Pengubinan Karpet Aula 78 x 48",
+            question:
+              "Atur dimensi lantai menjadi 78 × 48 meter. Berapakah sisi ubin bujur sangkar terbesar yang mengubin aula secara sempurna tanpa sisa (Target: FPB = 6)?",
+            targetCondition: (vars) => {
+              const res = computeEuclideanTiles(vars.width, vars.height);
+              return res.gcd === 6 && (vars.width === 78 || vars.height === 78);
+            },
+            hint1Static: "Atur width = 78 dan height = 48.",
+            hint2Static: "78 = 1 x 48 + 30 -> 48 = 1 x 30 + 18 -> 30 = 1 x 18 + 12 -> 18 = 1 x 12 + 6 -> 12 = 2 x 6 + 0. FPB = 6.",
+            solutionVariables: { width: 78, height: 48 },
+            solutionExplanation: "Sisa bukan nol terakhir dari 78 dan 48 adalah 6. Ubin terbesar berukuran 6x6 meter.",
             xpReward: 100,
           },
         },
         {
-          id: "e3-step-4",
-          type: "validation",
-          title: "Master Algoritma Euclid",
-          validation: {
-            title: "Luar Biasa! Kamu Menguasai Algoritma Euclid",
-            summaryText:
-              "Kamu telah menguasai esensi geometris Algoritma Euclid: dari bujur sangkar pembagi, rantai sisa bagi, hingga pembuktian sifat koprima pasangan Fibonacci.",
-            keyTakeaway: "Dua bilangan Fibonacci berurutan selalu koprima: gcd(Fn, Fn-1) = 1.",
-            formulaKaTeX: "\\gcd(F_n, F_{n-1}) = 1",
-            badgeToUnlock: "modular-master",
+          id: "e6-s8",
+          type: "reflect",
+          title: "Kelulusan Modul Algoritma Euclid",
+          naiExpression: "celebrating",
+          naiDialogue: "Luar biasa! Kamu telah menguasai Algoritma Euclid dari geometri ubin hingga identitas Bézout!",
+          reflect: {
+            title: "Modul Selesai: Master Algoritma Euclid",
+            takeaways: [
+              "FPB adalah ukuran ubin bujur sangkar terbesar yang mempartisi lantai tanpa celah.",
+              "Teorema reduksi gcd(a, b) = gcd(b, a mod b) menjamin komputasi FPB super cepat.",
+              "Perkalian emas a · b = gcd · lcm memungkinkan pencarian KPK tanpa daftar kelipatan.",
+              "Identitas Bézout membuktikan bahwa FPB adalah nilai terkecil dari kombinasi linear ax + by.",
+            ],
+            connectionText: "Siap melangkah ke topik berikutnya? Masuki dunia partikel dasar semesta bilangan di Faktorisasi Prima & Koprima!",
+            badgeToUnlock: "euclid-grandmaster",
+            xpReward: 100,
+            formulaKaTeX: "\\gcd(a, b) = \\gcd(b, a \\pmod b)",
           },
         },
       ],

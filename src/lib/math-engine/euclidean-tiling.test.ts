@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   computeEuclideanDivisionSteps,
   computeEuclideanTiles,
+  computeLCM,
+  extendedEuclidBezout,
 } from "./euclidean-tiling";
 
 describe("Euclidean Tiling Math Engine", () => {
@@ -62,5 +64,21 @@ describe("Euclidean Tiling Math Engine", () => {
     expect(result.gcd).toBe(10);
     expect(result.tiles.length).toBe(1);
     expect(result.tiles[0].size).toBe(10);
+  });
+
+  it("computes LCM correctly via duality with GCD", () => {
+    // 60 and 45: gcd = 15, lcm = (60 * 45) / 15 = 180
+    expect(computeLCM(60, 45)).toBe(180);
+    expect(computeLCM(6, 8)).toBe(24);
+  });
+
+  it("finds Bezout coefficients correctly: a*x + b*y = gcd(a,b)", () => {
+    const res = extendedEuclidBezout(7, 5);
+    expect(res.gcd).toBe(1);
+    expect(7 * res.x + 5 * res.y).toBe(1);
+
+    const res2 = extendedEuclidBezout(42, 30);
+    expect(res2.gcd).toBe(6);
+    expect(42 * res2.x + 30 * res2.y).toBe(6);
   });
 });

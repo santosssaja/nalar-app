@@ -62,7 +62,7 @@ export function TopBarA11yControls({ onOpenShortcuts }: TopBarA11yControlsProps)
         type="button"
         suppressHydrationWarning
         onClick={toggleSubtitles}
-        className={`p-1.5 rounded-lg border transition ${
+        className={`hidden sm:inline-flex p-1.5 rounded-lg border transition ${
           preferences.subtitlesEnabled
             ? "bg-neutral-800 border-neutral-600 text-amber-300"
             : "bg-neutral-900 border-neutral-800 text-neutral-500 hover:text-neutral-300"
@@ -82,7 +82,7 @@ export function TopBarA11yControls({ onOpenShortcuts }: TopBarA11yControlsProps)
           else if (preferences.fontScale === "large") setFontScale("extra-large");
           else setFontScale("normal");
         }}
-        className="p-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 text-neutral-400 hover:text-neutral-200 transition"
+        className="hidden sm:inline-flex p-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 text-neutral-400 hover:text-neutral-200 transition"
         aria-label={`Ubah ukuran teks, saat ini: ${preferences.fontScale}`}
         title="Ukuran teks (Normal/Besar/Ekstra)"
       >

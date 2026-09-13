@@ -1,0 +1,29 @@
+---
+title: "Roller Coaster & Konservasi Energi"
+description: "Simulasi interaktif hukum kekekalan energi mekanik dan syarat batas loop vertikal."
+category: "physics"
+slug: "physics-roller-coaster"
+---
+
+# Roller Coaster & Konservasi Energi
+
+Modul ini mendemonstrasikan pertukaran energi potensial gravitasi dan energi kinetik pada lintasan roller coaster dengan loop vertikal lingkaran beradius $R$.
+
+```tsx
+import { InteractiveLesson } from "@/modules/science/physics-roller-coaster";
+
+export function DemoRollerCoaster() {
+  return <InteractiveLesson />;
+}
+```
+
+## Persamaan Utama
+
+1. Konservasi Energi Mekanik:
+$$E_M = E_P + E_K = mgh + \frac{1}{2}mv^2 = \text{konstan}$$
+
+2. Kecepatan di Titik Lembah:
+$$v = \sqrt{2gh_0}$$
+
+3. Syarat Minimum Loop Vertikal:
+$$h_0 \ge \frac{5}{2} R = 2.5 R, \quad v_{\text{puncak}} \ge \sqrt{gR}$$

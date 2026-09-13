@@ -61,7 +61,7 @@ export function ChallengeStep({
       const newAttemptList = [...attempts, { attemptNumber: nextAttempt, canvasSnapshot: currentVariables }];
       setAttempts(newAttemptList);
 
-      setErrorMessage("Kondisi target belum terpenuhi. Periksa kembali nilai atau manipulasi kanvas.");
+      setErrorMessage("Kondisi target belum terpenuhi. Sesuaikan kembali slider kontrol.");
 
       // Auto trigger progressive hint on repeated failure
       if (nextAttempt === 2) {
@@ -106,88 +106,91 @@ export function ChallengeStep({
     setIsAutoSolving(true);
   };
 
-  return (
-    <div className="w-full space-y-6 animate-fade-in">
-      {/* Challenge Card */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-neutral-900/90 border border-neutral-800 shadow-xl space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+  const challengeSidebar = (
+    <div className="space-y-2.5 animate-fade-in">
+      {/* Compact Challenge Card */}
+      <div className="p-3.5 rounded-2xl bg-neutral-900/95 border border-neutral-800 shadow-md space-y-2">
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
               Tantangan Logika
             </span>
-            <span className="text-xs font-mono font-bold text-amber-400 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5" /> +{config.xpReward} XP
+            <span className="text-[11px] font-mono font-bold text-amber-400 flex items-center gap-0.5">
+              <Sparkles className="w-3 h-3" /> +{config.xpReward} XP
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRequestHint()}
-              disabled={isSolved || isLoadingHint}
-              leftIcon={<HelpCircle className="w-3.5 h-3.5 text-amber-400" />}
-            >
-              {activeHint ? `Petunjuk Berikutnya (${activeHint.hintLevel}/4)` : "Butuh Petunjuk?"}
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleRequestHint()}
+            disabled={isSolved || isLoadingHint}
+            leftIcon={<HelpCircle className="w-3 h-3 text-amber-400" />}
+            className="text-[11px] py-1 px-2 h-auto text-neutral-400 hover:text-white"
+          >
+            {activeHint ? `Petunjuk (${activeHint.hintLevel}/4)` : "Bantuan"}
+          </Button>
         </div>
 
-        <div className="space-y-1">
-          <h3 className="text-lg sm:text-xl font-black text-white">{config.title}</h3>
-          <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
+        <div>
+          <h3 className="text-xs sm:text-sm font-black text-white">{config.title}</h3>
+          <p className="text-xs text-neutral-300 leading-relaxed font-medium mt-0.5">
             {config.question}
           </p>
         </div>
 
-        {/* Validation and Action row */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          {errorMessage && !isSolved && (
-            <div className="flex items-center gap-1.5 text-xs text-rose-400 font-semibold">
-              <ShieldAlert className="w-4 h-4" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-
-          {isSolved && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Tantangan Selesai! Kamu berhak atas +{config.xpReward} XP.</span>
-            </div>
-          )}
-
-          <div className="ml-auto flex items-center gap-3">
-            {!isSolved ? (
-              <Button
-                variant="primary"
-                size="md"
-                onClick={handleValidate}
-                leftIcon={<CheckCircle2 className="w-4 h-4" />}
-              >
-                Validasi Jawaban
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="md"
-                onClick={onSuccessNext}
-                rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="bg-emerald-600 hover:bg-emerald-500 border-emerald-500/40 shadow-emerald-600/20"
-              >
-                Lanjut ke Rangkuman
-              </Button>
-            )}
+        {/* Feedback Message */}
+        {errorMessage && !isSolved && (
+          <div className="flex items-center gap-1 text-[11px] text-rose-400 font-semibold bg-rose-950/40 p-2 rounded-lg border border-rose-800/50">
+            <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        {isSolved && (
+          <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold bg-emerald-950/40 p-2 rounded-lg border border-emerald-800/50">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>Target tercapai! +{config.xpReward} XP diperoleh.</span>
+          </div>
+        )}
+
+        {/* Action Button */}
+        <div>
+          {!isSolved ? (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleValidate}
+              leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+              className="w-full text-xs font-bold py-1.5"
+            >
+              Validasi Jawaban
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onSuccessNext}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              className="w-full text-xs font-bold py-1.5 bg-emerald-600 hover:bg-emerald-500 border-emerald-500/40 shadow-emerald-600/20"
+            >
+              Lanjut ke Rangkuman
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Progressive Hint Scaffolding */}
-      <HintPanel
-        hint={activeHint}
-        isLoading={isLoadingHint}
-        onClose={() => setActiveHint(null)}
-        onApplySolution={handleApplySolution}
-      />
+      {activeHint && (
+        <div className="max-h-[160px] overflow-y-auto">
+          <HintPanel
+            hint={activeHint}
+            isLoading={isLoadingHint}
+            onClose={() => setActiveHint(null)}
+            onApplySolution={handleApplySolution}
+          />
+        </div>
+      )}
 
       {/* Canvas Auto-Solver Animation (Hint 4) */}
       {autoSolveTargets && (
@@ -207,15 +210,18 @@ export function ChallengeStep({
           }}
         />
       )}
+    </div>
+  );
 
-      {/* Interactive Playground Canvas */}
-      <div className="w-full">
-        <ModulePlaygroundEmbed
-          slug={topicSlug}
-          onVariablesChange={setCurrentVariables}
-          externalVariables={targetVariables}
-        />
-      </div>
+  return (
+    <div className="w-full h-full flex flex-col justify-between overflow-y-auto md:overflow-hidden">
+      <ModulePlaygroundEmbed
+        slug={topicSlug}
+        initialVariables={config.solutionVariables}
+        onVariablesChange={setCurrentVariables}
+        externalVariables={targetVariables}
+        challengeSidebar={challengeSidebar}
+      />
     </div>
   );
 }

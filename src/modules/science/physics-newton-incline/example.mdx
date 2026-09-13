@@ -1,0 +1,32 @@
+---
+title: "Bidang Miring & Hukum Newton"
+description: "Dekomposisi vektor gaya berat, gaya normal, friksi, dan percepatan luncur pada bidang miring."
+category: "physics"
+slug: "physics-newton-incline"
+---
+
+# Bidang Miring & Hukum Newton
+
+Modul ini mensimulasikan hukum gerak Newton pada bidang miring dengan sudut $\theta \in [0^\circ, 75^\circ]$, massa balok $m$, dan koefisien gesekan $\mu$.
+
+```tsx
+import { InteractiveLesson } from "@/modules/science/physics-newton-incline";
+
+export function DemoNewtonIncline() {
+  return <InteractiveLesson />;
+}
+```
+
+## Persamaan Utama
+
+1. Gaya Berat:
+$$W = mg$$
+
+2. Komponen Gaya:
+$$W_\parallel = mg \sin\theta, \quad W_\perp = mg \cos\theta$$
+
+3. Gaya Normal & Gesekan:
+$$N = mg \cos\theta, \quad f_k = \mu_k N$$
+
+4. Percepatan Luncur:
+$$a = g(\sin\theta - \mu_k \cos\theta)$$
