@@ -31,3 +31,6 @@ Peta kurikulum tiga pilar sains (Fisika, Kimia, Biologi) yang terintegrasi secar
 
 ### 8. [roadmap-softskills.md](roadmap-softskills.md) — Peta Kurikulum Soft Skills & Metakognisi
 Peta kurikulum penalaran kritis, literasi data, argumentasi ilmiah, dan etika kecerdasan buatan.
+
+### 9. [panduan-menambahkan-modul.md](panduan-menambahkan-modul.md) — 🛠️ Panduan Menambahkan Modul Baru
+Panduan teknis langkah demi langkah (7 tahap) untuk membangun dan mendaftarkan modul pembelajaran interaktif baru (*standalone topic*), mengikuti standar *Guided Discovery Learning* 8 layar, arsitektur *engine* murni, visualisasi kanvas, kontrol slider, rumus reaktif KaTeX, dan checklist Definition of Done (DoD).
