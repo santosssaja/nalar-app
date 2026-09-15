@@ -280,60 +280,44 @@ Semua 7 playground sains MVP telah dibangun lengkap dengan sistem 3-level bertin
 
 ---
 
-## Fase 3: Backend & Sinkronisasi *(Sprint 11–13)*
+## Fase 3: Backend & Sinkronisasi *(Sprint 11–13)* — ✅ Selesai
 
-### Sprint 11: Setup Backend (Hono + Drizzle + PostgreSQL)
-```
-Migrasi dari Python/FastAPI → Node.js:
+### Sprint 11: Setup Backend (Hono + Drizzle + Vercel Serverless) — ✅ Selesai
+Migrasi dari Python/FastAPI → Node.js Hono Serverless Architecture yang berjalan terpadu di Vercel:
 
-1. backend/ (rewrite)
-   ├── src/
-   │   ├── index.ts          — Hono server entry
-   │   ├── db/
-   │   │   ├── schema.ts     — Drizzle schema (users, progress, achievements, streaks, ai_hint_logs)
-   │   │   ├── migrate.ts    — migration runner
-   │   │   └── connection.ts — PostgreSQL connection
-   │   ├── routes/
-   │   │   ├── auth.ts       — login/register (Lucia Auth)
-   │   │   ├── progress.ts   — CRUD progress & sync
-   │   │   ├── hints.ts      — proxy ke LLM API (hint 3 & 4)
-   │   │   └── leaderboard.ts
-   │   └── middleware/
-   │       ├── auth.ts       — session validation
-   │       └── rate-limit.ts — rate limiting hint API
-   ├── drizzle.config.ts
-   ├── package.json
-   └── tsconfig.json
-```
+1. **Hono Serverless & Drizzle Schema:**
+   - `src/lib/server/db/schema.ts`: Drizzle ORM PostgreSQL schema (`users`, `progress`, `achievements`, `streaks`, `ai_hint_logs`, `sessions`).
+   - `src/lib/server/db/storage.ts`: `StorageAdapter` interface dengan `MemoryStorageAdapter` seeded fallback + PostgreSQL connectivity, menjamin aplikasi tidak pernah crash di Vercel preview atau local dev tanpa database terpasang.
+   - `src/lib/server/api/app.ts`: Master Hono application dengan CORS, router mounting, error handler, dan endpoint health check.
+   - `src/lib/server/api/routes/`:
+     - `auth.ts`: Guest session, register, login, me, dan logout.
+     - `progress.ts`: GET progress, POST save level, batch sync.
+     - `leaderboard.ts`: Leaderboard pembelajar teratas berdasarkan total XP dan streak.
+     - `hints.ts`: Proxy AI tutor Gemini Flash dengan fallback pedagogis 4-tier.
+     - `sync.ts`: Bidirectional synchronization dengan merge-additive conflict resolution.
+   - `src/app/api/[[...route]]/route.ts`: Next.js App Router catch-all handler via `hono/vercel` untuk deployment serverless native di Vercel.
+   - `backend/`: Node.js Hono service (`package.json`, `tsconfig.json`, `src/index.ts`) untuk kompatibilitas multi-service Vercel dan standalone runner port 8000.
+   - `vercel.json`: Konfigurasi Vercel service Next.js dan backward-compatible API rewrite `/api/backend/:path*` -> `/api/:path*`.
 
-### Sprint 12: Auth & Akun Opsional
-```
-1. Frontend:
-   - src/components/auth/LoginModal.tsx — magic link + Google/GitHub OAuth
-   - src/components/auth/ProfileMenu.tsx — dropdown profil
-   - Mode Tamu tetap berfungsi penuh tanpa login
+---
 
-2. Backend:
-   - Lucia Auth integration
-   - Session management (Redis)
-   - Endpoint: POST /auth/login, POST /auth/logout, GET /auth/me
-```
+### Sprint 12: Auth & Akun Opsional — ✅ Selesai
+1. **Frontend Auth Layer:**
+   - `src/context/AuthContext.tsx`: State manager autentikasi dengan dukungan penuh Mode Tamu (*Zero Gatekeeping*), login, register, dan migrasi otomatis progres lokal saat pembuatan akun baru.
+   - `src/components/auth/LoginModal.tsx`: Modal interaktif ramah aksesibilitas dengan tab Masuk, Daftar Akun Baru, dan info Mode Tamu.
+   - `src/components/auth/ProfileMenu.tsx`: Menu profil di header dengan indikator status sinkronisasi *real-time*, tombol sinkronisasi manual, ekspor/impor cadangan, dan aksi autentikasi.
+   - `src/components/layout/TopBar.tsx`: Integrasi `ProfileMenu` di samping pengatur aksesibilitas.
+   - `src/app/layout.tsx`: Penyematan `AuthProvider` dan `LoginModal` ke seluruh hierarki aplikasi.
 
-### Sprint 13: Sinkronisasi Offline-First
-```
-1. src/lib/sync/
-   ├── sync-engine.ts     — background sync logic
-   ├── conflict-resolver.ts — last-write-wins + merge-additive
-   └── export-import.ts    — JSON export/import untuk tamu
+---
 
-2. Service Worker setup:
-   - Cache materi statis (MDX, aset)
-   - Background sync progress ke server
-   - Offline indicator di UI
-
-3. Migrasi Tamu → Akun:
-   - Saat register, localStorage → server migration
-```
+### Sprint 13: Sinkronisasi Offline-First — ✅ Selesai
+1. **Sync & Resilience Engine:**
+   - `src/lib/sync/conflict-resolver.ts`: Logika *Last-write-wins + merge-additive* (XP selalu mengambil nilai maksimum monotonik, level dan lencana digabungkan tanpa kehilangan data).
+   - `src/lib/sync/sync-engine.ts`: Background synchronization engine dengan detektor koneksi `online`/`offline` dan pub/sub status (`idle`, `syncing`, `synced`, `offline`, `error`).
+   - `src/lib/sync/export-import.ts`: Fitur pencadangan dan pemulihan data JSON untuk pembelajar tamu (`nalar-backup-YYYY-MM-DD.json`).
+   - Unit tests: 20 test files lulus 100% (107 unit tests), termasuk pengujian endpoint Hono, conflict resolver, dan validasi berkas cadangan.
+   - Verifikasi Vercel: `pnpm build` menghasilkan static prerender + serverless API routes yang siap deploy tanpa error symlink.
 
 ---
 

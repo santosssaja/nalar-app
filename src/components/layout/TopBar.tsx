@@ -15,6 +15,7 @@ import { KeyboardShortcutsModal } from "@/components/accessibility/KeyboardShort
 import { BadgesModal } from "./BadgesModal";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { TopBarA11yControls } from "./TopBarA11yControls";
+import { ProfileMenu } from "@/components/auth/ProfileMenu";
 
 export interface TopBarProps {
   onToggleSidebar?: () => void;
@@ -32,7 +33,7 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
     <>
       <header
         role="banner"
-        className="w-full max-w-full overflow-x-hidden h-16 bg-neutral-900/95 border-b border-neutral-800 backdrop-blur-md px-2.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 text-neutral-200 text-sm z-40 sticky top-0"
+        className="w-full max-w-full h-16 bg-neutral-900/95 border-b border-neutral-800 backdrop-blur-md px-2.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 text-neutral-200 text-sm z-40 sticky top-0"
       >
         {/* Left: Brand, Mobile Toggle & Landing Nav */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -132,8 +133,9 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
           </Tooltip>
         </div>
 
-        {/* Right: Accessibility Controls */}
-        <div className="flex items-center shrink-0">
+        {/* Right: Profile Menu & Accessibility Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <ProfileMenu />
           <TopBarA11yControls onOpenShortcuts={() => setShowShortcuts(true)} />
         </div>
       </header>

@@ -1,1 +1,0 @@
-"""Nalar Backend Application Package."""
