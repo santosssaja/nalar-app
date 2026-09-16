@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Sparkles,
@@ -155,19 +156,24 @@ export function Sidebar({
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/30">
+              <Link
+                href="/"
+                onClick={handleClose}
+                className="flex items-center gap-2 sm:gap-2.5 font-black tracking-tight text-white hover:text-indigo-400 transition group"
+                aria-label="Beranda Nalar"
+              >
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-400 flex items-center justify-center text-white text-xs sm:text-sm font-black shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
                   N
                 </div>
-                <div>
-                  <h2 className="text-sm font-black text-white tracking-tight leading-none">
-                    NALAR STEM
-                  </h2>
-                  <p className="text-[10px] text-neutral-400 font-medium mt-0.5">
-                    Menu Navigasi & Progres
-                  </p>
+                <div className="flex flex-col">
+                  <span className="text-sm sm:text-base tracking-tight font-black leading-none text-white group-hover:text-indigo-300 transition-colors">
+                    NALAR
+                  </span>
+                  <span className="text-[10px] text-neutral-400 font-medium tracking-normal mt-0.5">
+                    STEM Interaktif & Inklusif
+                  </span>
                 </div>
-              </div>
+              </Link>
 
               <Tooltip content="Tutup menu (Esc)" position="bottom">
                 <button

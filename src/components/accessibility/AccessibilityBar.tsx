@@ -73,10 +73,10 @@ export function AccessibilityBar() {
             className="flex items-center gap-2 font-black tracking-tight text-white hover:text-indigo-400 transition"
             aria-label="Nalar Beranda"
           >
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-sky-400 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/20">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-400 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/25">
               N
             </div>
-            <span className="text-base tracking-normal font-extrabold">NALAR</span>
+            <span className="text-base tracking-tight font-black leading-none">NALAR</span>
           </Link>
           <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             Pendidikan Berkualitas
