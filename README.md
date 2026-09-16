@@ -13,7 +13,7 @@
 
 ## 📖 Tentang Nalar
 
-**Nalar** adalah platform web edukasi Sains, Teknologi, Rekayasa, dan Matematika (STEM) interaktif yang dirancang sebagai alternatif terbuka dan gratis setara *Brilliant*. Nalar mengubah konsep-konsep matematika yang abstrak dan rumit menjadi pemahaman intuitif melalui manipulasi visual kanvas 60 FPS, didukung fitur aksesibilitas kelas satu untuk penyandang disabilitas (*low vision*, tunarungu, asistensi audio), serta tutor AI hemat kuota token.
+**Nalar** adalah platform web edukasi Sains, Teknologi, Rekayasa, dan Matematika (STEM) interaktif yang dirancang sebagai alternatif terbuka dan gratis setara *Brilliant*. Nalar mengubah konsep-konsep matematika yang abstrak dan rumit menjadi pemahaman intuitif melalui manipulasi visual kanvas, didukung fitur aksesibilitas kelas satu untuk penyandang disabilitas (*low vision*, tunarungu, asistensi audio), serta tutor AI hemat kuota token.
 
 ---
 

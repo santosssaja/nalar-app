@@ -33,7 +33,7 @@ export function FeaturedModulesGrid() {
             Pilih Modul Pembelajaran Mandiri
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400">
-            Setiap modul dilengkapi kanvas manipulasi 60 FPS, KaTeX reaktif, dan asistensi AI ramah difabel.
+            Setiap modul dilengkapi kanvas manipulasi, KaTeX reaktif, dan asistensi AI ramah difabel.
           </p>
         </div>
 
@@ -42,33 +42,30 @@ export function FeaturedModulesGrid() {
           <button
             type="button"
             onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              activeTab === "all"
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${activeTab === "all"
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-neutral-400 hover:text-white"
-            }`}
+              }`}
           >
             Semua Modul ({FEATURED_LANDING_MODULES.length})
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("math")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              activeTab === "math"
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${activeTab === "math"
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-neutral-400 hover:text-white"
-            }`}
+              }`}
           >
             Matematika
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("science")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              activeTab === "science"
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${activeTab === "science"
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-neutral-400 hover:text-white"
-            }`}
+              }`}
           >
             Fisika
           </button>

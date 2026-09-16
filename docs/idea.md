@@ -21,7 +21,7 @@
 | :--- | :--- | :--- | :--- |
 | **Akses Awal** | Registrasi & verifikasi email | Wajib akun + langganan berbayar | **Instan (Zero-Friction), 100% Gratis** |
 | **Penyimpanan Data** | Database server terpusat | Cloud berbayar | **Hybrid: localStorage (offline) + Server (sinkronisasi)** |
-| **Pendekatan Materi** | Menghafal rumus simbolik | Kuis pilihan berganda interaktif | **Manipulasi Parameter Kanvas 60 FPS** |
+| **Pendekatan Materi** | Menghafal rumus simbolik | Kuis pilihan berganda interaktif | **Manipulasi Parameter Kanvas** |
 | **Adaptasi Jenjang** | Kurikulum kaku per kelas | Satu jalur linear | **Skill Tree adaptif, multi-jenjang** |
 | **Aksesibilitas** | Hampir tidak ada | Terbatas pada kontras standar | **A11y-First (Dark, Light, High-Contrast, TTS, Subtitles, Keyboard)** |
 | **Ketergantungan AI** | Tidak ada | Chatbot pasif berbayar | **On-Demand & Event-Driven (Hemat Token)** |
@@ -266,7 +266,7 @@ Playground adalah **unit simulasi kanvas mandiri** yang menjadi inti pengalaman 
 ```
 
 ### Standar Playground
-- **Performa**: Target 60 FPS, animasi halus tanpa *jank*
+- **Performa**: Target mulus, animasi halus
 - **Responsif**: Desktop (kanvas + panel samping) → Mobile (kanvas atas, panel bawah)
 - **Aksesibel**: Setiap slider/kontrol wajib `aria-label`, navigasi keyboard penuh
 - **Reaktif**: Rumus KaTeX menampilkan nilai *live* yang sinkron dengan state kanvas

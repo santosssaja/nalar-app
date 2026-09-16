@@ -9,7 +9,7 @@ Dokumen ini mendefinisikan standar identitas visual, arsitektur *Design Tokens*,
 ## 1. Filosofi Desain & Identitas Brand
 
 ### A. Pilar Visual
-1. **Intuitif & Eksploratif**: Menghindari tampilan statis membosankan. Konsep abstrak disajikan sebagai objek visual yang merespons sentuhan dan manipulasi pengguna secara *real-time* (60 FPS).
+1. **Intuitif & Eksploratif**: Menghindari tampilan statis membosankan. Konsep abstrak disajikan sebagai objek visual yang merespons sentuhan dan manipulasi pengguna secara *real-time*.
 2. **Inklusif & Ramah Difabel (Accessibility-First)**: Aksesibilitas bukan sekadar fitur tambahan, melainkan pondasi arsitektur sejak awal (Dark Mode bawaan, Kontras Tinggi WCAG AAA, asistensi suara Web Speech API, dan navigasi papan ketik penuh).
 3. **Ramah & Hangat (Human-Centric)**: Melalui maskot **Nai** (Panda Merah), platform menghadirkan suasana belajar yang mendukung tanpa rasa takut salah, mengadopsi psikologi belajar positif Duolingo & Brilliant.
 4. **Modern & Premium**: Memadukan estetika *dark-mode native*, tipografi kurasi tinggi, *glassmorphism* lembut, palet warna harmonis per domain, dan mikro-animasi fluida.

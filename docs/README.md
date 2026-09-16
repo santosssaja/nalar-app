@@ -18,7 +18,7 @@ Mendefinisikan identitas brand visual, arsitektur *Design Tokens* (Dark, Light, 
 Dokumen strategi eksekusi rekayasa perangkat lunak bertahap (Fase 0 hingga Fase 4), pelacak status penyelesaian sprint, arsitektur *vertical slice*, dan metrik pengujian kode.
 
 ### 4. [architecture-math.md](architecture-math.md) — Arsitektur Teknis Modul Matematika
-Standar rekayasa modul interaktif, pemisahan kepentingan (*pure math engine* vs kanvas visual vs logika tantangan), pustaka grafis (Mafs & SVG), aturan isolasi *re-render* 60 FPS, dan panduan langkah-demi-langkah bagi pengembang.
+Standar rekayasa modul interaktif, pemisahan kepentingan (*pure math engine* vs kanvas visual vs logika tantangan), pustaka grafis (Mafs & SVG), aturan isolasi *re-render*, dan panduan langkah-demi-langkah bagi pengembang.
 
 ### 5. [playgrounds.md](playgrounds.md) — Katalog & Spesifikasi Playground Interaktif
 Kompilasi spesifikasi mendalam untuk 30+ modul simulasi interaktif (Matematika, Fisika, Kimia, Biologi, dan Metakognisi), lengkap dengan konsep interaksi, visualisasi kanvas, rumus reaktif KaTeX, dan skenario tantangan.

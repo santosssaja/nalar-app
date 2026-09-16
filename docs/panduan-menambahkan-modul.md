@@ -1,283 +1,306 @@
 # 🛠️ Panduan Lengkap: Cara Menambahkan Modul Baru di Nalar
 
-Dokumen ini adalah panduan referensi teknis bagi pengembang untuk membangun dan mendaftarkan modul pembelajaran interaktif baru (*standalone topic*) di platform **Nalar**, mengikuti standar pedagogi ***Guided Discovery Learning*** dan prinsip arsitektur yang tertuang dalam `AGENTS.md`.
+Dokumen ini adalah panduan referensi teknis kanonikal bagi pengembang untuk membangun, menguji, dan mendaftarkan modul pembelajaran STEM interaktif (*standalone topic*) baru di platform **Nalar**. Panduan ini sepenuhnya selaras dengan spesifikasi modern pada [`docs/new-module.md`](new-module.md) dan mengadopsi arsitektur 11 Fase Pedagogi, 3 Mode Belajar, simulasi interaktif, serta render KaTeX reaktif.
 
 ---
 
 ## 📑 Daftar Isi
-1. [Filosofi Desain Modul Nalar](#1-filosofi-desain-modul-nalar)
-2. [Arsitektur & Struktur Berkas Modul](#2-arsitektur--struktur-berkas-modul)
-3. [Alur Langkah Demi Langkah (7 Tahap)](#3-alur-langkah-demi-langkah-7-tahap)
-   - [Tahap 1: Komputasi Murni & Unit Test](#tahap-1-komputasi-murni--unit-test)
-   - [Tahap 2: Kanvas Visual, Kontrol & KaTeX](#tahap-2-kanvas-visual-kontrol--katex)
-   - [Tahap 3: Penyusunan Konten Guided Discovery (`module.ts`)](#tahap-3-penyusunan-konten-guided-discovery-modulets)
-   - [Tahap 4: Integrasi ke Playground Runner (`ModulePlaygroundEmbed.tsx`)](#tahap-4-integrasi-ke-playground-runner-moduleplaygroundembedtsx)
-   - [Tahap 5: Pendaftaran ke Registry Global (`registry.ts`)](#tahap-5-pendaftaran-ke-registry-global-registryts)
-   - [Tahap 6: Halaman Topik & Peta Level (`src/app/topics/[slug]/page.tsx`)](#tahap-6-halaman-topik--peta-level-srcapptopicsslugpagetsx)
-   - [Tahap 7: Integrasi ke Pohon Keterampilan (*Skill Tree*)](#tahap-7-integrasi-ke-pohon-keterampilan-skill-tree)
-4. [Spesifikasi 8 Tipe Layar *Guided Discovery*](#4-spesifikasi-8-tipe-layar-guided-discovery)
-5. [Invarian Arsitektur & Aturan Ketat (DOs & DON'Ts)](#5-invarian-arsitektur--aturan-ketat-dos--donts)
-6. [Contoh Berkas MDX (`example.mdx`)](#6-contoh-berkas-mdx-examplemdx)
-7. [Checklist Definition of Done (DoD) & Perintah Verifikasi](#7-checklist-definition-of-done-dod--perintah-verifikasi)
+- [🛠️ Panduan Lengkap: Cara Menambahkan Modul Baru di Nalar](#️-panduan-lengkap-cara-menambahkan-modul-baru-di-nalar)
+  - [📑 Daftar Isi](#-daftar-isi)
+  - [1. Filosofi \& Prinsip Inti Pembelajaran](#1-filosofi--prinsip-inti-pembelajaran)
+    - [Alur Pembelajaran Utama](#alur-pembelajaran-utama)
+    - [4 Pilar Desain Nalar:](#4-pilar-desain-nalar)
+  - [2. Arsitektur \& Struktur Berkas Modul](#2-arsitektur--struktur-berkas-modul)
+  - [3. Alur Langkah Demi Langkah Pembuatan Modul (7 Tahap)](#3-alur-langkah-demi-langkah-pembuatan-modul-7-tahap)
+    - [Tahap 1: Mesin Komputasi Murni \& Unit Test](#tahap-1-mesin-komputasi-murni--unit-test)
+      - [1. Berkas Logika: `src/lib/math-engine/<topic>.ts` (atau `science-engine`)](#1-berkas-logika-srclibmath-enginetopicts-atau-science-engine)
+      - [2. Berkas Unit Test: `src/lib/math-engine/<topic>.test.ts`](#2-berkas-unit-test-srclibmath-enginetopictestts)
+    - [Tahap 2: Kanvas Visual Interaktif \& Panel Kontrol Slider](#tahap-2-kanvas-visual-interaktif--panel-kontrol-slider)
+      - [1. Berkas State: `engine.ts`](#1-berkas-state-enginets)
+      - [2. Berkas Kanvas: `Canvas.tsx`](#2-berkas-kanvas-canvastsx)
+      - [3. Berkas Panel Kontrol: `Controls.tsx`](#3-berkas-panel-kontrol-controlstsx)
+    - [Tahap 3: Integrasi Kanvas ke Playground Runner (`ModulePlaygroundEmbed.tsx`)](#tahap-3-integrasi-kanvas-ke-playground-runner-moduleplaygroundembedtsx)
+    - [Tahap 4: Penyusunan Kontrak Pedagogi 11 Fase (`pedagogy.ts`)](#tahap-4-penyusunan-kontrak-pedagogi-11-fase-pedagogyts)
+    - [Tahap 5: Pendaftaran ke Registry Global (`pedagogy-registry.ts`)](#tahap-5-pendaftaran-ke-registry-global-pedagogy-registryts)
+    - [Tahap 6: Halaman Rute Next.js (`src/app/topics/<slug>/page.tsx`)](#tahap-6-halaman-rute-nextjs-srcapptopicsslugpagetsx)
+    - [Tahap 7: Dokumentasi Interaktif MDX (`example.mdx`) \& Verifikasi](#tahap-7-dokumentasi-interaktif-mdx-examplemdx--verifikasi)
+  - [4. Spesifikasi 11 Fase Pedagogi Nalar](#4-spesifikasi-11-fase-pedagogi-nalar)
+  - [5. Invarian Arsitektur \& Guardrails (DOs \& DON'Ts)](#5-invarian-arsitektur--guardrails-dos--donts)
+    - [🟢 Strict DOs](#-strict-dos)
+    - [🔴 Strict DON'Ts](#-strict-donts)
+  - [6. Checklist Definition of Done (DoD) \& Perintah Verifikasi](#6-checklist-definition-of-done-dod--perintah-verifikasi)
+    - [Perintah Pengujian Terminal:](#perintah-pengujian-terminal)
 
 ---
 
-## 1. Filosofi Desain Modul Nalar
+## 1. Filosofi & Prinsip Inti Pembelajaran
 
-Platform Nalar mengusung tema **Pendidikan Berkualitas (SDG 4)** yang inklusif, merata, dan intuitif. Setiap modul pembelajaran berpegang pada prinsip:
+Nalar bukan sekadar LMS konvensional (*teks → soal → nilai*). Nalar dirancang sebagai lingkungan eksplorasi intuitif tempat pengguna membangun pemahaman dari pengalaman visual langsung menuju kemahiran abstrak.
 
-1. **Learning by Doing**: Jangan pernah *menjelaskan* apa yang bisa *ditemukan sendiri* oleh pengguna. 80%+ layar meminta pengguna memanipulasi parameter, mengamati reaksi visual, dan merumuskan kesimpulan.
-2. **Zero-Friction Onboarding**: Tidak ada formulir login di awal. Semua progres (XP, lencana, tantangan selesai) disimpan di `localStorage`.
-3. **Katalog Mandiri (*Topic-Based Modular*)**: Materi tidak disekat kaku berdasarkan jenjang kelas (SD/SMP/SMA), melainkan berbasis topik mandiri yang memiliki prasyarat eksplisit (*prerequisites*).
-4. **Aksesibilitas Universal (A11y)**:
-   - Dukungan tema gelap (*dark mode*) dan kontras tinggi (*high contrast*).
-   - Kontrol keyboard lengkap (`Tab`, tombol panah, `Enter`, `Space`).
-   - Narasi audio terintegrasi (*native* Web Speech API).
-   - Tampilan adaptif pada layar desktop maupun ponsel pintar (*mobile-friendly*).
+### Alur Pembelajaran Utama
+$$\text{Realitas} \longrightarrow \text{Intuisi} \longrightarrow \text{Model} \longrightarrow \text{Formalisasi} \longrightarrow \text{Eksperimen} \longrightarrow \text{Latihan} \longrightarrow \text{Transfer} \longrightarrow \text{Mastery}$$
+
+> **Prinsip Utama Desain:**  
+> *"Every concept must be seen, manipulated, predicted, observed, explained, calculated, and transferred."*
+
+### 4 Pilar Desain Nalar:
+1. **Zero-Friction Onboarding**: Pengguna dapat langsung belajar tanpa registrasi atau login di awal alur. Seluruh progres belajar disimpan di `localStorage` (`nalar_progress_v1`).
+2. **Topic-Based Modular System**: Kurikulum disusun berbasis graf pengetahuan terarah (*Prerequisite DAG*), bukan sekat kelas kaku (SD/SMP/SMA).
+3. **Universal Accessibility (A11y)**: Tema gelap bawaan, mode kontras tinggi, navigasi papan ketik penuh, pembaca narasi suara native Web Speech API, dan layout bebas *overflow*.
+4. **Token-Efficient Socratic AI**: Asistensi AI tutor (Nai) hanya dipanggil *on-demand* saat pengguna meminta petunjuk atau menemui kesulitan, menggunakan 4 tingkatan *scaffolding*.
 
 ---
 
 ## 2. Arsitektur & Struktur Berkas Modul
 
-Setiap modul topik memisahkan antara **logika matematika/sains murni**, **visualisasi kanvas**, dan **konten instruksional**.
+Setiap modul topik mengisolasi **logika matematika/sains murni**, **komponen kanvas rendering**, dan **data instruksional pedagogis**:
 
 ```text
-d:\projects\nalar\
-├── src/
-│   ├── lib/
-│   │   ├── math-engine/ (atau science-engine/)
-│   │   │   ├── <topic-name>.ts        # Fungsi kalkulasi murni (pure functions)
-│   │   │   └── <topic-name>.test.ts   # Unit test Vitest (100% test coverage)
-│   │   └── curriculum/
-│   │       ├── math-tree.ts           # Pendaftaran simpul modul di Skill Tree
-│   │       └── level-token.ts         # Enkripsi & resolusi token tingkat belajar
-│   ├── modules/
-│   │   └── <math|science>/
-│   │       └── <topic-slug>/
-│   │           ├── engine.ts          # Tipe state lokal & re-export kalkulasi
-│   │           ├── Canvas.tsx         # Komponen grafis interaktif (SVG / Mafs / Canvas)
-│   │           ├── Controls.tsx       # Slider kontrol parameter interaktif
-│   │           ├── KaTeXFormula.tsx   # Rumus KaTeX reaktif yang sinkron dengan kanvas
-│   │           ├── module.ts          # Kurikulum multi-tingkat (8 layar guided discovery)
-│   │           └── example.mdx        # Contoh pemanggilan modul dalam dokumentasi MDX
-│   ├── components/
-│   │   └── learning/
-│   │       └── ModulePlaygroundEmbed.tsx # Dispatcher embed (mode standar & compact)
-│   └── app/
-│       └── topics/
-│           └── <topic-slug>/
-│               └── page.tsx           # Halaman pengantar topik & LevelMap
+src/
+├── lib/
+│   ├── curriculum/
+│   │   ├── pedagogy-types.ts         # Kontrak tipe TypeScript (ComprehensiveLesson, 11 fase, 3 mode)
+│   │   ├── prerequisite-engine.ts    # Mesin evaluasi keterbukaan topik DAG
+│   │   └── data/
+│   │       ├── topics.ts             # Katalog 26 topik & metadata silabus
+│   │       └── connections.ts        # Jembatan konseptual Matematika ➔ Sains (KaTeX)
+│   ├── math-engine/ (atau science-engine/)
+│   │   ├── <topic-name>.ts           # Logika komputasi murni (pure functions)
+│   │   └── <topic-name>.test.ts      # Pengujian unit Vitest (wajib lolos)
+├── modules/
+│   ├── <math|science>/
+│   │   └── <topic-slug>/
+│   │       ├── engine.ts             # Definisi state simulasi & re-export pure functions
+│   │       ├── Canvas.tsx            # Kanvas grafis interaktif (SVG / Canvas)
+│   │       ├── Controls.tsx          # Panel slider kontrol parameter ber-ARIA
+│   │       ├── pedagogy.ts           # Data konten 11 fase pembelajaran (ComprehensiveLesson)
+│   │       └── example.mdx           # Contoh penyematan modul dalam format MDX
+│   └── pedagogy-registry.ts          # Registry terpusat getComprehensiveLesson(slug)
+├── components/
+│   ├── pedagogy/                     # Komponen orkestrasi 11 fase
+│   │   ├── ComprehensiveLessonPlayer.tsx # Player utama (menerima string topicSlug)
+│   │   ├── PedagogyHeader.tsx        # Mode switcher (Learn, Explore, Master) & audio
+│   │   ├── PredictionCard.tsx        # Kartu prediksi pra-simulasi
+│   │   ├── FourTierHintDrawer.tsx    # Drawer petunjuk 4 level bertahap
+│   │   ├── VirtualLabNotebook.tsx    # Buku catatan praktikum virtual ilmiah
+│   │   ├── TransferChallengeCard.tsx # Tantangan transfer skenario dunia nyata
+│   │   ├── MasteryCheckView.tsx      # Matriks evaluasi kemahiran 5 dimensi
+│   │   └── ContextualAiTutorDrawer.tsx # AI Tutor Sokratik kontekstual
+│   ├── ui/
+│   │   └── KaTeXView.tsx             # Renderer rumus matematika KaTeX
+│   └── learning/
+│       └── ModulePlaygroundEmbed.tsx # Dispatcher embedding simulasi kanvas
+└── app/
+    └── topics/
+        ├── [slug]/page.tsx           # Rute dinamis pembungkus topik
+        └── <topic-slug>/page.tsx     # Halaman statis topik mandiri
 ```
 
 ---
 
-## 3. Alur Langkah Demi Langkah (7 Tahap)
+## 3. Alur Langkah Demi Langkah Pembuatan Modul (7 Tahap)
 
-### Tahap 1: Komputasi Murni & Unit Test
+---
 
-Pisahkan semua rumus fisika/matematika ke dalam fungsi murni (*pure functions*) tanpa dependensi React/DOM.
+### Tahap 1: Mesin Komputasi Murni & Unit Test
 
-#### 1. Berkas Logika: `src/lib/math-engine/<topic>.ts`
+Pisahkan semua perhitungan fisis/matematis ke dalam fungsi murni (*pure functions*) tanpa dependensi React atau DOM. Berikan proteksi defensif terhadap pembagian nol, `NaN`, dan tak hingga ($\pm\infty$).
+
+#### 1. Berkas Logika: `src/lib/math-engine/<topic>.ts` (atau `science-engine`)
 ```typescript
 /**
  * Logika murni untuk modul kalkulasi topik baru.
  */
 
 export interface CalculationResult {
-  value: number;
+  outputValue: number;
+  rateOfChange: number;
   isStable: boolean;
 }
 
-export function calculateTopicOutput(a: number, b: number): CalculationResult {
-  // Defensive check: hindari NaN, pembagian nol, dan Infinity
-  if (isNaN(a) || isNaN(b)) {
-    return { value: 0, isStable: false };
-  }
-  if (Math.abs(b) < 1e-9) {
-    return { value: 0, isStable: false };
+export function computeTopicPhysics(paramA: number, paramB: number): CalculationResult {
+  // Defensive guard: cegah NaN dan nilai tak berhingga
+  const safeA = Number.isFinite(paramA) ? paramA : 0;
+  const safeB = Number.isFinite(paramB) ? paramB : 0;
+
+  // Defensive guard: cegah pembagian nol
+  if (Math.abs(safeB) < 1e-9) {
+    return { outputValue: 0, rateOfChange: 0, isStable: false };
   }
 
-  const result = a / b;
+  const outputValue = safeA / safeB;
+  const rateOfChange = safeA * safeB;
+
   return {
-    value: isFinite(result) ? Number(result.toFixed(4)) : 0,
-    isStable: Math.abs(result) <= 10,
+    outputValue: Number.isFinite(outputValue) ? Number(outputValue.toFixed(4)) : 0,
+    rateOfChange: Number.isFinite(rateOfChange) ? Number(rateOfChange.toFixed(4)) : 0,
+    isStable: Math.abs(outputValue) <= 100,
   };
 }
 ```
 
-#### 2. Berkas Pengujian: `src/lib/math-engine/<topic>.test.ts`
+#### 2. Berkas Unit Test: `src/lib/math-engine/<topic>.test.ts`
 ```typescript
 import { describe, it, expect } from "vitest";
-import { calculateTopicOutput } from "./<topic>";
+import { computeTopicPhysics } from "./<topic>";
 
 describe("<topic> calculation engine", () => {
-  it("menghitung nilai dengan benar pada input valid", () => {
-    const res = calculateTopicOutput(10, 2);
-    expect(res.value).toBe(5);
+  it("menghitung nilai dengan benar pada parameter normal", () => {
+    const res = computeTopicPhysics(12, 3);
+    expect(res.outputValue).toBe(4);
+    expect(res.rateOfChange).toBe(36);
     expect(res.isStable).toBe(true);
   });
 
-  it("menangani pembagian dengan nol secara defensif", () => {
-    const res = calculateTopicOutput(5, 0);
-    expect(res.value).toBe(0);
+  it("menangani pembagian dengan nol secara defensif tanpa melempar exception", () => {
+    const res = computeTopicPhysics(10, 0);
+    expect(res.outputValue).toBe(0);
     expect(res.isStable).toBe(false);
+  });
+
+  it("menangani input NaN dan nilai tak terhingga secara aman", () => {
+    const res = computeTopicPhysics(NaN, Infinity);
+    expect(res.outputValue).toBe(0);
   });
 });
 ```
 
-Jalankan pengujian untuk memastikan validitas:
-```bash
-pnpm test
-```
-
 ---
 
-### Tahap 2: Kanvas Visual, Kontrol & KaTeX
+### Tahap 2: Kanvas Visual Interaktif & Panel Kontrol Slider
 
-Buat direktori komponen di `src/modules/math/<topic-slug>/` (atau `src/modules/science/<topic-slug>/`).
+Buat direktori baru di `src/modules/<math|science>/<topic-slug>/`.
 
 #### 1. Berkas State: `engine.ts`
 ```typescript
-export interface TopicState {
+import { computeTopicPhysics, CalculationResult } from "@/lib/math-engine/<topic>";
+
+export interface TopicSimulationState {
   paramA: number;
   paramB: number;
-  zoomLevel?: number;
+  scaleFactor?: number;
 }
 
 export * from "@/lib/math-engine/<topic>";
 ```
 
 #### 2. Berkas Kanvas: `Canvas.tsx`
-Pastikan kanvas memiliki `viewBox` yang responsif, atribut ARIA, dan skala tinggi yang fleksibel untuk tampilan mobile:
+Kanvas wajib responsif terhadap lebar kontainer, memiliki atribut ARIA lengkap, dan menggunakan warna-warna dark mode netral:
 ```tsx
 "use client";
 
 import React from "react";
-import { TopicState } from "./engine";
+import { TopicSimulationState, computeTopicPhysics } from "./engine";
 
 interface CanvasProps {
-  state: TopicState;
-  onSelectNode?: (val: number) => void;
+  state: TopicSimulationState;
+  onPointSelect?: (val: number) => void;
 }
 
-export function Canvas({ state, onSelectNode }: CanvasProps) {
-  const width = 640;
-  const height = 320;
+export function Canvas({ state }: CanvasProps) {
+  const { paramA, paramB } = state;
+  const result = computeTopicPhysics(paramA, paramB);
+
+  const width = 600;
+  const height = 240;
 
   return (
     <div
       role="region"
       aria-label="Kanvas Interaktif Simulasi Topik"
-      className="relative w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950 shadow-2xl flex flex-col"
+      className="relative w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950 p-4 shadow-inner flex flex-col space-y-3"
     >
-      {/* Header HUD Status */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-neutral-900/90 border-b border-neutral-800 text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-indigo-400 animate-pulse" />
-          <span className="font-bold text-neutral-200">Visualisasi Simulasi</span>
-        </div>
-        <div className="font-mono text-neutral-300">
-          A = {state.paramA}, B = {state.paramB}
-        </div>
+      {/* HUD Bar Status */}
+      <div className="flex items-center justify-between text-xs text-neutral-400 border-b border-neutral-800 pb-2">
+        <span className="font-mono text-sky-400">Parameter: A={paramA} | B={paramB}</span>
+        <span className="font-mono text-indigo-300">Hasil: {result.outputValue}</span>
       </div>
 
-      {/* SVG Viewport Responsif */}
-      <div className="relative w-full h-[180px] sm:h-[260px] md:h-[320px] flex items-center justify-center bg-neutral-950 select-none">
-        <svg
-          viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-full"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          {/* Elemen grafis SVG interaktif */}
-          <circle
-            cx={width / 2 + state.paramA * 20}
-            cy={height / 2}
-            r={16}
-            fill="#6366f1"
-            className="transition-all duration-200"
-          />
-        </svg>
-      </div>
+      {/* SVG Responsif */}
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="w-full h-48 select-none"
+        aria-label="Simulasi Grafis Interaktif"
+        role="img"
+      >
+        {/* Sumbu atau elemen visual */}
+        <line x1="20" y1={height / 2} x2={width - 20} y2={height / 2} stroke="#525252" strokeWidth="2" />
+        <circle
+          cx={width / 2 + paramA * 15}
+          cy={height / 2}
+          r="14"
+          fill="#38bdf8"
+          className="transition-all duration-200"
+        />
+      </svg>
     </div>
   );
 }
 ```
 
-#### 3. Berkas Kontrol Slider: `Controls.tsx`
-Wajib memiliki atribut ARIA dan navigasi papan ketik:
+#### 3. Berkas Panel Kontrol: `Controls.tsx`
+Kontrol slider wajib menyediakan atribut aksesibilitas (`aria-label`, `min`, `max`, `step`):
 ```tsx
 "use client";
 
 import React from "react";
-import { TopicState } from "./engine";
-import { RotateCcw } from "lucide-react";
+import { TopicSimulationState } from "./engine";
 
 interface ControlsProps {
-  state: TopicState;
-  onChange: (updater: (prev: TopicState) => TopicState) => void;
-  onReset: () => void;
+  state: TopicSimulationState;
+  onChange: (newState: TopicSimulationState) => void;
 }
 
-export function Controls({ state, onChange, onReset }: ControlsProps) {
-  return (
-    <div className="space-y-4 text-xs">
-      <div className="flex items-center justify-between">
-        <span className="font-bold text-neutral-300 uppercase tracking-wider text-[11px]">
-          Panel Kendali Parameter
-        </span>
-        <button
-          type="button"
-          onClick={onReset}
-          className="flex items-center gap-1 text-neutral-400 hover:text-white transition"
-          aria-label="Reset parameter kanvas"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset</span>
-        </button>
-      </div>
+export function Controls({ state, onChange }: ControlsProps) {
+  const update = (key: keyof TopicSimulationState, val: number) => {
+    onChange({ ...state, [key]: val });
+  };
 
-      {/* Slider Parameter A */}
-      <div className="space-y-1.5">
-        <div className="flex justify-between font-medium">
-          <label htmlFor="paramA-slider" className="text-neutral-300">
-            Parameter A
-          </label>
-          <span className="font-mono text-indigo-400 font-bold">{state.paramA}</span>
+  return (
+    <div className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-4 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Slider A */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between">
+            <label htmlFor="ctrl-param-a" className="text-sky-400 font-semibold">
+              Parameter A: {state.paramA}
+            </label>
+            <span className="text-neutral-500 font-mono">[-10, 10]</span>
+          </div>
+          <input
+            id="ctrl-param-a"
+            type="range"
+            min="-10"
+            max="10"
+            step="1"
+            value={state.paramA}
+            onChange={(e) => update("paramA", parseFloat(e.target.value))}
+            className="w-full accent-sky-400 cursor-pointer h-1.5 bg-neutral-800 rounded-lg appearance-none"
+            aria-label="Atur Parameter A"
+          />
         </div>
-        <input
-          id="paramA-slider"
-          type="range"
-          min={-10}
-          max={10}
-          step={1}
-          value={state.paramA}
-          onChange={(e) => {
-            const val = Number(e.target.value);
-            onChange((prev) => ({ ...prev, paramA: val }));
-          }}
-          className="w-full accent-indigo-500 cursor-pointer"
-          aria-label="Atur nilai Parameter A"
-        />
+
+        {/* Slider B */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between">
+            <label htmlFor="ctrl-param-b" className="text-indigo-400 font-semibold">
+              Parameter B: {state.paramB}
+            </label>
+            <span className="text-neutral-500 font-mono">[1, 10]</span>
+          </div>
+          <input
+            id="ctrl-param-b"
+            type="range"
+            min="1"
+            max="10"
+            step="1"
+            value={state.paramB}
+            onChange={(e) => update("paramB", parseFloat(e.target.value))}
+            className="w-full accent-indigo-400 cursor-pointer h-1.5 bg-neutral-800 rounded-lg appearance-none"
+            aria-label="Atur Parameter B"
+          />
+        </div>
       </div>
-    </div>
-  );
-}
-```
-
-#### 4. Berkas Rumus Reaktif: `KaTeXFormula.tsx`
-```tsx
-"use client";
-
-import React from "react";
-import { TopicState } from "./engine";
-import { KaTeXView } from "@/components/ui/KaTeXView";
-
-export function KaTeXFormula({ state }: { state: TopicState }) {
-  const mathExpr = `A = ${state.paramA}, \\quad B = ${state.paramB} \\implies f(A, B) = ${state.paramA + state.paramB}`;
-
-  return (
-    <div className="p-3 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex items-center justify-center shadow-md">
-      <KaTeXView math={mathExpr} displayMode className="text-sm sm:text-base text-indigo-300" />
     </div>
   );
 }
@@ -285,475 +308,343 @@ export function KaTeXFormula({ state }: { state: TopicState }) {
 
 ---
 
-### Tahap 3: Penyusunan Konten Guided Discovery (`module.ts`)
+### Tahap 3: Integrasi Kanvas ke Playground Runner (`ModulePlaygroundEmbed.tsx`)
 
-Definisikan modul dalam `src/modules/math/<topic-slug>/module.ts`. Setiap tingkat (*Level*) wajib mematuhi 8 layar penemuan terpandu:
+Buka [src/components/learning/ModulePlaygroundEmbed.tsx](file:///d:/projects/nalar/src/components/learning/ModulePlaygroundEmbed.tsx), lalu daftarkan komponen kanvas topik baru pada percabangan `renderCanvasAndControls`:
+
+1. Impor `Canvas` dan `Controls`:
+   ```tsx
+   import { Canvas as TopicCanvas } from "@/modules/<math|science>/<topic-slug>/Canvas";
+   import { Controls as TopicControls } from "@/modules/<math|science>/<topic-slug>/Controls";
+   ```
+2. Tambahkan kasus `switch (slug)`:
+   ```tsx
+   case "<topic-slug>":
+     return (
+       <div className="space-y-4">
+         <TopicCanvas
+           state={{
+             paramA: vars.paramA ?? 2,
+             paramB: vars.paramB ?? 4,
+           }}
+         />
+         {!compact && (
+           <TopicControls
+             state={{
+               paramA: vars.paramA ?? 2,
+               paramB: vars.paramB ?? 4,
+             }}
+             onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+           />
+         )}
+       </div>
+     );
+   ```
+
+---
+
+### Tahap 4: Penyusunan Kontrak Pedagogi 11 Fase (`pedagogy.ts`)
+
+Buat berkas `src/modules/<math|science>/<topic-slug>/pedagogy.ts`. Berkas ini mendefinisikan kurikulum lengkap yang mematuhi kontrak `ComprehensiveLesson` dari `@/lib/curriculum/pedagogy-types`.
 
 ```typescript
-import { TopicModule } from "@/types/topic";
+import { ComprehensiveLesson } from "@/lib/curriculum/pedagogy-types";
 
-export const myNewTopicModule: TopicModule = {
-  id: "math-my-new-topic",
-  slug: "math-my-new-topic",
-  title: "Eksplorasi Konsep Baru",
-  category: "math",
-  domain: "Aljabar & Bilangan",
-  description: "Temukan prinsip fundamental konsep baru melalui simulasi visual dan penalaran.",
-  difficulty: "beginner",
-  estimatedMinutes: 30,
-  xpReward: 150,
-  prerequisites: ["math-real-numbers-line"],
-  interactiveComponentSlug: "math-my-new-topic",
-  levels: [
+export const myTopicPedagogicalLesson: ComprehensiveLesson = {
+  id: "<topic-slug>",
+  slug: "<topic-slug>",
+  title: "Judul Modul Lengkap",
+  subject: "math", // atau "science"
+  domain: "algebra", // sesuaikan domain
+  summary: "Ringkasan konsep yang dipelajari dalam 1-2 kalimat padat.",
+  audioNarrationText: "Teks narasi audio pembuka untuk assistive Web Speech API.",
+  prerequisites: [], // id topik prasyarat
+  learningObjectives: [
+    "Tujuan pembelajaran konkret 1",
+    "Tujuan pembelajaran konkret 2",
+  ],
+
+  // 1. Hook / Fenomena Nyata
+  hook: {
+    question: "Pertanyaan pemantik rasa ingin tahu yang bersumber dari dunia nyata?",
+    phenomenonDescription: "Deskripsi fenomena nyata yang dapat diamati sebelum masuk ke rumus formal.",
+    realWorldContext: "Konteks aplikasi sehari-hari (GPS, olahraga, teknologi, alam).",
+  },
+
+  // 2. Prediction
+  prediction: {
+    prompt: "Uji Hipotesis Awal",
+    question: "Apa yang akan terjadi jika nilai parameter dilipatgandakan?",
+    options: [
+      { id: "p1", text: "Pilihan salah dengan penjelasan intuitif", isCorrect: false, explanation: "Penjelasan mengapa konsepsi ini keliru." },
+      { id: "p2", text: "Pilihan benar dengan penalaran ilmiah", isCorrect: true, explanation: "Penjelasan ilmiah yang tepat." },
+    ],
+    whatActuallyHappened: "Hasil nyata yang diamati saat simulasi dijalankan.",
+  },
+
+  // 3. Explore
+  explore: {
+    prompt: "Eksplorasi Kanvas Interaktif",
+    guidingQuestions: [
+      "Amati apa yang terjadi pada kanvas saat Parameter A digeser.",
+      "Bandingkan hasilnya saat Parameter B bernilai minimum versus maksimum.",
+    ],
+    initialVariables: { paramA: 3, paramB: 2 },
+  },
+
+  // 4. Discover
+  discover: {
+    prompt: "Penemuan Pola Keteraturan",
+    patternSummary: "Hubungan konsisten antara parameter input dan reaksi sistem visual.",
+    interactiveInsight: "Wawasan mendalam mengapa pola ini terjadi secara nalar.",
+  },
+
+  // 5. Formalize (KaTeX)
+  formalize: {
+    summary: "Bahasa Matematis & Formulasi Simbolik",
+    definitions: [
+      { term: "Istilah Penting", explanation: "Definisi konseptual istilah tanpa jargon berlebihan." },
+    ],
+    formulas: [
+      {
+        name: "Nama Hukum / Persamaan",
+        latex: "y = \\frac{a}{b} \\cdot x", // Dirender otomatis via KaTeXView
+        meaning: "Makna fisis dari rumus di atas.",
+      },
+    ],
+    variablesTable: [
+      { symbol: "a, b", meaning: "Parameter pengendali", unit: "satuan baku (SI)" },
+    ],
+  },
+
+  // 6. Derivation / Reasoning (KaTeX)
+  derivation: {
+    title: "Penurunan Konsep Langkah Demi Langkah",
+    steps: [
+      {
+        stepNumber: 1,
+        explanation: "Titik tolak dari prinsip fundamental pertama.",
+        latex: "f_0 = c_1",
+      },
+      {
+        stepNumber: 2,
+        explanation: "Substitusi matematis untuk menghasilkan bentuk umum.",
+        latex: "f(x) = f_0 + k \\cdot x",
+      },
+    ],
+  },
+
+  // 7. Guided Practice (4-Tier Progressive Hints)
+  guidedPractice: [
     {
-      index: 1,
-      title: "Fenomena Awal & Intuisi",
-      description: "Menemukan pola perubahan saat parameter digeser.",
+      id: "gp-1",
+      title: "Latihan Terbimbing Tingkat 1",
+      question: "Atur kanvas agar nilai Parameter A menghasilkan output bernilai 6.",
+      hints: {
+        level1Attention: "Perhatikan nilai slider Parameter A pada panel kontrol.",
+        level2Concept: "Hasil sebanding lurus dengan nilai Parameter A.",
+        level3Strategy: "Gunakan hubungan A = Output / 2.",
+        level4Scaffold: "Geser slider Parameter A tepat ke angka 3.",
+      },
+      targetCondition: (vars) => vars.paramA === 3,
+      solutionExplanation: "Parameter A = 3 menghasilkan output yang tepat sesuai target.",
       xpReward: 30,
-      steps: [
-        // Layar 1: Pemantik (PROVOKE)
-        {
-          id: "step-1-provoke",
-          type: "provoke",
-          title: "Pertanyaan Pemantik",
-          audioNarrationText: "Mengapa saat nilai A dinaikkan, bentuk grafik bergeser ke arah berlawanan?",
-          naiDialogue: "Perhatikan titik biru di kanvas. Mengapa ia melompat saat kita mengubah tanda?",
-          naiExpression: "curious",
-          provoke: {
-            hookTitle: "Misteri Pergeseran Tanda",
-            hookText: "Bayangkan kamu melangkah mundur di depan cermin.",
-            question: "Apa yang terjadi saat sebuah nilai dikalikan dengan -1?",
-            interactiveComponentSlug: "math-my-new-topic",
-            initialVariables: { paramA: 3, paramB: 1 },
-            options: [
-              {
-                id: "opt-1",
-                text: "Arah berputar 180 derajat ke posisi sebaliknya",
-                naiResponse: "Tepat sekali! Membalik arah adalah operasi rotasi geometri 180 derajat.",
-              },
-              {
-                id: "opt-2",
-                text: "Nilai lenyap menjadi nol",
-                naiResponse: "Bukan nol! Nilai tetap memiliki besaran yang sama, hanya arahnya yang terbalik.",
-              },
-            ],
-          },
-        },
+    },
+  ],
 
-        // Layar 2: Prediksi (PREDICT)
-        {
-          id: "step-2-predict",
-          type: "predict",
-          title: "Uji Prediksi Hipotesis",
-          audioNarrationText: "Buatlah prediksi sebelum menggeser kontrol simulasi.",
-          naiDialogue: "Sebelum menjalankan simulasi, tebak dulu apa yang akan terjadi!",
-          naiExpression: "thinking",
-          predict: {
-            scenarioTitle: "Eksperimen Dua Pengali Negatif",
-            scenarioText: "Jika kita membalik arah dua kali berturut-turut, ke mana arah akhir titik?",
-            interactiveComponentSlug: "math-my-new-topic",
-            initialVariables: { paramA: 2, paramB: 1 },
-            simulationVariables: { paramA: -4, paramB: 2 },
-            options: [
-              {
-                id: "p-1",
-                text: "Kembali menghadap ke arah positif semula (+)",
-                isCorrect: true,
-                explanation: "Benar! Rotasi 180 derajat dua kali menghasilkan 360 derajat (kembali ke asal).",
-              },
-              {
-                id: "p-2",
-                text: "Tetap menghadap ke kiri negatif (-)",
-                isCorrect: false,
-                explanation: "Kurang tepat. Coba perhatikan simulasi saat dijalankan.",
-              },
-            ],
-          },
-        },
+  // 8. Independent Practice
+  independentPractice: [
+    {
+      id: "ip-1",
+      title: "Tantangan Mandiri Tanpa Bantuan",
+      question: "Tentukan nilai Parameter B agar sistem berada dalam kesetimbangan.",
+      targetCondition: (vars) => vars.paramB === 5,
+      solutionExplanation: "Nilai B = 5 menyeimbangkan kedua sisi persamaan.",
+      xpReward: 35,
+    },
+  ],
 
-        // Layar 3: Eksplorasi Terbimbing (GUIDED)
-        {
-          id: "step-3-guided",
-          type: "guided",
-          title: "Eksplorasi & Tabel Pola",
-          audioNarrationText: "Geser slider dan amati perubahan pada tabel observasi.",
-          naiDialogue: "Coba geser slider parameter A dan perhatikan apa yang dicatat pada tabel!",
-          naiExpression: "teaching",
-          guided: {
-            instructionTitle: "Mengamati Pola Skala",
-            instructionText: "Atur parameter A ke berbagai nilai untuk menemukan keteraturan perkalian.",
-            interactiveComponentSlug: "math-my-new-topic",
-            initialVariables: { paramA: 2, paramB: 3 },
-            observationTable: {
-              headers: ["Parameter A", "Parameter B", "Hasil f(A, B)"],
-              rows: [
-                { parameter: "A = 2, B = 3", expectedValue: "5" },
-                { parameter: "A = -4, B = 4", expectedValue: "0" },
-              ],
-            },
-            discoveryQuestion: {
-              prompt: "Apa hubungan antara parameter A dan B pada kondisi seimbang?",
-              options: [
-                { id: "d-1", text: "Jumlah keduanya bernilai nol (saling meniadakan)", isCorrect: true },
-                { id: "d-2", text: "Hasil kalinya selalu positif", isCorrect: false },
-              ],
-              correctOption: "d-1",
-            },
-          },
-        },
+  // 9. Virtual Laboratory (Khusus Sains/Eksperimental)
+  virtualLab: {
+    experimentTitle: "Eksperimen Uji Hipotesis",
+    hypothesisPrompt: "Apakah perbesaran nilai A akan mempercepat laju perubahan secara linier?",
+    parameters: [
+      { name: "paramA", label: "Variabel Bebas A", min: 1, max: 10, step: 1, defaultValue: 2 },
+    ],
+    dataCollectionFields: ["Parameter A", "Laju Perubahan", "Waktu"],
+    analysisQuestions: [
+      "Bagaimana korelasi antara Parameter A dengan nilai observasi?",
+    ],
+  },
 
-        // Layar 4: Formalisasi Simbolik (FORMALIZE)
-        {
-          id: "step-4-formalize",
-          type: "formalize",
-          title: "Merumuskan Kaidah",
-          audioNarrationText: "Lengkapi bagian yang kosong untuk merumuskan hukum matematika ini.",
-          naiDialogue: "Hebat! Sekarang mari kita susun rumus formalnya bersama-sama.",
-          naiExpression: "happy",
-          formalize: {
-            title: "Hukum Kesetimbangan Skalar",
-            prompt: "Pilihlah bagian yang tepat untuk melengkapi persamaan formal berikut:",
-            formulaTemplate: "A + [blank1] = 0 \\implies [blank2] = -A",
-            blanks: [
-              {
-                id: "blank1",
-                label: "Komponen Penyeimbang",
-                options: ["(-A)", "(+A)", "(0)"],
-                correctOption: "(-A)",
-              },
-              {
-                id: "blank2",
-                label: "Invers Aditif",
-                options: ["B", "A", "1"],
-                correctOption: "B",
-              },
-            ],
-            resolvedFormulaKaTeX: "A + (-A) = 0 \\implies B = -A",
-            explanation: "Setiap elemen bilangan riil A memiliki invers penjumlahan -A sehingga jumlahnya nol.",
-          },
-        },
+  // 10. Transfer Challenge (Real-World)
+  transferChallenge: {
+    title: "Aplikasi Dunia Nyata",
+    realWorldScenario: "Skenario kontekstual nyata yang membutuhkan transfer pemahaman konsep ini.",
+    taskPrompt: "Tentukan parameter yang optimal untuk menyelesaikan masalah nyata di atas.",
+    targetCondition: (vars) => vars.paramA === 4,
+    solutionExplanation: "Penerapan model pada skenario nyata menghasilkan efisiensi maksimal.",
+    reflectionPrompt: "Mengapa model sederhana ini tetap relevan saat dihadapkan pada friksi dunia nyata?",
+    xpReward: 40,
+  },
 
-        // Layar 5: Kuis Cepat (CHECK)
-        {
-          id: "step-5-check",
-          type: "check",
-          title: "Cek Pemahaman Cepat",
-          audioNarrationText: "Jawablah pertanyaan cepat ini untuk memverifikasi pemahamanmu.",
-          naiDialogue: "Satu pertanyaan kilat untuk memastikan pemahamanmu sudah kokoh!",
-          naiExpression: "curious",
-          check: {
-            checkType: "true_false",
-            question: "Invers penjumlahan dari -7 adalah +7?",
-            trueFalseAnswer: true,
-            explanation: "BENAR! -(-7) = +7 karena membalik arah negatif menghasilkan positif.",
-          },
-        },
-
-        // Layar 6: Sandbox Bebas (SANDBOX)
-        {
-          id: "step-6-sandbox",
-          type: "sandbox",
-          title: "Laboratorium Eksperimen Bebas",
-          audioNarrationText: "Eksplorasi seluruh parameter tanpa batas waktu atau penilaian.",
-          naiDialogue: "Kini kendali penuh ada di tanganmu. Ujilah angka-angka ekstrim!",
-          naiExpression: "happy",
-          sandbox: {
-            title: "Sandbox Eksplorasi Bebas",
-            instructions: "Cobalah memasukkan nilai besar atau pecahan untuk melihat kestabilan sistem.",
-            interactiveComponentSlug: "math-my-new-topic",
-            initialVariables: { paramA: 5, paramB: -5 },
-          },
-        },
-
-        // Layar 7: Tantangan Logika (CHALLENGE)
-        {
-          id: "step-7-challenge",
-          type: "challenge",
-          title: "Tantangan Logika",
-          audioNarrationText: "Selesaikan misi ini dengan mengatur parameter kanvas ke kondisi target.",
-          naiDialogue: "Buktikan kemampuanmu! Capai target yang ditentukan pada kanvas.",
-          naiExpression: "teaching",
-          challenge: {
-            id: "challenge-lvl1",
-            title: "Mencapai Titik Nol Mutlak",
-            question: "Atur parameter A = 6 dan temukan nilai parameter B agar hasilnya seimbang tepat di nol!",
-            targetCondition: (vars) => vars.paramA === 6 && vars.paramB === -6,
-            solutionVariables: { paramA: 6, paramB: -6 },
-            solutionExplanation: "Karena A = 6, maka penyeimbangnya haruslah B = -6 sehingga 6 + (-6) = 0.",
-            xpReward: 40,
-            hint2Static: "Pikirkan invers dari bilangan positif 6.",
-          },
-        },
-
-        // Layar 8: Rangkuman & Selebrasi (REFLECT)
-        {
-          id: "step-8-reflect",
-          type: "reflect",
-          title: "Refleksi & Tingkat Selesai",
-          audioNarrationText: "Selamat! Kamu telah menyelesaikan tingkat ini dengan penalaran mandiri.",
-          naiDialogue: "Luar biasa! Kamu berhasil menemukan prinsip ini tanpa menghafal!",
-          naiExpression: "celebrating",
-          reflect: {
-            title: "Tingkat 1 Tuntas: Invers & Penyeimbang",
-            takeaways: [
-              "Setiap bilangan memiliki pasangan invers penjumlahan yang menjadikannya nol.",
-              "Operasi tanda minus secara geometris adalah pembalikan arah sebesar 180 derajat.",
-            ],
-            connectionText: "Pada tingkat berikutnya, kita akan mempelajari bagaimana konsep ini berkembang ke perkalian dan dilatasi!",
-            xpReward: 30,
-            nextLevelTitle: "Tingkat 2",
-          },
-        },
+  // 11. Mastery Check (Matriks 5 Dimensi)
+  masteryCheck: [
+    {
+      id: "mc-1",
+      dimension: "conceptual",
+      dimensionLabel: "Pemahaman Konseptual",
+      question: "Pertanyaan konseptual yang menguji pemahaman mendalam tanpa hitungan rumit?",
+      options: [
+        { id: "o1", text: "Pilihan jawaban yang tepat", isCorrect: true, feedback: "Tepat sekali!" },
+        { id: "o2", text: "Distraktor miskonsepsi umum", isCorrect: false, feedback: "Periksa kembali konsep dasar." },
       ],
     },
   ],
+
+  // Jembatan Konsep Antar-Disiplin (Math <-> Science)
+  crossDomainBridge: {
+    connectedTopicId: "science-kinematics",
+    connectedTopicTitle: "Kinematika",
+    connectionNarrative: "Penjelasan keterkaitan konsep ini dengan pemodelan sains fisis.",
+    badgeText: "Matematika ➔ Sains: Aplikasi Fisis",
+  },
 };
 ```
 
 ---
 
-### Tahap 4: Integrasi ke Playground Runner (`ModulePlaygroundEmbed.tsx`)
+### Tahap 5: Pendaftaran ke Registry Global (`pedagogy-registry.ts`)
 
-Buka `src/components/learning/ModulePlaygroundEmbed.tsx` dan tambahkan penanganan untuk slug modul baru:
-
-1. **Import komponen**:
-   ```tsx
-   import { Canvas as MyCanvas } from "@/modules/math/math-my-new-topic/Canvas";
-   import { Controls as MyControls } from "@/modules/math/math-my-new-topic/Controls";
-   import { KaTeXFormula as MyKaTeX } from "@/modules/math/math-my-new-topic/KaTeXFormula";
-   import { TopicState as MyState } from "@/modules/math/math-my-new-topic/engine";
-   ```
-
-2. **Daftarkan State**:
-   ```tsx
-   const [myState, setMyState] = useState<MyState>({
-     paramA: initialVariables.paramA ?? 1,
-     paramB: initialVariables.paramB ?? 1,
-   });
-   ```
-
-3. **Sinkronisasi Variabel Eksternal (Hint / AutoSolver)**:
-   ```tsx
-   useEffect(() => {
-     if (!externalVariables) return;
-     if (slug === "math-my-new-topic") {
-       setMyState((prev) => ({
-         ...prev,
-         paramA: externalVariables.paramA ?? prev.paramA,
-         paramB: externalVariables.paramB ?? prev.paramB,
-       }));
-     }
-   }, [externalVariables, slug]);
-   ```
-
-4. **Kirim Perubahan Variabel ke Runner**:
-   ```tsx
-   useEffect(() => {
-     if (slug === "math-my-new-topic" && onVariablesChange) {
-       onVariablesChange({
-         paramA: myState.paramA,
-         paramB: myState.paramB,
-       });
-     }
-   }, [myState, slug, onVariablesChange]);
-   ```
-
-5. **Render Cabang Mode Compact & Standar**:
-   ```tsx
-   if (slug === "math-my-new-topic") {
-     if (compact) {
-       return (
-         <div className="w-full flex flex-col gap-2">
-           <MyKaTeX state={myState} />
-           <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-             <MyCanvas state={myState} />
-           </div>
-         </div>
-       );
-     }
-     return (
-       <div className="w-full flex flex-col gap-2.5">
-         <MyKaTeX state={myState} />
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-           <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg flex items-center justify-center min-h-[240px] md:min-h-[320px]">
-             <MyCanvas state={myState} />
-           </div>
-           <div className="lg:col-span-5 flex flex-col gap-3">
-             {challengeSidebar && <div>{challengeSidebar}</div>}
-             <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
-               <MyControls
-                 state={myState}
-                 onChange={setMyState}
-                 onReset={() => setMyState({ paramA: 1, paramB: 1 })}
-               />
-             </div>
-           </div>
-         </div>
-       </div>
-     );
-   }
-   ```
-
----
-
-### Tahap 5: Pendaftaran ke Registry Global (`registry.ts`)
-
-Buka `src/modules/registry.ts`, impor objek modul, lalu daftarkan ke `TOPIC_MODULES_REGISTRY`:
+Buka [src/modules/pedagogy-registry.ts](file:///d:/projects/nalar/src/modules/pedagogy-registry.ts), impor objek lesson baru, lalu daftarkan ke kamus `COMPREHENSIVE_LESSONS`:
 
 ```typescript
-import { myNewTopicModule } from "./math/math-my-new-topic/module";
+import { myTopicPedagogicalLesson } from "./math/<topic-slug>/pedagogy";
 
-export const TOPIC_MODULES_REGISTRY: Record<string, TopicModule> = {
-  // Modul lainnya...
-  "math-my-new-topic": myNewTopicModule,
+export const COMPREHENSIVE_LESSONS: Record<string, ComprehensiveLesson> = {
+  // Topik lainnya...
+  "<topic-slug>": myTopicPedagogicalLesson,
 };
 ```
 
 ---
 
-### Tahap 6: Halaman Topik & Peta Level (`src/app/topics/[slug]/page.tsx`)
+### Tahap 6: Halaman Rute Next.js (`src/app/topics/<slug>/page.tsx`)
 
-Buat berkas rute beranda topik di `src/app/topics/math-my-new-topic/page.tsx`:
+Buat berkas rute halaman topik di `src/app/topics/<topic-slug>/page.tsx`.
+
+> [!IMPORTANT]
+> **Aturan Batas Server/Client (RSC Boundary Serialization):**  
+> Komponen halaman Server Component **TIDAK BOLEH** mengoper seluruh objek `lesson` (yang memuat fungsi JavaScript `targetCondition`) langsung sebagai prop ke Client Component!  
+> **Oper selalu string `topicSlug="<topic-slug>"`** agar prop bersifat 100% serializable. `ComprehensiveLessonPlayer` akan menyelesaikan datanya secara otomatis di sisi client.
 
 ```tsx
 import React from "react";
-import { notFound } from "next/navigation";
-import { getTopicModule } from "@/modules/registry";
-import { LevelMap } from "@/components/learning/LevelMap";
+import type { Metadata } from "next";
+import { ComprehensiveLessonPlayer } from "@/components/pedagogy/ComprehensiveLessonPlayer";
 
-export const metadata = {
-  title: "Eksplorasi Konsep Baru | Nalar",
-  description: "Pelajari konsep baru melalui visualisasi kanvas interaktif dan tantangan penalaran.",
+export const metadata: Metadata = {
+  title: "Judul Modul | Nalar STEM",
+  description: "Deskripsi singkat topik untuk SEO dan kartu media sosial.",
 };
 
-export default function TopicPage() {
-  const moduleData = getTopicModule("math-my-new-topic");
-  if (!moduleData) notFound();
-
+export default function MyTopicPage() {
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 space-y-8">
-      <div className="space-y-2">
-        <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider">
-          {moduleData.domain}
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-black text-white">{moduleData.title}</h1>
-        <p className="text-sm text-neutral-400 max-w-2xl">{moduleData.description}</p>
-      </div>
-
-      {/* Peta Level & Status Tingkat yang Terbuka */}
-      <LevelMap
-        topicSlug="math-my-new-topic"
-        topicTitle={moduleData.title}
-        levels={moduleData.levels}
-      />
-    </div>
+    <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
+      <ComprehensiveLessonPlayer topicSlug="<topic-slug>" />
+    </main>
   );
 }
 ```
 
-> [!TIP]
-> Navigasi tingkat (seperti `http://localhost:3000/topics/math-my-new-topic/tk-xxxxxx`) ditangani secara otomatis oleh runner dinamis di `src/app/topics/[slug]/[level]/page.tsx`.
-
 ---
 
-### Tahap 7: Integrasi ke Pohon Keterampilan (*Skill Tree*)
+### Tahap 7: Dokumentasi Interaktif MDX (`example.mdx`) & Verifikasi
 
-Buka `src/lib/curriculum/math-tree.ts` (atau `science-tree.ts`), lalu tambahkan simpul topik baru dengan relasi prasyaratnya:
-
-```typescript
-{
-  id: "math-my-new-topic",
-  slug: "math-my-new-topic",
-  title: "Eksplorasi Konsep Baru",
-  domain: "math",
-  difficulty: "beginner",
-  summary: "Simulasi interaktif konsep baru.",
-  prerequisites: ["math-real-numbers-line"],
-  position: { x: 200, y: 350 },
-}
-```
-
----
-
-## 4. Spesifikasi 8 Tipe Layar *Guided Discovery*
-
-Setiap langkah dalam modul menggunakan salah satu dari kontrak berikut:
-
-| Tipe (`type`) | Properti Wajib | Fungsi Pedagogi |
-| :--- | :--- | :--- |
-| `provoke` | `provoke: ProvokeConfig` | Memberikan fenomena kontraintuitif dan pertanyaan pemantik awal. Menggunakan `compact={true}`. |
-| `predict` | `predict: PredictConfig` | Meminta pengguna berhipotesis sebelum tombol simulasi ditekan. Menggunakan `compact={true}`. |
-| `guided` | `guided: GuidedConfig` | Eksplorasi terarah dengan tabel observasi parameter dan slider manual. |
-| `formalize` | `formalize: FormalizeConfig` | Menyusun simbol matematika formal dengan melengkapi isian rumpang (`KaTeXView`). |
-| `check` | `check: CheckConfig` | Verifikasi kilat konsep (format Benar/Salah atau Pilihan Ganda). |
-| `sandbox` | `sandbox: PlaygroundConfig` | Memberikan ruang bebas bereksperimen dengan parameter ekstrim tanpa batasan target. |
-| `challenge`| `challenge: ChallengeConfig` | Misi logika dengan fungsi `targetCondition(vars): boolean` dan 4 lapis petunjuk AI bertahap. |
-| `reflect` | `reflect: ReflectConfig` | Ringkasan temuan kunci, perayaan kembang api (*confetti*), hadiah XP, dan jembatan ke materi berikutnya. |
-
----
-
-## 5. Invarian Arsitektur & Aturan Ketat (DOs & DON'Ts)
-
-### 🟢 Strict DOs
-1. **Pemisahan Rumus**: Selalu letakkan rumus di `src/lib/math-engine/` atau `src/lib/science-engine/`. Komponen React hanya bertugas menerima parameter dan merender tampilan.
-2. **Defensive Math**: Wajib mengantisipasi $\frac{1}{0}$, $\pm\infty$, dan `NaN`. Gunakan nilai fallback yang aman.
-3. **Pembersihan Resource**: Pastikan `cancelAnimationFrame`, `clearTimeout`, dan listener dibersihkan pada fungsi *cleanup* `useEffect`.
-4. **Layout Responsif Mobile**: Gunakan kelas pembungkus `overflow-y-auto md:overflow-hidden` agar pengguna ponsel dapat menggulir halaman secara alami tanpa memicu *horizontal scrollbar*.
-5. **Aksesibilitas Slider**: Berikan atribut `aria-label`, `min`, `max`, dan `step` pada setiap elemen input slider.
-
-### 🔴 Strict DON'Ts
-1. **JANGAN membuat file monolitik >250 baris**: Pecah berkas menjadi `Canvas.tsx`, `Controls.tsx`, `KaTeXFormula.tsx`, dan `module.ts`.
-2. **JANGAN mengalokasikan objek baru dalam loop render 60 FPS**: Hindari `new Vector()` atau pembuatan array baru berulang di dalam siklus animasi kanvas untuk mencegah *garbage collector freeze*.
-3. **JANGAN menggunakan CSS inline acak**: Gunakan kelas utilitas Tailwind CSS (`bg-neutral-950`, `text-neutral-100`, `border-neutral-800`).
-4. **JANGAN memanggil API LLM secara otomatis pada setiap render**: Panggilan AI tutor Nai hanya terjadi saat aksi pengguna (klik tombol petunjuk atau gagal menjawab tantangan logika 2 kali berturut-turut).
-
----
-
-## 6. Contoh Berkas MDX (`example.mdx`)
-
-Setiap modul baru wajib menyertakan berkas `example.mdx` di dalam foldernya sebagai contoh dokumentasi penggunaan komponen:
+Sertakan berkas `example.mdx` di dalam folder modul (`src/modules/<math|science>/<topic-slug>/example.mdx`) untuk mendemonstrasikan cara pemanggilan komponen kanvas:
 
 ```mdx
-# Dokumentasi Penggunaan Komponen: Eksplorasi Konsep Baru
+# Dokumentasi Penggunaan: <Nama Topik>
 
-Komponen ini dapat disematkan ke dalam artikel edukasi berbasis MDX menggunakan kode berikut:
+Komponen kanvas topik ini dapat disematkan ke dalam artikel edukasi berbasis MDX menggunakan kode berikut:
 
 import { Canvas } from "./Canvas";
 import { Controls } from "./Controls";
-import { KaTeXFormula } from "./KaTeXFormula";
 
 <div className="my-6 p-4 rounded-3xl bg-neutral-900 border border-neutral-800 space-y-4">
-  <KaTeXFormula state={{ paramA: 3, paramB: 2 }} />
   <Canvas state={{ paramA: 3, paramB: 2 }} />
 </div>
 
 ## Konsep yang Diajarkan
-1. Invers penjumlahan dan simetri titik nol.
-2. Perilaku geometris saat nilai parameter bernilai negatif.
+1. Pemahaman intuitif perubahan parameter A terhadap sistem.
+2. Penurunan matematis hubungan keseimbangan.
 ```
 
 ---
 
-## 7. Checklist Definition of Done (DoD) & Perintah Verifikasi
+## 4. Spesifikasi 11 Fase Pedagogi Nalar
 
-Sebelum menyatakan penambahan modul selesai, pastikan Anda telah memverifikasi hal berikut:
+Tiap modul kanonikal di Nalar wajib menyediakan data untuk 11 fase instruksional berikut:
 
-- [ ] Logika matematika murni memiliki unit test dengan 100% kasus uji lolos (`pnpm test`).
-- [ ] TypeScript terkompilasi bersih tanpa *type error* (`pnpm typecheck`).
-- [ ] Modul terdaftar di `TOPIC_MODULES_REGISTRY` dan `ModulePlaygroundEmbed.tsx`.
-- [ ] Mode `compact` berfungsi dengan baik pada layar *Provoke* dan *Predict*.
-- [ ] Rumus matematika di layar *Formalize* dirender dengan KaTeX secara visual (bukan teks LaTeX mentah).
-- [ ] Tata letak diuji pada viewport desktop (1536×730) dan mobile (390×844) tanpa *horizontal overflow*.
-- [ ] Berkas contoh `example.mdx` telah disertakan di direktori modul.
+| Fase | Nama Fase | Peran Pedagogis & Antarmuka |
+| :--- | :--- | :--- |
+| **A** | **Hook / Fenomena** | Memantik rasa ingin tahu melalui fenomena nyata tanpa rumus formal terlebih dahulu. |
+| **B** | **Prediksi** | Menguji intuisi awal pengguna dengan kartu tebakan (*Predict vs What Actually Happened*). |
+| **C** | **Eksplorasi** | Manipulasi langsung slider pada kanvas untuk menguji hipotesis (*Playground Canvas*). |
+| **D** | **Penemuan Pola** | Merangkum keteraturan yang ditemukan pengguna sebelum masuk ke notasi formal. |
+| **E** | **Formalisasi** | Menghubungkan intuisi visual ke persamaan matematika formal via KaTeX (`KaTeXView`). |
+| **F** | **Penurunan Konsep** | Menjelaskan asal-usul logika rumus langkah demi langkah (bukan sekadar hafalan). |
+| **G** | **Latihan Terbimbing** | Tantangan interaktif dengan **4-Level Progressive Hint** (Attention $\to$ Concept $\to$ Strategy $\to$ Scaffold). |
+| **H** | **Latihan Mandiri** | Tantangan logika murni tanpa bantuan scaffolding untuk menguji kemandirian strategi. |
+| **I** | **Lab Virtual** | Praktikum simulasi sains dengan Buku Catatan Laboratorium tersinkronisasi `localStorage`. |
+| **J** | **Tantangan Transfer** | Masalah aplikatif baru di dunia nyata yang memerlukan generalisasi pemahaman konsep. |
+| **K** | **Evaluasi Kemahiran** | Pengukuran komprehensif mengacu pada Matriks 5 Dimensi Kemahiran STEM. |
 
-### Perintah Pengujian Lokal:
+---
+
+## 5. Invarian Arsitektur & Guardrails (DOs & DON'Ts)
+
+### 🟢 Strict DOs
+1. **Serialisasi RSC yang Aman**: Selalu kirim `topicSlug="<slug>"` (bertipe string) dari Server Component ke `ComprehensiveLessonPlayer`. Hindari pengiriman objek yang memiliki properti fungsi عبر Server/Client boundary.
+2. **Kompilasi Rumus via KaTeXView**: Selalu gunakan komponen `<KaTeXView math={...} displayMode />` untuk setiap rumus LaTeX. Jangan mencetak string mentah (`{form.latex}`) atau tag `<code>`.
+3. **Defensive Math Invariants**: Cegah pembagian nol (`b === 0`), `NaN`, dan `Infinity` di semua fungsi `math-engine/` dan `science-engine/`.
+4. **Pembersihan Resource Siklus Hidup**: Selalu bersihkan `requestAnimationFrame`, interval, dan *event listener* pada *cleanup function* hook `useEffect`.
+5. **Aksesibilitas Universal (A11y)**: Berikan atribut `aria-label`, `min`, `max`, `step` pada semua elemen `<input type="range">`.
+
+### 🔴 Strict DON'Ts
+1. **JANGAN membuat file monolitik raksasa (>250 baris)**: Pecah berkas menjadi `Canvas.tsx`, `Controls.tsx`, `engine.ts`, dan `pedagogy.ts`.
+2. **JANGAN mengalokasikan objek baru di dalam loop render**: Hindari `new Vector()` atau pembuatan array baru di dalam siklus animasi kanvas untuk mencegah *garbage collector lag*.
+3. **JANGAN menggunakan CSS inline acak**: Manfaatkan utilitas kelas Tailwind CSS secara konsisten (`bg-neutral-950`, `text-neutral-100`, `border-neutral-800`).
+4. **JANGAN menggunakan tag `<Script>` di dalam `<head>` pada App Router**: Untuk skrip inisialisasi tema SSR, selalu gunakan hook `useServerInsertedHTML` melalui `ThemeScript` guna mencegah peringatan hidrasi React 19.
+
+---
+
+## 6. Checklist Definition of Done (DoD) & Perintah Verifikasi
+
+Sebelum menyatakan penambahan modul selesai, pastikan seluruh kriteria berikut terpenuhi:
+
+- [ ] Fungsi komputasi murni terisolasi di `src/lib/<math|science>-engine/<topic>.ts`.
+- [ ] Unit test Vitest dibuat dan lulus 100% (`pnpm test`).
+- [ ] Komponen `Canvas.tsx` dan `Controls.tsx` terdaftar di `ModulePlaygroundEmbed.tsx`.
+- [ ] Berkas `pedagogy.ts` mematuhi skema `ComprehensiveLesson` dan terdaftar di `pedagogy-registry.ts`.
+- [ ] Halaman rute `src/app/topics/<topic-slug>/page.tsx` mengoper `topicSlug` bertipe string ke `ComprehensiveLessonPlayer`.
+- [ ] Seluruh formula matematika ter-render visual menggunakan KaTeX tanpa menampilkan teks kode LaTeX mentah.
+- [ ] Tampilan teruji responsif pada layar desktop (1536×730) maupun ponsel (390×844) tanpa *horizontal overflow*.
+- [ ] Berkas dokumentasi `example.mdx` disertakan di dalam folder modul.
+- [ ] TypeScript lolos pengecekan tipe dengan 0 error (`pnpm typecheck`).
+- [ ] Build produksi Next.js terkompilasi bersih tanpa *serialization error* (`pnpm build`).
+
+### Perintah Pengujian Terminal:
 ```bash
 # 1. Pengecekan tipe data TypeScript
 pnpm typecheck
 
-# 2. Menjalankan semua unit test
+# 2. Menjalankan seluruh pengujian unit
 pnpm test
 
-# 3. Menjalankan server dev lokal
+# 3. Validasi kompilasi dan prerender statis Next.js
+pnpm build
+
+# 4. Menjalankan server pengembangan lokal
 pnpm dev
 ```

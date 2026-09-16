@@ -232,7 +232,7 @@ export const CANONICAL_TOPICS: CanonicalTopic[] = [
     sections: [
       { id: "sec-hook", title: "Prediksi Posisi Mobil Balap", type: "hook", summary: "Mobil bergerak dari keadaan diam dengan percepatan tetap. Di mana posisinya setelah 5 detik?" },
       { id: "sec-prediction", title: "Tebakan Kurva v-t", type: "prediction", summary: "Jika percepatan diperbesar 2x lipat, bagaimana kecuraman garis grafik v-t berubah?" },
-      { id: "sec-explore", title: "Simulator Kinematika Multi-Grafik", type: "explore", summary: "Manipulasi v₀, a, dan θ secara interaktif; saksikan animasi proyektil dan 3 grafik sinkron 60 FPS." },
+      { id: "sec-explore", title: "Simulator Kinematika Multi-Grafik", type: "explore", summary: "Manipulasi v₀, a, dan θ secara interaktif; saksikan animasi proyektil dan 3 grafik sinkron." },
       { id: "sec-discover", title: "Menemukan Pola Luas Daerah v-t", type: "discover", summary: "Saksikan bagaimana luas di bawah kurva grafik v-t sama persis dengan perpindahan total s." },
       { id: "sec-formalize", title: "Persamaan Gerak Kinematika Klasik", type: "formalize", summary: "Persamaan kinematik GLBB: v = v₀ + at, s = v₀t + 0.5at², v² = v₀² + 2as." },
       { id: "sec-practice", title: "Latihan Terbimbing (Guided)", type: "practice", summary: "Hitung waktu tempuh puncak dan jangkauan maksimum dengan panduan 4 level hint." },
