@@ -9,7 +9,7 @@ import { CtaBanner } from "@/components/landing/CtaBanner";
 export const metadata = {
   title: "Nalar — Belajar STEM Interaktif & Inklusif Lewat Intuisi Visual",
   description:
-    "Platform pembelajaran STEM interaktif dengan simulasi kanvas 60 FPS, metodologi Guided Discovery, AI Tutor ramah difabel, dan tanpa hambatan registrasi.",
+    "Platform pembelajaran STEM interaktif dengan simulasi kanvas, metodologi Guided Discovery, AI Tutor ramah difabel, dan tanpa hambatan registrasi.",
 };
 
 export default function Home() {

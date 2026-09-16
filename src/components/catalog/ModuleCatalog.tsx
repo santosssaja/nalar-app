@@ -42,14 +42,18 @@ export function ModuleCatalog({
     const counts: Record<CurriculumDomain, number> = {
       all: allTreeData.nodes.length,
       math: 0,
+      science: 0,
       physics: 0,
       chemistry: 0,
       biology: 0,
       softskill: 0,
     };
     allTreeData.nodes.forEach((n) => {
-      if (counts[n.domain] !== undefined) {
-        counts[n.domain] += 1;
+      if (n.subject === "math") counts.math += 1;
+      if (n.subject === "science") counts.science += 1;
+      const d = n.domain as CurriculumDomain;
+      if (d in counts && d !== "math" && d !== "science") {
+        counts[d] += 1;
       }
     });
     return counts;
@@ -61,7 +65,7 @@ export function ModuleCatalog({
     [allTreeData]
   );
   const totalXp = useMemo(
-    () => allTreeData.nodes.reduce((acc, n) => acc + n.xp, 0),
+    () => allTreeData.nodes.reduce((acc, n) => acc + (n.xpReward || n.xp || 0), 0),
     [allTreeData]
   );
 
@@ -69,7 +73,11 @@ export function ModuleCatalog({
   const filteredTopics = useMemo(() => {
     return allTreeData.nodes.filter((node) => {
       // Domain filter
-      if (domain !== "all" && node.domain !== domain) return false;
+      if (domain !== "all") {
+        if (domain === "math" && node.subject !== "math") return false;
+        if (domain === "science" && node.subject !== "science") return false;
+        if (domain !== "math" && domain !== "science" && node.domain !== domain) return false;
+      }
 
       // Stage filter
       if (stage !== "all" && node.stage !== stage) return false;
@@ -77,7 +85,7 @@ export function ModuleCatalog({
       // Status filter
       const status = calculateTopicStatus(node, progress.completedTopics, allTreeData);
       if (availability === "available" && !node.isAvailable) return false;
-      if (availability === "completed" && status !== "done") return false;
+      if (availability === "completed" && status !== "completed" && status !== "done") return false;
       if (availability === "locked" && status !== "locked") return false;
 
       // Search query

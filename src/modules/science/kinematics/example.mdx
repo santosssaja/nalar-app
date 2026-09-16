@@ -1,0 +1,26 @@
+# Contoh Penggunaan: Kinematika (Flagship MVP)
+
+Modul ini memvisualisasikan gerak proyektil 2D dan sinkronisasi kurva gerak 1D (x-t, v-t, a-t).
+
+```tsx
+import { kinematicsModule } from "@/modules/science/kinematics/module";
+import {
+  projectilePosition2D,
+  projectileRange,
+  projectileMaxHeight,
+} from "@/modules/science/kinematics/engine";
+
+// Menghitung koordinat proyektil pada t = 1.5 detik
+const pos = projectilePosition2D({
+  x0: 0,
+  y0: 0,
+  v0: 25,
+  angleDeg: 45,
+  g: 9.8,
+  t: 1.5,
+});
+
+// Menghitung jangkauan maksimum di tanah datar
+const range = projectileRange(25, 45, 9.8); // Jarak terjauh (meter)
+const hMax = projectileMaxHeight(25, 45, 9.8); // Ketinggian puncak (meter)
+```

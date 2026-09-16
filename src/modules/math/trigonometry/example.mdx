@@ -1,0 +1,15 @@
+# Contoh Penggunaan: Trigonometri & Lingkaran Satuan
+
+Modul ini memvisualisasikan proyeksi polar ke ortogonal pada lingkaran satuan berjejari $r = 1$.
+
+```tsx
+import { trigonometryModule } from "@/modules/math/trigonometry/module";
+import { decomposeVector, verifyPythagoreanIdentity } from "@/modules/math/trigonometry/engine";
+
+// Menguraikan vektor kecepatan peluru 20 m/s dengan sudut elevasi 45 derajat
+const { vx, vy } = decomposeVector(20, 45);
+// vx ≈ 14.14 m/s, vy ≈ 14.14 m/s
+
+// Memverifikasi identitas Pythagoras
+const isUnit = verifyPythagoreanIdentity(Math.PI / 4); // true
+```

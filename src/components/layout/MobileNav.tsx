@@ -17,6 +17,12 @@ export function MobileNav() {
       isActive: pathname.startsWith("/dashboard"),
     },
     {
+      label: "Pohon Belajar",
+      href: "/skill-tree",
+      icon: Network,
+      isActive: pathname.startsWith("/skill-tree"),
+    },
+    {
       label: "Katalog Modul",
       href: "/explore",
       icon: BookOpen,

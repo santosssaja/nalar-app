@@ -10,6 +10,11 @@ export type BadgeVariant =
   | "biology"
   | "softskill"
   | "science"
+  | "arithmetic"
+  | "algebra"
+  | "calculus"
+  | "geometry"
+  | "logic"
   | "success"
   | "warning"
   | "danger"
@@ -32,6 +37,11 @@ const variantStyles: Record<BadgeVariant, string> = {
   biology: "bg-teal-500/10 text-teal-300 border-teal-500/30",
   softskill: "bg-purple-500/10 text-purple-300 border-purple-500/30",
   science: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30",
+  arithmetic: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+  algebra: "bg-orange-500/10 text-orange-300 border-orange-500/30",
+  calculus: "bg-blue-500/10 text-blue-300 border-blue-500/30",
+  geometry: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+  logic: "bg-violet-500/10 text-violet-300 border-violet-500/30",
   success: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   warning: "bg-amber-500/15 text-amber-300 border-amber-500/30",
   danger: "bg-rose-500/15 text-rose-300 border-rose-500/30",

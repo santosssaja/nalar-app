@@ -1,31 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Canvas as ClockCanvas } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/Canvas";
-import { Controls as ClockControls } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/Controls";
-import { KaTeXFormula as ClockKaTeX } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/KaTeXFormula";
-import { ModularClockState } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/engine";
-
-import { Canvas as EuclidCanvas } from "@/modules/_legacy/math/math-euclid_legacy/Canvas";
-import { Controls as EuclidControls, EuclidState } from "@/modules/_legacy/math/math-euclid_legacy/Controls";
-import { KaTeXFormula as EuclidKaTeX } from "@/modules/_legacy/math/math-euclid_legacy/KaTeXFormula";
-
-import { Canvas as RealCanvas } from "@/modules/_legacy/math/math-real-numbers-line_legacy/Canvas";
-import { Controls as RealControls } from "@/modules/_legacy/math/math-real-numbers-line_legacy/Controls";
-import { KaTeXFormula as RealKaTeX } from "@/modules/_legacy/math/math-real-numbers-line_legacy/KaTeXFormula";
-import { RealNumberState } from "@/modules/_legacy/math/math-real-numbers-line_legacy/engine";
-
-import { Canvas as PrimesCanvas } from "@/modules/_legacy/math/math-primes-coprime_legacy/Canvas";
-import { Controls as PrimesControls } from "@/modules/_legacy/math/math-primes-coprime_legacy/Controls";
-import { KaTeXFormula as PrimesKaTeX } from "@/modules/_legacy/math/math-primes-coprime_legacy/KaTeXFormula";
-import { PrimesCoprimeState } from "@/modules/_legacy/math/math-primes-coprime_legacy/engine";
-
-import { Canvas as DetCanvas } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/Canvas";
-import { Controls as DetControls } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/Controls";
-import { KaTeXFormula as DetKaTeX } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/KaTeXFormula";
-import { DeterminantCanvasState } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/engine";
-
-import { InclinePlaygroundEmbed } from "./embeds/InclinePlaygroundEmbed";
+import { Canvas as RealCanvas } from "@/modules/math/real-numbers/Canvas";
+import { Controls as RealControls } from "@/modules/math/real-numbers/Controls";
+import { Canvas as AlgebraCanvas } from "@/modules/math/elementary-algebra/Canvas";
+import { Controls as AlgebraControls } from "@/modules/math/elementary-algebra/Controls";
+import { Canvas as FuncCanvas } from "@/modules/math/functions-graphs/Canvas";
+import { Controls as FuncControls } from "@/modules/math/functions-graphs/Controls";
+import { Canvas as TrigCanvas } from "@/modules/math/trigonometry/Canvas";
+import { Controls as TrigControls } from "@/modules/math/trigonometry/Controls";
+import { Canvas as SiCanvas } from "@/modules/science/si-units/Canvas";
+import { Controls as SiControls } from "@/modules/science/si-units/Controls";
+import { Canvas as KinematicsCanvas } from "@/modules/science/kinematics/Canvas";
+import { Controls as KinematicsControls } from "@/modules/science/kinematics/Controls";
 
 export interface ModulePlaygroundEmbedProps {
   slug: string;
@@ -44,408 +31,189 @@ export function ModulePlaygroundEmbed({
   challengeSidebar,
   compact = false,
 }: ModulePlaygroundEmbedProps) {
-  // Support physics-newton-incline
-  if (slug === "physics-newton-incline") {
-    return (
-      <InclinePlaygroundEmbed
-        initialVariables={initialVariables}
-        onVariablesChange={onVariablesChange}
-        externalVariables={externalVariables}
-        challengeSidebar={challengeSidebar}
-      />
-    );
-  }
+  const [vars, setVars] = useState<Record<string, number>>(initialVariables);
 
-  return (
-    <StandardModuleEmbed
-      slug={slug}
-      initialVariables={initialVariables}
-      onVariablesChange={onVariablesChange}
-      externalVariables={externalVariables}
-      challengeSidebar={challengeSidebar}
-      compact={compact}
-    />
-  );
-}
-
-function StandardModuleEmbed({
-  slug,
-  initialVariables = {},
-  onVariablesChange,
-  externalVariables,
-  challengeSidebar,
-  compact = false,
-}: ModulePlaygroundEmbedProps) {
-  // 1. Modular Clock State
-  const [clockState, setClockState] = useState<ModularClockState>({
-    n: initialVariables.n ?? 12,
-    multiplier: initialVariables.multiplier ?? 2,
-    activeNode: null,
-    hourA: initialVariables.hourA ?? 9,
-    hourB: initialVariables.hourB ?? 7,
-  });
-
-  // 2. Euclid State
-  const [euclidState, setEuclidState] = useState<EuclidState>({
-    width: initialVariables.width ?? 84,
-    height: initialVariables.height ?? 52,
-  });
-
-  // 3. Real Numbers Line State
-  const [realState, setRealState] = useState<RealNumberState>({
-    point1: initialVariables.point1 ?? 3,
-    point2: initialVariables.point2 ?? -4,
-    scaleFactor: initialVariables.scaleFactor ?? 2,
-    sqrtN: initialVariables.sqrtN ?? 2,
-    zoomLevel: initialVariables.zoomLevel ?? 1,
-    distribA: initialVariables.distribA ?? 3,
-    distribB: initialVariables.distribB ?? 4,
-    distribC: initialVariables.distribC ?? 2,
-  });
-
-  // 4. Primes & Coprime State
-  const [primesState, setPrimesState] = useState<PrimesCoprimeState>({
-    numberN: initialVariables.numberN ?? 12,
-    coprimeA: initialVariables.coprimeA ?? 8,
-    coprimeB: initialVariables.coprimeB ?? 9,
-    sieveLimit: initialVariables.sieveLimit ?? 60,
-    fermatBase: initialVariables.fermatBase ?? 3,
-    fermatPrime: initialVariables.fermatPrime ?? 7,
-  });
-
-  // 5. Determinant 2D State
-  const [detState, setDetState] = useState<DeterminantCanvasState>({
-    i_hat_x: initialVariables.a ?? initialVariables.i_hat_x ?? 2,
-    i_hat_y: initialVariables.c ?? initialVariables.i_hat_y ?? 0,
-    j_hat_x: initialVariables.b ?? initialVariables.j_hat_x ?? 0,
-    j_hat_y: initialVariables.d ?? initialVariables.j_hat_y ?? 2,
-  });
-
-  // Sync external variables (e.g. from Hint 4 auto-solver)
   useEffect(() => {
-    if (!externalVariables) return;
-
-    if (slug === "arithmetic-modular-clock") {
-      setClockState((prev) => ({
-        ...prev,
-        n: externalVariables.n ?? prev.n,
-        multiplier: externalVariables.multiplier ?? prev.multiplier,
-        hourA: externalVariables.hourA ?? prev.hourA,
-        hourB: externalVariables.hourB ?? prev.hourB,
-      }));
-    } else if (slug === "math-euclid") {
-      setEuclidState((prev) => ({
-        ...prev,
-        width: externalVariables.width ?? prev.width,
-        height: externalVariables.height ?? prev.height,
-      }));
-    } else if (slug === "math-real-numbers-line" || slug === "math-real-numbers") {
-      setRealState((prev) => ({
-        ...prev,
-        point1: externalVariables.point1 ?? prev.point1,
-        point2: externalVariables.point2 ?? prev.point2,
-        scaleFactor: externalVariables.scaleFactor ?? prev.scaleFactor,
-        sqrtN: externalVariables.sqrtN ?? prev.sqrtN,
-        zoomLevel: externalVariables.zoomLevel ?? prev.zoomLevel,
-      }));
-    } else if (slug === "math-primes-coprime" || slug === "math-prime-factorization") {
-      setPrimesState((prev) => ({
-        ...prev,
-        numberN: externalVariables.numberN ?? prev.numberN,
-        coprimeA: externalVariables.coprimeA ?? prev.coprimeA,
-        coprimeB: externalVariables.coprimeB ?? prev.coprimeB,
-      }));
-    } else if (slug === "linear-algebra-determinant-2d") {
-      setDetState((prev) => ({
-        ...prev,
-        i_hat_x: externalVariables.a ?? externalVariables.i_hat_x ?? prev.i_hat_x,
-        i_hat_y: externalVariables.c ?? externalVariables.i_hat_y ?? prev.i_hat_y,
-        j_hat_x: externalVariables.b ?? externalVariables.j_hat_x ?? prev.j_hat_x,
-        j_hat_y: externalVariables.d ?? externalVariables.j_hat_y ?? prev.j_hat_y,
-      }));
+    if (externalVariables) {
+      setVars((prev) => ({ ...prev, ...externalVariables }));
     }
-  }, [externalVariables, slug]);
+  }, [externalVariables]);
 
-  // Notify parent of variable changes
-  useEffect(() => {
-    if (!onVariablesChange) return;
+  const handleVarsChange = (newVars: Record<string, number>) => {
+    setVars(newVars);
+    onVariablesChange?.(newVars);
+  };
 
-    if (slug === "arithmetic-modular-clock") {
-      onVariablesChange({
-        n: clockState.n,
-        multiplier: clockState.multiplier,
-        hourA: clockState.hourA,
-        hourB: clockState.hourB,
-      });
-    } else if (slug === "math-euclid") {
-      onVariablesChange({
-        width: euclidState.width,
-        height: euclidState.height,
-      });
-    } else if (slug === "math-real-numbers-line" || slug === "math-real-numbers") {
-      onVariablesChange({
-        point1: realState.point1,
-        point2: realState.point2,
-        scaleFactor: realState.scaleFactor,
-        sqrtN: realState.sqrtN,
-        zoomLevel: realState.zoomLevel,
-      });
-    } else if (slug === "math-primes-coprime" || slug === "math-prime-factorization") {
-      onVariablesChange({
-        numberN: primesState.numberN,
-        coprimeA: primesState.coprimeA,
-        coprimeB: primesState.coprimeB,
-      });
-    } else if (slug === "linear-algebra-determinant-2d") {
-      onVariablesChange({
-        a: detState.i_hat_x,
-        b: detState.j_hat_x,
-        c: detState.i_hat_y,
-        d: detState.j_hat_y,
-        i_hat_x: detState.i_hat_x,
-        i_hat_y: detState.i_hat_y,
-        j_hat_x: detState.j_hat_x,
-        j_hat_y: detState.j_hat_y,
-      });
-    }
-  }, [clockState, euclidState, realState, primesState, detState, slug, onVariablesChange]);
-
-  // RENDER 1: Modular Clock
-  if (slug === "arithmetic-modular-clock") {
-    if (compact) {
-      return (
-        <div className="w-full flex flex-col gap-2">
-          <ClockKaTeX state={clockState} />
-          <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-            <ClockCanvas
-              state={clockState}
-              onNodeClick={(idx) =>
-                setClockState((prev) => ({
-                  ...prev,
-                  activeNode: prev.activeNode === idx ? null : idx,
-                }))
-              }
+  const renderCanvasAndControls = () => {
+    switch (slug) {
+      case "math-real-numbers":
+      case "math-real-numbers-line":
+        return (
+          <div className="space-y-4">
+            <RealCanvas
+              state={{
+                point1: vars.point1 ?? 3,
+                point2: vars.point2 ?? -4,
+                scaleFactor: vars.scaleFactor ?? 1,
+                zoomLevel: vars.zoomLevel ?? 1,
+              }}
             />
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="w-full flex flex-col gap-2.5">
-        <ClockKaTeX state={clockState} />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-          <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg flex items-center justify-center min-h-[240px] md:min-h-[320px]">
-            <ClockCanvas
-              state={clockState}
-              onNodeClick={(idx) =>
-                setClockState((prev) => ({
-                  ...prev,
-                  activeNode: prev.activeNode === idx ? null : idx,
-                }))
-              }
-            />
-          </div>
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            {challengeSidebar && <div>{challengeSidebar}</div>}
-            <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
-              <ClockControls
-                state={clockState}
-                onChange={(next) => setClockState(next)}
-                onReset={() =>
-                  setClockState({
-                    n: 12,
-                    multiplier: 2,
-                    activeNode: null,
-                    hourA: 9,
-                    hourB: 7,
-                  })
-                }
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // RENDER 2: Math Euclid
-  if (slug === "math-euclid") {
-    if (compact) {
-      return (
-        <div className="w-full flex flex-col gap-2">
-          <EuclidKaTeX width={euclidState.width} height={euclidState.height} />
-          <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-            <EuclidCanvas width={euclidState.width} height={euclidState.height} />
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="w-full flex flex-col gap-2.5">
-        <EuclidKaTeX width={euclidState.width} height={euclidState.height} />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-          <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg flex items-center justify-center min-h-[240px] md:min-h-[320px]">
-            <EuclidCanvas width={euclidState.width} height={euclidState.height} />
-          </div>
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            {challengeSidebar && <div>{challengeSidebar}</div>}
-            <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
-              <EuclidControls
-                state={euclidState}
-                onChange={(updater) => setEuclidState(updater)}
-                onReset={() => setEuclidState({ width: 84, height: 52 })}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // RENDER 3: Real Numbers Line
-  if (slug === "math-real-numbers-line" || slug === "math-real-numbers") {
-    if (compact) {
-      return (
-        <div className="w-full flex flex-col gap-2">
-          <RealKaTeX state={realState} />
-          <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-            <RealCanvas state={realState} />
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="w-full flex flex-col gap-2.5">
-        <RealKaTeX state={realState} />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-          <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg flex items-center justify-center min-h-[240px] md:min-h-[320px]">
-            <RealCanvas state={realState} />
-          </div>
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            {challengeSidebar && <div>{challengeSidebar}</div>}
-            <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
+            {!compact && (
               <RealControls
-                state={realState}
-                onChange={setRealState}
-                onReset={() =>
-                  setRealState({
-                    point1: 3,
-                    point2: -4,
-                    scaleFactor: 2,
-                    sqrtN: 2,
-                    zoomLevel: 1,
-                    distribA: 3,
-                    distribB: 4,
-                    distribC: 2,
-                  })
-                }
+                state={{
+                  point1: vars.point1 ?? 3,
+                  point2: vars.point2 ?? -4,
+                  scaleFactor: vars.scaleFactor ?? 1,
+                  zoomLevel: vars.zoomLevel ?? 1,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
               />
-            </div>
+            )}
           </div>
-        </div>
-      </div>
-    );
-  }
+        );
 
-  // RENDER 4: Primes & Coprime
-  if (slug === "math-primes-coprime" || slug === "math-prime-factorization") {
-    if (compact) {
-      return (
-        <div className="w-full flex flex-col gap-2">
-          <PrimesKaTeX state={primesState} />
-          <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-            <PrimesCanvas state={primesState} />
+      case "math-elementary-algebra":
+        return (
+          <div className="space-y-4">
+            <AlgebraCanvas
+              state={{
+                a: vars.a ?? 2,
+                b: vars.b ?? 4,
+                c: vars.c ?? 10,
+                x: vars.x ?? 3,
+              }}
+            />
+            {!compact && (
+              <AlgebraControls
+                state={{
+                  a: vars.a ?? 2,
+                  b: vars.b ?? 4,
+                  c: vars.c ?? 10,
+                  x: vars.x ?? 3,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+              />
+            )}
           </div>
-        </div>
-      );
+        );
+
+      case "math-functions-graphs":
+        return (
+          <div className="space-y-4">
+            <FuncCanvas
+              state={{
+                a: vars.a ?? 1,
+                h: vars.h ?? 0,
+                k: vars.k ?? 0,
+                xInput: vars.xInput ?? 2,
+              }}
+            />
+            {!compact && (
+              <FuncControls
+                state={{
+                  a: vars.a ?? 1,
+                  h: vars.h ?? 0,
+                  k: vars.k ?? 0,
+                  xInput: vars.xInput ?? 2,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+              />
+            )}
+          </div>
+        );
+
+      case "math-trig-unit-circle":
+      case "math-trigonometry":
+        return (
+          <div className="space-y-4">
+            <TrigCanvas
+              state={{
+                angleDeg: vars.angleDeg ?? 45,
+                radius: vars.radius ?? 1,
+              }}
+            />
+            {!compact && (
+              <TrigControls
+                state={{
+                  angleDeg: vars.angleDeg ?? 45,
+                  radius: vars.radius ?? 1,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+              />
+            )}
+          </div>
+        );
+
+      case "science-si-units":
+      case "sci-units-measurements":
+        return (
+          <div className="space-y-4">
+            <SiCanvas
+              state={{
+                lengthMeters: vars.lengthMeters ?? 1500,
+                timeSeconds: vars.timeSeconds ?? 60,
+                targetUnitCode: vars.targetUnitCode ?? 1,
+              }}
+            />
+            {!compact && (
+              <SiControls
+                state={{
+                  lengthMeters: vars.lengthMeters ?? 1500,
+                  timeSeconds: vars.timeSeconds ?? 60,
+                  targetUnitCode: vars.targetUnitCode ?? 1,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+              />
+            )}
+          </div>
+        );
+
+      case "science-kinematics":
+      case "physics-projectile-motion":
+      default:
+        return (
+          <div className="space-y-4">
+            <KinematicsCanvas
+              state={{
+                x0: vars.x0 ?? 0,
+                y0: vars.y0 ?? 0,
+                v0: vars.v0 ?? 20,
+                angleDeg: vars.angleDeg ?? 45,
+                g: vars.g ?? 9.8,
+                a: vars.a ?? 2,
+                t: vars.t ?? 0,
+              }}
+            />
+            {!compact && (
+              <KinematicsControls
+                state={{
+                  x0: vars.x0 ?? 0,
+                  y0: vars.y0 ?? 0,
+                  v0: vars.v0 ?? 20,
+                  angleDeg: vars.angleDeg ?? 45,
+                  g: vars.g ?? 9.8,
+                  a: vars.a ?? 2,
+                  t: vars.t ?? 0,
+                }}
+                onChange={(s) => handleVarsChange(s as unknown as Record<string, number>)}
+              />
+            )}
+          </div>
+        );
     }
-    return (
-      <div className="w-full flex flex-col gap-2.5">
-        <PrimesKaTeX state={primesState} />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-          <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg flex items-center justify-center min-h-[240px] md:min-h-[320px]">
-            <PrimesCanvas
-              state={primesState}
-              onNumberSelect={(val) => setPrimesState((prev) => ({ ...prev, numberN: val }))}
-            />
-          </div>
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            {challengeSidebar && <div>{challengeSidebar}</div>}
-            <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
-              <PrimesControls
-                state={primesState}
-                onChange={setPrimesState}
-                onReset={() =>
-                  setPrimesState({
-                    numberN: 12,
-                    coprimeA: 8,
-                    coprimeB: 9,
-                    sieveLimit: 60,
-                    fermatBase: 3,
-                    fermatPrime: 7,
-                  })
-                }
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  };
 
-  // Fallback: Linear Algebra 2D Determinant
-  if (compact) {
-    return (
-      <div className="w-full flex flex-col gap-2">
-        <DetKaTeX state={detState} />
-        <div className="w-full bg-neutral-900/90 border border-neutral-800 rounded-2xl p-2 shadow-lg flex items-center justify-center min-h-[160px] max-h-[220px] md:max-h-[300px]">
-          <DetCanvas
-            state={detState}
-            onVectorMove={(key, pt) =>
-              setDetState((prev) => ({
-                ...prev,
-                [key === "i" ? "i_hat_x" : "j_hat_x"]: pt[0],
-                [key === "i" ? "i_hat_y" : "j_hat_y"]: pt[1],
-              }))
-            }
-          />
-        </div>
-      </div>
-    );
-  }
   return (
-    <div className="w-full flex flex-col gap-2.5">
-      <DetKaTeX state={detState} />
+    <div className="w-full h-full flex flex-col justify-between">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-        <div className="lg:col-span-7 bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 shadow-lg min-h-[240px] md:min-h-[340px]">
-          <DetCanvas
-            state={detState}
-            onVectorMove={(key, pt) =>
-              setDetState((prev) => ({
-                ...prev,
-                [key === "i" ? "i_hat_x" : "j_hat_x"]: pt[0],
-                [key === "i" ? "i_hat_y" : "j_hat_y"]: pt[1],
-              }))
-            }
-          />
+        <div className={challengeSidebar ? "lg:col-span-8" : "lg:col-span-12"}>
+          {renderCanvasAndControls()}
         </div>
-        <div className="lg:col-span-5 flex flex-col gap-3">
-          {challengeSidebar && <div>{challengeSidebar}</div>}
-          <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 shadow-lg max-h-[440px] overflow-y-auto">
-            <DetControls
-              state={detState}
-              onChange={(next) => setDetState(next)}
-              onReset={() =>
-                setDetState({
-                  i_hat_x: 2,
-                  i_hat_y: 0,
-                  j_hat_x: 0,
-                  j_hat_y: 2,
-                })
-              }
-            />
+        {challengeSidebar && (
+          <div className="lg:col-span-4 flex flex-col gap-3">
+            {challengeSidebar}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

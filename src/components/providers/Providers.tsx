@@ -4,6 +4,7 @@ import React from "react";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { GamificationProvider } from "@/context/GamificationContext";
+import { LearnerProvider } from "@/context/LearnerContext";
 import { NaiProvider } from "@/components/nai/NaiContext";
 import { Nai } from "@/components/nai/Nai";
 import { NaiPageWatcher } from "@/components/nai/NaiPageWatcher";
@@ -24,13 +25,15 @@ export function Providers({ children }: ProvidersProps) {
     <AccessibilityProvider>
       <AuthProvider>
         <GamificationProvider>
-          <NaiProvider>
-            <NaiPageWatcher />
-            <PageShell>{children}</PageShell>
-            <Nai />
-            <LevelUpModal />
-            <LoginModal />
-          </NaiProvider>
+          <LearnerProvider>
+            <NaiProvider>
+              <NaiPageWatcher />
+              <PageShell>{children}</PageShell>
+              <Nai />
+              <LevelUpModal />
+              <LoginModal />
+            </NaiProvider>
+          </LearnerProvider>
         </GamificationProvider>
       </AuthProvider>
     </AccessibilityProvider>

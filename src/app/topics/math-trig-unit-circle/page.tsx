@@ -1,20 +1,17 @@
+import React from "react";
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/_legacy/math/math-trig-unit-circle_legacy/InteractiveLesson";
-import { TopicModuleView } from "@/components/learning/TopicModuleView";
+import { ComprehensiveLessonPlayer } from "@/components/pedagogy/ComprehensiveLessonPlayer";
 
 export const metadata: Metadata = {
-  title: "Lingkaran Satuan Trigonometri | Nalar STEM",
+  title: "Trigonometri & Lingkaran Satuan | Nalar STEM",
   description:
-    "Eksplorasi interaktif fungsi trigonometri sinus, kosinus, dan tangen sebagai proyeksi spasial titik pada lingkaran berjari-jari satu.",
+    "Lingkaran satuan r = 1, rasio sinus dan kosinus, koordinat polar, dan identitas Pythagoras.",
 };
 
-export default function TrigTopicPage() {
+export default function TrigUnitCirclePage() {
   return (
     <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
-      <TopicModuleView
-        slug="math-trig-unit-circle"
-        sandboxContent={<InteractiveLesson />}
-      />
+      <ComprehensiveLessonPlayer topicSlug="math-trig-unit-circle" />
     </main>
   );
 }

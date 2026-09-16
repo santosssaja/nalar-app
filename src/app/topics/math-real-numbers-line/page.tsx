@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/_legacy/math/math-real-numbers-line_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {
@@ -11,10 +10,7 @@ export const metadata: Metadata = {
 export default function RealNumbersPage() {
   return (
     <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
-      <TopicModuleView
-        slug="math-real-numbers-line"
-        sandboxContent={<InteractiveLesson />}
-      />
+      <TopicModuleView slug="math-real-numbers-line" />
     </main>
   );
 }

@@ -1,0 +1,14 @@
+# Contoh Penggunaan: Fungsi & Grafik
+
+Modul ini memvisualisasikan fungsi sebagai mesin input-output dan eksplorasi transformasi kurva grafik f(x).
+
+```tsx
+import { functionsGraphsModule } from "@/modules/math/functions-graphs/module";
+import { evaluateQuadratic, averageRateOfChange } from "@/modules/math/functions-graphs/engine";
+
+// Menghitung nilai fungsi kuadrat f(x) = x² - 2x + 1 pada x = 3
+const y = evaluateQuadratic(3, 1, -2, 1); // y = 4
+
+// Menghitung laju perubahan rata-rata
+const slope = averageRateOfChange((x) => x * x, 1, 3); // (9 - 1) / (3 - 1) = 4
+```

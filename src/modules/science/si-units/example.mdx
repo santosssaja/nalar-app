@@ -1,0 +1,14 @@
+# Contoh Penggunaan: Besaran, Satuan SI & Analisis Dimensi
+
+Modul ini memvalidasi homogenitas rumus fisika dan konversi satuan standar internasional.
+
+```tsx
+import { siUnitsModule } from "@/modules/science/si-units/module";
+import { areDimensionsEqual, BASE_DIMENSIONS, convertLength } from "@/modules/science/si-units/engine";
+
+// Mengonversi 1500 meter ke kilometer
+const km = convertLength(1500, "m", "km"); // Menghasilkan: 1.5
+
+// Memeriksa konsistensi dimensi
+const isSpeed = areDimensionsEqual(BASE_DIMENSIONS.velocity, { M: 0, L: 1, T: -1 }); // true
+```

@@ -1,0 +1,14 @@
+# Contoh Penggunaan: Operasi Bilangan Riil & Garis Bilangan
+
+Modul ini memvisualisasikan garis bilangan riil kontinu satu dimensi dan operasi translasi serta dilatasi spasial.
+
+```tsx
+import { realNumbersModule } from "@/modules/math/real-numbers/module";
+import { translatePoint, scalePoint } from "@/modules/math/real-numbers/engine";
+
+// Menghitung translasi titik secara fungsional murni
+const newPosition = translatePoint(3, 4); // Menghasilkan: 7
+
+// Menghitung dilatasi skala
+const scaledPosition = scalePoint(3, 2); // Menghasilkan: 6
+```

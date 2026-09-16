@@ -31,11 +31,18 @@ export function SidebarNavItems({
       isActive: pathname.startsWith("/dashboard"),
     },
     {
+      label: "Pohon Pengetahuan",
+      href: "/skill-tree",
+      icon: Network,
+      isActive: pathname.startsWith("/skill-tree"),
+      badge: "DAG",
+    },
+    {
       label: "Katalog Modul",
       href: "/explore",
       icon: BookOpen,
       isActive: pathname.startsWith("/explore") || pathname.startsWith("/topics"),
-      badge: "50+ Topik",
+      badge: "Katalog",
     },
   ];
 

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/_legacy/science/physics-wave-simulator_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {
@@ -13,7 +12,6 @@ export default function WaveSimulatorTopicPage() {
     <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
       <TopicModuleView
         slug="physics-wave-simulator"
-        sandboxContent={<InteractiveLesson />}
       />
     </main>
   );

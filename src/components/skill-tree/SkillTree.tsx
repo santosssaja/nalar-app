@@ -110,17 +110,22 @@ function SkillTreeInner({ domain = "all", stage = "all" }: SkillTreeProps) {
         calculateTopicStatus(targetNode, progress.completedTopics, treeData) ===
           "active";
 
+      const isCrossDomain = Boolean(e.isCrossDomain);
+
       return {
         id: e.id,
         source: e.source,
         target: e.target,
         type: "prereqEdge",
-        animated: isTargetActive,
+        animated: isTargetActive || isCrossDomain,
+        data: {
+          isCrossDomain,
+        },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 16,
           height: 16,
-          color: "#6366f1",
+          color: isCrossDomain ? "#38bdf8" : "#6366f1",
         },
       };
     });

@@ -76,16 +76,22 @@ export function TopBar({ onToggleSidebar, isSidebarOpen }: TopBarProps) {
               className="hidden md:flex items-center gap-1 ml-4 pl-4 border-l border-neutral-800"
             >
               <Link
-                href="/explore"
-                className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
-              >
-                Katalog Modul
-              </Link>
-              <Link
                 href="/dashboard"
                 className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/skill-tree"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
+              >
+                Pohon Pengetahuan
+              </Link>
+              <Link
+                href="/explore"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-800 transition"
+              >
+                Katalog Modul
               </Link>
             </nav>
           )}

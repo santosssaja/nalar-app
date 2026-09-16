@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/_legacy/science/physics-projectile-motion_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {
@@ -11,10 +10,7 @@ export const metadata: Metadata = {
 export default function ProjectileTopicPage() {
   return (
     <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
-      <TopicModuleView
-        slug="physics-projectile-motion"
-        sandboxContent={<InteractiveLesson />}
-      />
+      <TopicModuleView slug="science-kinematics" />
     </main>
   );
 }

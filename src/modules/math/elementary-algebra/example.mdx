@@ -1,0 +1,16 @@
+# Contoh Penggunaan: Aljabar Elementer
+
+Modul ini memvisualisasikan variabel dinamis dan persamaan linear melalui analogi timbangan kesetaraan.
+
+```tsx
+import { elementaryAlgebraModule } from "@/modules/math/elementary-algebra/module";
+import { solveLinearEquation, isScaleBalanced } from "@/modules/math/elementary-algebra/engine";
+
+// Menyelesaikan persamaan linear 2x + 4 = 10 secara analitis
+const result = solveLinearEquation(2, 4, 10);
+// result.solution => 3
+
+// Memeriksa kesetimbangan timbangan
+const balanced = isScaleBalanced(2 * 3 + 4, 10);
+// balanced => true
+```

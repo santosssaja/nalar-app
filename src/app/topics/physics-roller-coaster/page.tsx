@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/_legacy/science/physics-roller-coaster_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {
@@ -13,7 +12,6 @@ export default function RollerCoasterTopicPage() {
     <main className="flex-1 w-full bg-neutral-950 text-neutral-100">
       <TopicModuleView
         slug="physics-roller-coaster"
-        sandboxContent={<InteractiveLesson />}
       />
     </main>
   );

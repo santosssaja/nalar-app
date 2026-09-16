@@ -20,6 +20,11 @@ const DOMAIN_ACCENTS: Record<TopicCurriculumItem["domain"], { border: string; gl
     glow: "group-hover:shadow-indigo-500/10",
     text: "text-indigo-400",
   },
+  science: {
+    border: "border-sky-500/30 hover:border-sky-500/60",
+    glow: "group-hover:shadow-sky-500/10",
+    text: "text-sky-400",
+  },
   physics: {
     border: "border-sky-500/30 hover:border-sky-500/60",
     glow: "group-hover:shadow-sky-500/10",
@@ -39,6 +44,31 @@ const DOMAIN_ACCENTS: Record<TopicCurriculumItem["domain"], { border: string; gl
     border: "border-amber-500/30 hover:border-amber-500/60",
     glow: "group-hover:shadow-amber-500/10",
     text: "text-amber-400",
+  },
+  arithmetic: {
+    border: "border-indigo-500/30 hover:border-indigo-500/60",
+    glow: "group-hover:shadow-indigo-500/10",
+    text: "text-indigo-400",
+  },
+  algebra: {
+    border: "border-indigo-500/30 hover:border-indigo-500/60",
+    glow: "group-hover:shadow-indigo-500/10",
+    text: "text-indigo-400",
+  },
+  calculus: {
+    border: "border-indigo-500/30 hover:border-indigo-500/60",
+    glow: "group-hover:shadow-indigo-500/10",
+    text: "text-indigo-400",
+  },
+  geometry: {
+    border: "border-indigo-500/30 hover:border-indigo-500/60",
+    glow: "group-hover:shadow-indigo-500/10",
+    text: "text-indigo-400",
+  },
+  logic: {
+    border: "border-indigo-500/30 hover:border-indigo-500/60",
+    glow: "group-hover:shadow-indigo-500/10",
+    text: "text-indigo-400",
   },
 };
 
@@ -69,7 +99,7 @@ export function ModuleCard({
 
           {/* Status Chip */}
           <div>
-            {status === "done" ? (
+            {status === "done" || status === "completed" ? (
               <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                 <CheckCircle2 className="w-3 h-3" /> Tuntas
               </span>

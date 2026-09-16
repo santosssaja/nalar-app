@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
+import { ThemeScript } from "@/components/providers/ThemeScript";
 
 export const metadata: Metadata = {
   title: "Nalar | Platform Belajar STEM Interaktif & Inklusif",
@@ -18,26 +18,6 @@ export const metadata: Metadata = {
   ],
 };
 
-/**
- * Synchronous Anti-FOUC (Flash of Unstyled Content) Script.
- * Runs in <head> before first browser paint to eliminate theme flickering on page refresh.
- */
-const themeInitializerScript = `(function() {
-  try {
-    var stored = localStorage.getItem('nalar_a11y_prefs_v1');
-    if (stored) {
-      var prefs = JSON.parse(stored);
-      if (prefs && prefs.theme) {
-        document.documentElement.setAttribute('data-theme', prefs.theme);
-        document.documentElement.setAttribute('data-high-contrast', String(prefs.theme === 'high-contrast'));
-      }
-      if (prefs && prefs.fontScale) {
-        document.documentElement.setAttribute('data-font-scale', prefs.fontScale);
-      }
-    }
-  } catch (e) {}
-})();`;
-
 export default function RootLayout({
   children,
 }: {
@@ -51,11 +31,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeInitializerScript }}
-        />
+        <ThemeScript />
       </head>
       <body className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         <Providers>{children}</Providers>

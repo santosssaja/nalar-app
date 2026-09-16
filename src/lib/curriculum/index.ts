@@ -1,102 +1,95 @@
-import { mathTreeData } from "./math-tree";
-import { scienceTreeData } from "./science-tree";
-import { softskillsTreeData } from "./softskills-tree";
 import {
   CurriculumDomain,
   CurriculumTreeData,
-  TopicCurriculumItem,
+  CanonicalTopic,
   TopicNodeStatus,
 } from "./types";
+import { CANONICAL_TOPICS, KNOWLEDGE_GRAPH_EDGES, CANONICAL_KNOWLEDGE_GRAPH } from "./data/topics";
+import { CONCEPT_CONNECTIONS } from "./data/connections";
+import {
+  isTopicUnlocked,
+  getTopicStatus,
+  getTopicPrerequisites as getPrereqsFromEngine,
+  getTopicDependents,
+  getTopicConceptConnections,
+  getRecommendedNextTopic,
+  calculateOverallMastery,
+} from "./prerequisite-engine";
 
 export * from "./types";
-export * from "./math-tree";
-export * from "./science-tree";
-export * from "./softskills-tree";
+export * from "./data/topics";
+export * from "./data/connections";
+export * from "./prerequisite-engine";
 
+/**
+ * Returns tree data for the knowledge graph.
+ * Defaults to the canonical knowledge graph containing Math, Science, and their bridges.
+ */
 export function getCombinedCurriculum(domain: CurriculumDomain = "all"): CurriculumTreeData {
-  if (domain === "math") return mathTreeData;
-
-  if (domain === "physics" || domain === "chemistry" || domain === "biology") {
-    const domainNodes = scienceTreeData.nodes.filter((n) => n.domain === domain);
-    if (domainNodes.length === 0) return scienceTreeData;
-
-    const domainNodeIds = new Set(domainNodes.map((n) => n.id));
-    const minX = Math.min(...domainNodes.map((n) => n.position.x));
-    const normalizedNodes = domainNodes.map((n) => ({
-      ...n,
-      position: { x: n.position.x - minX + 120, y: n.position.y },
-    }));
-
+  if (domain === "all") {
     return {
-      nodes: normalizedNodes,
-      edges: scienceTreeData.edges.filter(
-        (e) => domainNodeIds.has(e.source) && domainNodeIds.has(e.target)
+      nodes: CANONICAL_TOPICS,
+      edges: KNOWLEDGE_GRAPH_EDGES,
+    };
+  }
+
+  if (domain === "math") {
+    const mathNodes = CANONICAL_TOPICS.filter((n) => n.subject === "math");
+    const mathNodeIds = new Set(mathNodes.map((n) => n.id));
+    return {
+      nodes: mathNodes,
+      edges: KNOWLEDGE_GRAPH_EDGES.filter(
+        (e) => mathNodeIds.has(e.source) && mathNodeIds.has(e.target)
       ),
     };
   }
 
-  if (domain === "softskill") return softskillsTreeData;
-
-  // Domain === "all": combine all with generous lane spacing
-  const mathNodes = mathTreeData.nodes.map((n) => ({
-    ...n,
-    position: { x: n.position.x, y: n.position.y },
-  }));
-
-  const scienceNodes = scienceTreeData.nodes.map((n) => ({
-    ...n,
-    position: { x: n.position.x + 1800, y: n.position.y },
-  }));
-
-  const softskillNodes = softskillsTreeData.nodes.map((n) => ({
-    ...n,
-    position: { x: n.position.x + 3100, y: n.position.y },
-  }));
+  if (domain === "science" || domain === "physics" || domain === "chemistry" || domain === "biology") {
+    const scienceNodes = CANONICAL_TOPICS.filter((n) => {
+      if (domain === "science") return n.subject === "science";
+      return n.domain === domain;
+    });
+    const sciNodeIds = new Set(scienceNodes.map((n) => n.id));
+    return {
+      nodes: scienceNodes,
+      edges: KNOWLEDGE_GRAPH_EDGES.filter(
+        (e) => sciNodeIds.has(e.source) && sciNodeIds.has(e.target)
+      ),
+    };
+  }
 
   return {
-    nodes: [...mathNodes, ...scienceNodes, ...softskillNodes],
-    edges: [
-      ...mathTreeData.edges,
-      ...scienceTreeData.edges,
-      ...softskillsTreeData.edges,
-    ],
+    nodes: CANONICAL_TOPICS,
+    edges: KNOWLEDGE_GRAPH_EDGES,
   };
 }
 
+/**
+ * Compatibility helper for existing catalog components
+ */
 export function calculateTopicStatus(
-  item: TopicCurriculumItem,
+  item: CanonicalTopic,
   completedTopicSlugs: string[],
-  treeData: CurriculumTreeData
+  treeData?: CurriculumTreeData
 ): TopicNodeStatus {
-  // If user completed this topic
-  if (completedTopicSlugs.includes(item.slug)) {
-    return "done";
-  }
+  const isDone =
+    completedTopicSlugs.includes(item.id) || completedTopicSlugs.includes(item.slug);
+  if (isDone) return "completed";
 
-  // Find all edges pointing to this node (prerequisites)
-  const incomingEdges = treeData.edges.filter((e) => e.target === item.id);
-
-  // If node has no incoming edges, it is active by default
-  if (incomingEdges.length === 0) {
-    return "active";
-  }
-
-  // Check if every incoming prerequisite node is done
-  const allPrereqsMet = incomingEdges.every((edge) => {
-    const parentNode = treeData.nodes.find((n) => n.id === edge.source);
-    if (!parentNode) return true;
-    return completedTopicSlugs.includes(parentNode.slug);
-  });
-
-  return allPrereqsMet ? "active" : "locked";
+  const unlocked = isTopicUnlocked(
+    item.id,
+    completedTopicSlugs,
+    treeData?.nodes || CANONICAL_TOPICS
+  );
+  return unlocked ? "active" : "locked";
 }
 
+/**
+ * Compatibility helper for existing topic prerequisite lookup
+ */
 export function getTopicPrerequisites(
   topicId: string,
-  treeData: CurriculumTreeData
-): TopicCurriculumItem[] {
-  const incoming = treeData.edges.filter((e) => e.target === topicId);
-  const sourceIds = new Set(incoming.map((e) => e.source));
-  return treeData.nodes.filter((n) => sourceIds.has(n.id));
+  treeData?: CurriculumTreeData
+): CanonicalTopic[] {
+  return getPrereqsFromEngine(topicId, treeData?.nodes || CANONICAL_TOPICS);
 }
-

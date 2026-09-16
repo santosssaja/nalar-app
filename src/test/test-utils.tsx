@@ -36,6 +36,63 @@ vi.mock("@/context/GamificationContext", () => ({
   GamificationProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+const mockLearnerContext = {
+  learnerState: {
+    topicMastery: {},
+    completedTopics: [],
+    completedActivities: [],
+    attemptHistory: [],
+    mistakes: [],
+    hintsUsedCount: {},
+    lastActivity: {
+      topicId: "math-real-numbers",
+      topicTitle: "Operasi Bilangan Riil & Garis Bilangan",
+      activityType: "explore",
+      route: "/topics/math-real-numbers",
+      timestamp: new Date().toISOString(),
+    },
+    learningMode: "learn",
+    labNotebook: [],
+  },
+  learningMode: "learn",
+  setLearningMode: vi.fn(),
+  updateTopicMastery: vi.fn(),
+  recordActivity: vi.fn(),
+  recordMistake: vi.fn(),
+  recordHintUsed: vi.fn(),
+  saveLabNotebookEntry: vi.fn(),
+  resetLearnerData: vi.fn(),
+  overallMastery: { conceptual: 0, procedural: 0, reasoning: 0, problemSolving: 0, transfer: 0, overall: 0 },
+  recommendedTopic: {
+    id: "math-real-numbers",
+    slug: "math-real-numbers",
+    title: "Operasi Bilangan Riil & Garis Bilangan",
+    subject: "math",
+    domain: "arithmetic",
+    level: 1,
+    stage: "explorer",
+    phase: "mvp",
+    summary: "Garis bilangan",
+    description: "Deskripsi",
+    audioNarrationText: "",
+    prerequisites: [],
+    unlocks: ["math-elementary-algebra"],
+    learningObjectives: [],
+    concepts: [],
+    sections: [],
+    xpReward: 100,
+    isAvailable: true,
+    route: "/topics/math-real-numbers",
+    position: { x: 0, y: 0 },
+  },
+  isUnlocked: vi.fn((id: string) => id === "math-real-numbers"),
+};
+
+vi.mock("@/context/LearnerContext", () => ({
+  useLearnerModel: () => mockLearnerContext,
+  LearnerProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 vi.mock("@/context/AccessibilityContext", () => ({
   useAccessibility: () => mockAccessibilityContext,
   AccessibilityProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -80,4 +137,4 @@ export function renderWithProviders(
   return render(ui, options);
 }
 
-export { mockGamificationContext, mockAccessibilityContext };
+export { mockGamificationContext, mockAccessibilityContext, mockLearnerContext };

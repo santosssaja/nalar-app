@@ -33,7 +33,7 @@ export interface TopicModule {
   id: string;
   slug: string;
   title: string;
-  category: "math" | "physics" | "chemistry" | "biology" | "softskill";
+  category: "math" | "physics" | "chemistry" | "biology" | "softskill" | "science";
   summary: string;
   audioNarrationText: string;
   initialVariables: Record<string, number>;
