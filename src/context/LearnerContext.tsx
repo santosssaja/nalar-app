@@ -1,12 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { useLocalStorage } from "@/lib/storage";
 import {
   LearnerState,
   INITIAL_LEARNER_STATE,
   LEARNER_STORAGE_KEY,
-  createDefault5DMastery,
   LabNotebookEntry,
 } from "@/lib/learner/learner-model";
 import { FiveDimensionMastery, LearningMode, CanonicalTopic } from "@/lib/curriculum/types";
@@ -16,6 +15,7 @@ import {
   isTopicUnlocked,
 } from "@/lib/curriculum/prerequisite-engine";
 import { CANONICAL_TOPICS } from "@/lib/curriculum/data/topics";
+import { useLearnerActions } from "./learner-actions";
 
 interface LearnerContextType {
   learnerState: LearnerState;
@@ -47,155 +47,7 @@ export function LearnerProvider({ children }: { children: React.ReactNode }) {
     INITIAL_LEARNER_STATE
   );
 
-  const setLearningMode = useCallback(
-    (mode: LearningMode) => {
-      setLearnerState((prev) => ({ ...prev, learningMode: mode }));
-    },
-    [setLearnerState]
-  );
-
-  const updateTopicMastery = useCallback(
-    (topicId: string, updates: Partial<FiveDimensionMastery>) => {
-      setLearnerState((prev) => {
-        const current = prev.topicMastery[topicId] || createDefault5DMastery();
-        const nextConceptual = updates.conceptual ?? current.conceptual;
-        const nextProcedural = updates.procedural ?? current.procedural;
-        const nextReasoning = updates.reasoning ?? current.reasoning;
-        const nextProblemSolving = updates.problemSolving ?? current.problemSolving;
-        const nextTransfer = updates.transfer ?? current.transfer;
-
-        const nextOverall = Math.round(
-          (nextConceptual + nextProcedural + nextReasoning + nextProblemSolving + nextTransfer) / 5
-        );
-
-        const updatedMastery: FiveDimensionMastery = {
-          conceptual: nextConceptual,
-          procedural: nextProcedural,
-          reasoning: nextReasoning,
-          problemSolving: nextProblemSolving,
-          transfer: nextTransfer,
-          overall: nextOverall,
-        };
-
-        const isNowCompleted = nextOverall >= 70;
-        const alreadyCompleted = prev.completedTopics.includes(topicId);
-        const nextCompletedTopics =
-          isNowCompleted && !alreadyCompleted
-            ? [...prev.completedTopics, topicId]
-            : prev.completedTopics;
-
-        return {
-          ...prev,
-          topicMastery: {
-            ...prev.topicMastery,
-            [topicId]: updatedMastery,
-          },
-          completedTopics: nextCompletedTopics,
-        };
-      });
-    },
-    [setLearnerState]
-  );
-
-  const recordActivity = useCallback(
-    ({
-      topicId,
-      topicTitle,
-      activityId,
-      activityType,
-      route,
-      success,
-    }: {
-      topicId: string;
-      topicTitle: string;
-      activityId: string;
-      activityType: string;
-      route: string;
-      success: boolean;
-    }) => {
-      setLearnerState((prev) => {
-        const alreadyHasActivity = prev.completedActivities.includes(activityId);
-        const newCompletedActivities =
-          success && !alreadyHasActivity
-            ? [...prev.completedActivities, activityId]
-            : prev.completedActivities;
-
-        const newAttempt = {
-          topicId,
-          activityId,
-          success,
-          timestamp: new Date().toISOString(),
-        };
-
-        return {
-          ...prev,
-          completedActivities: newCompletedActivities,
-          attemptHistory: [newAttempt, ...prev.attemptHistory].slice(0, 50),
-          lastActivity: {
-            topicId,
-            topicTitle,
-            activityType,
-            route,
-            timestamp: new Date().toISOString(),
-          },
-        };
-      });
-    },
-    [setLearnerState]
-  );
-
-  const recordMistake = useCallback(
-    (topicId: string, concept: string, note: string) => {
-      setLearnerState((prev) => ({
-        ...prev,
-        mistakes: [
-          {
-            id: `mistake-${Date.now()}`,
-            topicId,
-            concept,
-            note,
-            timestamp: new Date().toISOString(),
-          },
-          ...prev.mistakes,
-        ].slice(0, 30),
-      }));
-    },
-    [setLearnerState]
-  );
-
-  const recordHintUsed = useCallback(
-    (topicId: string) => {
-      setLearnerState((prev) => ({
-        ...prev,
-        hintsUsedCount: {
-          ...prev.hintsUsedCount,
-          [topicId]: (prev.hintsUsedCount[topicId] || 0) + 1,
-        },
-      }));
-    },
-    [setLearnerState]
-  );
-
-  const saveLabNotebookEntry = useCallback(
-    (entry: Omit<LabNotebookEntry, "id" | "updatedAt">) => {
-      setLearnerState((prev) => {
-        const newEntry: LabNotebookEntry = {
-          ...entry,
-          id: `lab-${Date.now()}`,
-          updatedAt: new Date().toISOString(),
-        };
-        return {
-          ...prev,
-          labNotebook: [newEntry, ...prev.labNotebook],
-        };
-      });
-    },
-    [setLearnerState]
-  );
-
-  const resetLearnerData = useCallback(() => {
-    setLearnerState(INITIAL_LEARNER_STATE);
-  }, [setLearnerState]);
+  const actions = useLearnerActions(setLearnerState);
 
   const overallMastery = useMemo(() => {
     return calculateOverallMastery(learnerState.topicMastery);
@@ -205,41 +57,21 @@ export function LearnerProvider({ children }: { children: React.ReactNode }) {
     return getRecommendedNextTopic(learnerState.completedTopics, CANONICAL_TOPICS);
   }, [learnerState.completedTopics]);
 
-  const isUnlocked = useCallback(
-    (topicId: string) => {
-      return isTopicUnlocked(topicId, learnerState.completedTopics, CANONICAL_TOPICS);
-    },
-    [learnerState.completedTopics]
-  );
+  const isUnlocked = useMemo(() => {
+    const completed = learnerState.completedTopics;
+    return (topicId: string) => isTopicUnlocked(topicId, completed, CANONICAL_TOPICS);
+  }, [learnerState.completedTopics]);
 
   const value = useMemo(
     () => ({
       learnerState,
       learningMode: learnerState.learningMode,
-      setLearningMode,
-      updateTopicMastery,
-      recordActivity,
-      recordMistake,
-      recordHintUsed,
-      saveLabNotebookEntry,
-      resetLearnerData,
+      ...actions,
       overallMastery,
       recommendedTopic,
       isUnlocked,
     }),
-    [
-      learnerState,
-      setLearningMode,
-      updateTopicMastery,
-      recordActivity,
-      recordMistake,
-      recordHintUsed,
-      saveLabNotebookEntry,
-      resetLearnerData,
-      overallMastery,
-      recommendedTopic,
-      isUnlocked,
-    ]
+    [learnerState, actions, overallMastery, recommendedTopic, isUnlocked]
   );
 
   return <LearnerContext.Provider value={value}>{children}</LearnerContext.Provider>;

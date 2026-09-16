@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
+import React, { createContext, useContext, useCallback, useMemo, useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import {
   ALL_BADGES,
@@ -147,10 +147,6 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
   const completeModule = useCallback(
     (topicSlug: string) => {
-      if (progress.completedTopics.includes(topicSlug)) {
-        return;
-      }
-
       setProgress((prev) => {
         if (prev.completedTopics.includes(topicSlug)) return prev;
 
@@ -171,7 +167,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       });
       triggerCelebration();
     },
-    [triggerCelebration, setProgress, progress.completedTopics]
+    [triggerCelebration, setProgress]
   );
 
   const resetProgress = useCallback(() => {
@@ -179,26 +175,40 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     setLevelUpModalRank(null);
   }, [setProgress]);
 
-  const rankInfo = calculateUserRank(progress.xp);
+  const rankInfo = useMemo(() => calculateUserRank(progress.xp), [progress.xp]);
 
-  const unlockedBadgeList = ALL_BADGES.filter((b) =>
-    progress.unlockedBadges.includes(b.id)
+  const unlockedBadgeList = useMemo(
+    () => ALL_BADGES.filter((b) => progress.unlockedBadges.includes(b.id)),
+    [progress.unlockedBadges]
+  );
+
+  const value = useMemo(
+    () => ({
+      progress,
+      rankInfo,
+      unlockedBadgeList,
+      levelUpModalRank,
+      closeLevelUpModal,
+      completeChallenge,
+      completeModule,
+      triggerCelebration,
+      resetProgress,
+    }),
+    [
+      progress,
+      rankInfo,
+      unlockedBadgeList,
+      levelUpModalRank,
+      closeLevelUpModal,
+      completeChallenge,
+      completeModule,
+      triggerCelebration,
+      resetProgress,
+    ]
   );
 
   return (
-    <GamificationContext.Provider
-      value={{
-        progress,
-        rankInfo,
-        unlockedBadgeList,
-        levelUpModalRank,
-        closeLevelUpModal,
-        completeChallenge,
-        completeModule,
-        triggerCelebration,
-        resetProgress,
-      }}
-    >
+    <GamificationContext.Provider value={value}>
       {children}
     </GamificationContext.Provider>
   );

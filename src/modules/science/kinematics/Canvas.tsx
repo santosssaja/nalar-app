@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   projectilePosition2D,
   projectileMaxHeight,
@@ -71,14 +71,17 @@ export function Canvas({ state, onTimeChange }: CanvasProps) {
   const toSvgX = (x: number) => (x / maxViewX) * 540 + 30;
   const toSvgY = (y: number) => 210 - (y / maxViewY) * 170;
 
-  // Trajectory sample points
-  const trajectoryPoints: string[] = [];
-  const dt = Math.max(0.05, tTotal / 40);
-  for (let t = 0; t <= tTotal; t += dt) {
-    const pos = projectilePosition2D({ x0: 0, y0: 0, v0, angleDeg, g, t });
-    trajectoryPoints.push(`${toSvgX(pos.x).toFixed(1)},${toSvgY(pos.y).toFixed(1)}`);
-  }
-  const trajD = trajectoryPoints.length > 0 ? `M ${trajectoryPoints.join(" L ")}` : "";
+  // Trajectory sample points (memoized: pure geometry, no per-frame allocation)
+  const trajD = useMemo(() => {
+    const points: string[] = [];
+    const dt = Math.max(0.05, tTotal / 40);
+    for (let t = 0; t <= tTotal; t += dt) {
+      const pos = projectilePosition2D({ x0: 0, y0: 0, v0, angleDeg, g, t });
+      points.push(`${toSvgX(pos.x).toFixed(1)},${toSvgY(pos.y).toFixed(1)}`);
+    }
+    return points.length > 0 ? `M ${points.join(" L ")}` : "";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v0, angleDeg, g, tTotal, range, hMax]);
 
   // Synchronized 1D metrics at simTime
   const pos1DVal = position1D(0, 0, a, simTime);
@@ -99,6 +102,8 @@ export function Canvas({ state, onTimeChange }: CanvasProps) {
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
+            aria-pressed={isPlaying}
+            aria-label={isPlaying ? "Jeda simulasi" : "Jalankan simulasi"}
             className="flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs transition"
           >
             {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -113,6 +118,7 @@ export function Canvas({ state, onTimeChange }: CanvasProps) {
             }}
             className="p-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition"
             title="Reset Waktu"
+            aria-label="Reset waktu simulasi"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
