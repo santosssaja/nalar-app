@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   Sparkles,
@@ -8,6 +8,7 @@ import {
   X,
   Keyboard,
 } from "lucide-react";
+import { clsx } from "clsx";
 import { useGamification } from "@/context/GamificationContext";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { SidebarNavItems } from "./SidebarNavItems";
@@ -33,16 +34,30 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { progress, rankInfo } = useGamification();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
 
   const isDrawerActive = controlledDrawerOpen ?? isOpen ?? false;
   const handleClose = onCloseDrawer ?? onClose;
 
-  // Listen to Escape key to close drawer
+  // Manage focus: when drawer opens, focus close button. When closed, return focus to open trigger button.
+  useEffect(() => {
+    if (isDrawerActive) {
+      // Small timeout to allow transition initialization
+      const timer = setTimeout(() => {
+        closeButtonRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isDrawerActive]);
+
+  // Listen to Escape key to close drawer and restore focus
   useEffect(() => {
     if (!isDrawerActive || !handleClose) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         handleClose();
+        openButtonRef.current?.focus();
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -57,16 +72,18 @@ export function Sidebar({
         className="hidden md:flex flex-col w-[72px] shrink-0 sticky top-16 h-[calc(100vh-4rem)] z-30 bg-neutral-900 border-r border-neutral-800 text-neutral-200 select-none justify-between items-center p-2.5"
       >
         <div className="w-full flex flex-col items-center space-y-4">
-          {/* Drawer open button */}
+          {/* Drawer open button with micro-animation */}
           <div className="w-full flex justify-center pb-2 border-b border-neutral-800/80">
             <Tooltip content="Buka menu lengkap" position="right">
               <button
+                ref={openButtonRef}
                 type="button"
                 onClick={onOpenDrawer}
                 aria-label="Buka menu navigasi lengkap"
-                className="w-10 h-10 rounded-xl bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white flex items-center justify-center transition cursor-pointer border border-neutral-700/50"
+                aria-expanded={isDrawerActive}
+                className="w-10 h-10 rounded-xl bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border border-neutral-700/50 hover:border-indigo-500/40 group shadow-sm"
               >
-                <Menu className="w-4 h-4" />
+                <Menu className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90 group-hover:text-indigo-400" />
               </button>
             </Tooltip>
           </div>
@@ -96,99 +113,126 @@ export function Sidebar({
         </div>
       </aside>
 
-      {/* 2. Full Drawer Overlay (for both Desktop detail view and Mobile drawer) */}
-      {isDrawerActive && (
+      {/* 2. Full Drawer Overlay with Fluid Enter & Exit Transitions */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu Navigasi Penuh"
+        aria-hidden={!isDrawerActive}
+        inert={!isDrawerActive ? true : undefined}
+        className={clsx(
+          "fixed inset-0 z-50 flex transition-[visibility] duration-300",
+          isDrawerActive
+            ? "pointer-events-auto visible"
+            : "pointer-events-none invisible delay-300"
+        )}
+      >
+        {/* Backdrop Blur with Fade-in and Fade-out */}
         <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu Navigasi Penuh"
-          className="fixed inset-0 z-50 flex"
+          className={clsx(
+            "fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out cursor-pointer",
+            isDrawerActive ? "opacity-100" : "opacity-0"
+          )}
+          onClick={handleClose}
+          aria-hidden="true"
+        />
+
+        {/* Sliding Drawer Panel with Snappy Spring Easing */}
+        <div
+          className={clsx(
+            "relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-neutral-800 shadow-2xl z-10 flex flex-col justify-between p-4 sm:p-5 select-none",
+            "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform",
+            isDrawerActive ? "translate-x-0" : "-translate-x-full"
+          )}
         >
-          {/* Backdrop Blur */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in transition-opacity cursor-pointer"
-            onClick={handleClose}
-            aria-hidden="true"
-          />
-
-          {/* Sliding Drawer Panel */}
-          <div className="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-neutral-800 shadow-2xl z-10 flex flex-col justify-between p-4 sm:p-5 animate-slide-in select-none">
-            <div className="space-y-5 overflow-y-auto pr-1">
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/30">
-                    N
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-black text-white tracking-tight leading-none">
-                      NALAR STEM
-                    </h2>
-                    <p className="text-[10px] text-neutral-400 font-medium mt-0.5">
-                      Menu Navigasi & Progres
-                    </p>
-                  </div>
+            className={clsx(
+              "flex-1 space-y-5 overflow-y-auto pr-1 transition-all duration-500 ease-out",
+              isDrawerActive
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-3"
+            )}
+          >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-md shadow-indigo-500/30">
+                  N
                 </div>
-
-                <Tooltip content="Tutup menu (Esc)" position="bottom">
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    aria-label="Tutup menu navigasi"
-                    className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </Tooltip>
+                <div>
+                  <h2 className="text-sm font-black text-white tracking-tight leading-none">
+                    NALAR STEM
+                  </h2>
+                  <p className="text-[10px] text-neutral-400 font-medium mt-0.5">
+                    Menu Navigasi & Progres
+                  </p>
+                </div>
               </div>
 
-              {/* Full Navigation Links */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
-                  Navigasi Utama
-                </span>
-                <SidebarNavItems
-                  pathname={pathname}
-                  isCollapsed={false}
-                  onClose={handleClose}
-                />
-              </div>
-
-              {/* Full User Rank & XP Progress Card */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
-                  Pencapaian Belajar
-                </span>
-                <SidebarRankCard
-                  rank={rankInfo}
-                  currentXp={progress.xp}
-                  isCollapsed={false}
-                />
-              </div>
-
-              {/* Quick tip / A11y shortcut note */}
-              <div className="p-3 rounded-xl bg-neutral-950/60 border border-neutral-800/80 text-[11px] text-neutral-400 space-y-1">
-                <p className="flex items-center gap-1.5 text-neutral-300 font-semibold">
-                  <Keyboard className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span>Pintasan Cepat</span>
-                </p>
-                <p className="text-[10px] text-neutral-400">
-                  Tekan <kbd className="px-1 py-0.5 rounded bg-neutral-800 text-neutral-300 font-mono text-[9px]">Esc</kbd> untuk menutup menu ini kapan saja.
-                </p>
-              </div>
+              <Tooltip content="Tutup menu (Esc)" position="bottom">
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  onClick={handleClose}
+                  aria-label="Tutup menu navigasi"
+                  className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer border border-neutral-700/40 group"
+                >
+                  <X className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90 group-hover:text-rose-400" />
+                </button>
+              </Tooltip>
             </div>
 
-            {/* Drawer Footer */}
-            <div className="pt-4 border-t border-neutral-800/80 text-[11px] text-neutral-500 space-y-1">
-              <p className="flex items-center gap-1 text-neutral-400 font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                <span>Nalar STEM v0.1</span>
+            {/* Full Navigation Links */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+                Navigasi Utama
+              </span>
+              <SidebarNavItems
+                pathname={pathname}
+                isCollapsed={false}
+                onClose={handleClose}
+              />
+            </div>
+
+            {/* Full User Rank & XP Progress Card */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+                Pencapaian Belajar
+              </span>
+              <SidebarRankCard
+                rank={rankInfo}
+                currentXp={progress.xp}
+                isCollapsed={false}
+              />
+            </div>
+
+            {/* Quick tip / A11y shortcut note */}
+            <div className="p-3 rounded-xl bg-neutral-950/60 border border-neutral-800/80 text-[11px] text-neutral-400 space-y-1">
+              <p className="flex items-center gap-1.5 text-neutral-300 font-semibold">
+                <Keyboard className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span>Pintasan Cepat</span>
               </p>
-              <p className="text-[10px]">Pendidikan Berkualitas & Ramah Difabel</p>
+              <p className="text-[10px] text-neutral-400">
+                Tekan <kbd className="px-1 py-0.5 rounded bg-neutral-800 text-neutral-300 font-mono text-[9px]">Esc</kbd> untuk menutup menu ini kapan saja.
+              </p>
             </div>
           </div>
+
+          {/* Drawer Footer */}
+          <div
+            className={clsx(
+              "pt-4 border-t border-neutral-800/80 text-[11px] text-neutral-500 space-y-1 transition-opacity duration-500",
+              isDrawerActive ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <p className="flex items-center gap-1 text-neutral-400 font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <span>Nalar STEM v0.1</span>
+            </p>
+            <p className="text-[10px]">Pendidikan Berkualitas & Ramah Difabel</p>
+          </div>
         </div>
-      )}
+      </div>
     </>
   );
 }
