@@ -107,5 +107,31 @@ describe("Hono Server API", () => {
     expect(hintData.text).toBeDefined();
     expect(["gemma", "mock"]).toContain(hintData.source);
   });
+
+  it("POST /api/hints rejects invalid input with 400 Bad Request", async () => {
+    const res = await app.request("/api/hints", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topicSlug: "invalid topic with spaces & symbols!",
+        challengeQuestion: "",
+        hintLevel: 99, // out of range
+      }),
+    });
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBeDefined();
+  });
+
+  it("POST /api/progress/save rejects malformed requests with 400", async () => {
+    const res = await app.request("/api/progress/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topicSlug: "",
+      }),
+    });
+    expect(res.status).toBe(400);
+  });
 });
 

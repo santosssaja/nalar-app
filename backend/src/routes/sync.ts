@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { storage } from "../db/storage";
 import { AchievementRecord, ProgressRecord } from "../db/schema";
+import { syncProgressSchema } from "../validations/schemas";
 
 export const syncRouter = new Hono();
 
@@ -17,8 +18,15 @@ syncRouter.post("/", async (c) => {
       }
     }
 
-    const body = await c.req.json();
-    const { xp = 0, completedLevels = {}, unlockedBadges = [], streak = {} } = body;
+    const rawBody = await c.req.json();
+    const parsed = syncProgressSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return c.json(
+        { error: parsed.error.issues.map((i) => i.message).join(", "), details: parsed.error.issues },
+        400
+      );
+    }
+    const { xp, completedLevels, unlockedBadges, streak } = parsed.data;
 
     const existingProgress = await storage.getProgress(userId);
     const existingStreak = await storage.getStreak(userId);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/science/physics-projectile-motion/InteractiveLesson";
+import { InteractiveLesson } from "@/modules/_legacy/science/physics-projectile-motion_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {

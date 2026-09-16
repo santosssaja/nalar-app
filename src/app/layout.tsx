@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import { AccessibilityProvider } from "@/context/AccessibilityContext";
-import { AuthProvider } from "@/context/AuthContext";
-import { GamificationProvider } from "@/context/GamificationContext";
-import { NaiProvider } from "@/components/nai/NaiContext";
-import { Nai } from "@/components/nai/Nai";
-import { NaiPageWatcher } from "@/components/nai/NaiPageWatcher";
-import { PageShell } from "@/components/layout/PageShell";
-import { LevelUpModal } from "@/components/gamification/LevelUpModal";
-import { LoginModal } from "@/components/auth/LoginModal";
+import { Providers } from "@/components/providers/Providers";
 
 export const metadata: Metadata = {
   title: "Nalar | Platform Belajar STEM Interaktif & Inklusif",
@@ -66,19 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
-        <AccessibilityProvider>
-          <AuthProvider>
-            <GamificationProvider>
-              <NaiProvider>
-                <NaiPageWatcher />
-                <PageShell>{children}</PageShell>
-                <Nai />
-                <LevelUpModal />
-                <LoginModal />
-              </NaiProvider>
-            </GamificationProvider>
-          </AuthProvider>
-        </AccessibilityProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

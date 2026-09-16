@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/math/math-real-numbers-line/InteractiveLesson";
+import { InteractiveLesson } from "@/modules/_legacy/math/math-real-numbers-line_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {

@@ -13,13 +13,37 @@ import { rateLimitMiddleware } from "./middleware/rate-limit";
 
 export const app = new Hono().basePath("/api");
 
-// Global CORS
+// Allowed CORS origins
+const allowedOrigins = (
+  process.env.CORS_ALLOWED_ORIGINS ||
+  "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000"
+)
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+// Global CORS Whitelist
 app.use(
   "*",
   cors({
-    origin: "*",
+    origin: (origin) => {
+      // Allow requests with no origin (curl, same-origin, test runner, server-to-server)
+      if (!origin) return "*";
+      // Allow matching whitelist
+      if (allowedOrigins.includes(origin)) return origin;
+      // Allow localhost and local IP in development
+      if (
+        process.env.NODE_ENV !== "production" &&
+        (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+          origin.endsWith(".vercel.app"))
+      ) {
+        return origin;
+      }
+      return null;
+    },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "X-Guest-Id"],
+    credentials: true,
   })
 );
 

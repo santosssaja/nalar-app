@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { storage } from "../db/storage";
 import { ProgressRecord } from "../db/schema";
+import { registerRequestSchema, loginRequestSchema } from "../validations/schemas";
 
 export const authRouter = new Hono();
 
@@ -30,12 +31,15 @@ authRouter.post("/guest", async (c) => {
 // POST /api/auth/register
 authRouter.post("/register", async (c) => {
   try {
-    const body = await c.req.json();
-    const { email, name, password, initialProgress } = body;
-
-    if (!email || !name) {
-      return c.json({ error: "Email dan nama wajib diisi" }, 400);
+    const rawBody = await c.req.json();
+    const parsed = registerRequestSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return c.json(
+        { error: parsed.error.issues.map((i) => i.message).join(", "), details: parsed.error.issues },
+        400
+      );
     }
+    const { email, name, password, initialProgress } = parsed.data;
 
     const existing = await storage.getUserByEmail(email);
     if (existing) {
@@ -70,12 +74,15 @@ authRouter.post("/register", async (c) => {
 // POST /api/auth/login
 authRouter.post("/login", async (c) => {
   try {
-    const body = await c.req.json();
-    const { email, password } = body;
-
-    if (!email) {
-      return c.json({ error: "Email wajib diisi" }, 400);
+    const rawBody = await c.req.json();
+    const parsed = loginRequestSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return c.json(
+        { error: parsed.error.issues.map((i) => i.message).join(", "), details: parsed.error.issues },
+        400
+      );
     }
+    const { email, password } = parsed.data;
 
     let user = await storage.getUserByEmail(email);
     if (!user) {

@@ -2,7 +2,9 @@ import { CurriculumTreeData } from "./types";
 
 export const scienceTreeData: CurriculumTreeData = {
   nodes: [
-    // Root: Metode Ilmiah
+    // ═══════════════════════════════════════════════════════
+    // ROOT: Metode Ilmiah
+    // ═══════════════════════════════════════════════════════
     {
       id: "sci-scientific-method",
       slug: "sci-scientific-method",
@@ -11,13 +13,15 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Siklus observasi, perumusan hipotesis, eksperimen terkontrol, dan falsifikasi.",
+      description: "Siklus observasi, hipotesis, eksperimen terkontrol, dan falsifikasi.",
       xp: 50,
       isAvailable: false,
       position: { x: 480, y: 60 },
     },
 
-    // Track 1: Fisika Mekanika & Gelombang (Physics)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 1: Fisika — Mekanika & Gelombang
+    // ═══════════════════════════════════════════════════════
     {
       id: "sci-units-measurements",
       slug: "sci-units-measurements",
@@ -26,52 +30,52 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Dimensi SI, analisis ketidakpastian pengukuran, dan angka penting.",
+      description: "Dimensi SI, analisis ketidakpastian, dan angka penting.",
       xp: 50,
       isAvailable: false,
-      position: { x: 60, y: 220 },
+      position: { x: 120, y: 220 },
     },
     {
       id: "sci-kinematics",
-      slug: "sci-kinematics",
+      slug: "physics-projectile-motion",
       title: "Kinematika Gerak",
       domain: "physics",
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Posisi, kecepatan, percepatan, dan grafik gerak lurus beraturan dan berubah beraturan.",
+      description: "Posisi, kecepatan, percepatan, grafik gerak, dan proyektil parabola.",
       xp: 80,
       isAvailable: true,
       route: "/topics/physics-projectile-motion",
-      position: { x: 60, y: 440 },
+      position: { x: 120, y: 400 },
     },
     {
       id: "sci-dynamics-newton",
-      slug: "sci-dynamics-newton",
+      slug: "physics-newton-incline",
       title: "Dinamika & Hukum Newton",
       domain: "physics",
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Hukum I, II, III Newton, diagram benda bebas, dan gaya gesek.",
+      description: "Hukum I, II, III Newton, diagram benda bebas, dan gaya gesek bidang miring.",
       xp: 90,
       isAvailable: true,
       route: "/topics/physics-newton-incline",
-      position: { x: 60, y: 660 },
+      position: { x: 120, y: 580 },
     },
     {
       id: "sci-work-energy",
-      slug: "sci-work-energy",
+      slug: "physics-roller-coaster",
       title: "Usaha & Energi Mekanik",
       domain: "physics",
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Teorema usaha-energi, energi potensial gravitasi dan pegas, serta hukum kekekalan.",
+      description: "Teorema usaha-energi, energi potensial, kekekalan, dan loop-the-loop.",
       xp: 100,
       isAvailable: true,
       route: "/topics/physics-roller-coaster",
-      position: { x: 60, y: 860 },
+      position: { x: 120, y: 760 },
     },
     {
       id: "sci-electric-field",
@@ -81,11 +85,11 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Hukum Coulomb, vektor kuat medan listrik E, potensial elektrostatik, dan gaya antar muatan.",
+      description: "Hukum Coulomb, vektor medan listrik E, potensial elektrostatik, dan dipole.",
       xp: 110,
       isAvailable: true,
       route: "/topics/physics-electric-field",
-      position: { x: 60, y: 1060 },
+      position: { x: 120, y: 940 },
     },
     {
       id: "sci-circuits-electricity",
@@ -95,25 +99,25 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "mvp",
       level: 3,
-      description: "Hukum Ohm V = IR, hambatan ekuivalen seri & paralel, disipasi daya P = VI, dan aliran arus.",
+      description: "Hukum Ohm, hambatan seri-paralel, daya P=VI, dan aliran arus.",
       xp: 115,
       isAvailable: true,
       route: "/topics/physics-dc-circuits",
-      position: { x: 60, y: 1260 },
+      position: { x: 120, y: 1120 },
     },
     {
       id: "sci-simple-harmonic",
-      slug: "sci-simple-harmonic",
-      title: "Osilasi & Gelombang",
+      slug: "physics-harmonic-oscillator",
+      title: "Osilasi Harmonik",
       domain: "physics",
       stage: "scholar",
       phase: "mvp",
       level: 3,
-      description: "Gerak harmonik sederhana bandul dan pegas, interferensi, serta efek Doppler.",
+      description: "Gerak harmonik bandul dan pegas, periode, frekuensi, dan energi osilasi.",
       xp: 130,
       isAvailable: true,
       route: "/topics/physics-harmonic-oscillator",
-      position: { x: 340, y: 1060 },
+      position: { x: 400, y: 940 },
     },
     {
       id: "sci-wave-simulator",
@@ -123,14 +127,16 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "mvp",
       level: 3,
-      description: "Perambatan gelombang transversal & longitudinal, cepat rambat v = λf, dan superposisi.",
+      description: "Perambatan gelombang transversal/longitudinal, v=λf, superposisi, dan interferensi.",
       xp: 125,
       isAvailable: true,
       route: "/topics/physics-wave-simulator",
-      position: { x: 340, y: 1260 },
+      position: { x: 400, y: 1120 },
     },
 
-    // Track 2: Kimia Struktur & Reaksi (Chemistry)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 2: Kimia — Struktur & Reaksi
+    // ═══════════════════════════════════════════════════════
     {
       id: "sci-atomic-structure",
       slug: "sci-atomic-structure",
@@ -139,10 +145,10 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Proton, neutron, elektron, orbital, dan periodisitas sifat unsur tabel periodik.",
+      description: "Proton, neutron, elektron, orbital, dan periodisitas tabel periodik.",
       xp: 75,
       isAvailable: false,
-      position: { x: 480, y: 220 },
+      position: { x: 720, y: 220 },
     },
     {
       id: "sci-chemical-bonds",
@@ -152,10 +158,10 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Ikatan kovalen, ionik, logam, dan gaya antarmolekul penentu wujud zat.",
+      description: "Ikatan kovalen, ionik, logam, dan gaya antarmolekul.",
       xp: 85,
       isAvailable: false,
-      position: { x: 480, y: 440 },
+      position: { x: 720, y: 400 },
     },
     {
       id: "sci-stoichiometry",
@@ -165,13 +171,15 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Konsep mol, hukum kekekalan massa Lavoisier, dan reaksi pembatas.",
+      description: "Konsep mol, kekekalan massa Lavoisier, dan reaksi pembatas.",
       xp: 95,
       isAvailable: false,
-      position: { x: 480, y: 660 },
+      position: { x: 720, y: 580 },
     },
 
-    // Track 3: Biologi Kehidupan & Genetika (Biology)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 3: Biologi — Kehidupan & Genetika
+    // ═══════════════════════════════════════════════════════
     {
       id: "sci-cells-organelles",
       slug: "sci-cells-organelles",
@@ -180,10 +188,10 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Membran sel, transport pasif & aktif, mitokondria, dan kloroplas.",
+      description: "Membran sel, transport pasif/aktif, mitokondria, dan kloroplas.",
       xp: 70,
       isAvailable: false,
-      position: { x: 900, y: 220 },
+      position: { x: 1020, y: 220 },
     },
     {
       id: "sci-biomolecules",
@@ -196,7 +204,7 @@ export const scienceTreeData: CurriculumTreeData = {
       description: "Karbohidrat, lipid, protein, respirasi seluler, dan fotosintesis.",
       xp: 85,
       isAvailable: false,
-      position: { x: 900, y: 440 },
+      position: { x: 1020, y: 400 },
     },
     {
       id: "sci-dna-genetics",
@@ -206,13 +214,15 @@ export const scienceTreeData: CurriculumTreeData = {
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Struktur heliks ganda DNA, hukum pemisahan Mendel, dan mutasi ekspresi gen.",
+      description: "Heliks ganda DNA, hukum Mendel, mutasi, dan ekspresi gen.",
       xp: 110,
       isAvailable: false,
-      position: { x: 900, y: 660 },
+      position: { x: 1020, y: 580 },
     },
   ],
+
   edges: [
+    // Track 1: Fisika
     { id: "e-meth-unit", source: "sci-scientific-method", target: "sci-units-measurements" },
     { id: "e-meas-kin", source: "sci-units-measurements", target: "sci-kinematics" },
     { id: "e-kin-dyn", source: "sci-kinematics", target: "sci-dynamics-newton" },
@@ -222,15 +232,17 @@ export const scienceTreeData: CurriculumTreeData = {
     { id: "e-work-harm", source: "sci-work-energy", target: "sci-simple-harmonic" },
     { id: "e-harm-wave", source: "sci-simple-harmonic", target: "sci-wave-simulator" },
 
+    // Track 2: Kimia
     { id: "e-meth-atom", source: "sci-scientific-method", target: "sci-atomic-structure" },
     { id: "e-atom-bond", source: "sci-atomic-structure", target: "sci-chemical-bonds" },
     { id: "e-bond-stoi", source: "sci-chemical-bonds", target: "sci-stoichiometry" },
 
+    // Track 3: Biologi
     { id: "e-meth-cell", source: "sci-scientific-method", target: "sci-cells-organelles" },
     { id: "e-cell-bio", source: "sci-cells-organelles", target: "sci-biomolecules" },
     { id: "e-bio-dna", source: "sci-biomolecules", target: "sci-dna-genetics" },
 
-    // Biochemistry bridge: Kimia (480) -> adjacent Biologi (900)
-    { id: "e-atom-bio", source: "sci-atomic-structure", target: "sci-biomolecules" },
+    // Cross-track: Kimia → Biologi
+    { id: "e-atom-bio", source: "sci-atomic-structure", target: "sci-biomolecules", label: "molecular basis" },
   ],
 };

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Canvas as InclineCanvas } from "@/modules/science/physics-newton-incline/Canvas";
-import { Controls as InclineControls } from "@/modules/science/physics-newton-incline/Controls";
-import { KaTeXFormula as InclineKaTeX } from "@/modules/science/physics-newton-incline/KaTeXFormula";
-import { InclineState } from "@/modules/science/physics-newton-incline/engine";
+import { Canvas as InclineCanvas } from "@/modules/_legacy/science/physics-newton-incline_legacy/Canvas";
+import { Controls as InclineControls } from "@/modules/_legacy/science/physics-newton-incline_legacy/Controls";
+import { KaTeXFormula as InclineKaTeX } from "@/modules/_legacy/science/physics-newton-incline_legacy/KaTeXFormula";
+import { InclineState } from "@/modules/_legacy/science/physics-newton-incline_legacy/engine";
 
 export interface InclinePlaygroundEmbedProps {
   initialVariables?: Record<string, number>;

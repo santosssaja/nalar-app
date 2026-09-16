@@ -1,0 +1,175 @@
+import { Level } from "@/types/level";
+import { challengeTotient15 } from "./challenges";
+
+export const level4: Level = {
+  id: "primes-level-4",
+  index: 4,
+  tier: 2,
+  title: "Fungsi Totient Euler & Pondasi RSA",
+  description: "Menghitung banyak bilangan yang koprima dengan n melalui fungsi phi(n).",
+  ahaMoment: "Fungsi Euler φ(n) menghitung berapa banyak angka yang bersahabat (koprima) dengan n sebelum mencapainya!",
+  steps: [
+    {
+      id: "p4-s1",
+      type: "provoke",
+      title: "Berapa Banyak Sahabat Angka 10?",
+      naiExpression: "curious",
+      naiDialogue: "Dari angka 1 sampai 10, jika kita coret semua angka yang punya faktor bersama dengan 10 (kelipatan 2 dan 5), berapa angka yang tersisa?",
+      provoke: {
+        hookTitle: "Menghitung Sahabat Bilangan n",
+        hookText: "Deretan angka: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. Angka 2, 4, 6, 8, 10 (kelipatan 2) dan 5 (kelipatan 5) dicoret.",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 10, coprimeA: 8, coprimeB: 9 },
+        question: "Angka berapa sajakah yang tersisa (koprima dengan 10)?",
+        options: [
+          {
+            id: "opt-4-left",
+            text: "Tepat ada 4 angka: {1, 3, 7, 9}, sehingga φ(10) = 4",
+            responseText: "Tepat sekali! Inilah fungsi Totient Euler: φ(n) menghitung banyak bilangan bulat positif k ≤ n yang memenuhi FPB(k, n) = 1.",
+          },
+          {
+            id: "opt-2-left",
+            text: "Hanya 2 angka saja.",
+            responseText: "Kurang tepat. 1, 3, 7, dan 9 semuanya saling prima dengan 10.",
+          },
+        ],
+      },
+    },
+    {
+      id: "p4-s2",
+      type: "predict",
+      title: "Bagaimana Jika Angkanya Prima p?",
+      naiExpression: "thinking",
+      naiDialogue: "Jika p adalah bilangan prima 7, berapa banyak angka di bawah 7 yang koprima dengan 7?",
+      predict: {
+        scenarioTitle: "Totient Bilangan Prima",
+        scenarioText: "Angka di bawah 7 adalah: 1, 2, 3, 4, 5, 6. Karena 7 prima, ia tidak punya faktor selain 1 dan 7.",
+        question: "Berapakah nilai φ(7)?",
+        options: [
+          {
+            id: "pred-6-prime",
+            text: "6 angka (semua angka 1 sampai p - 1 koprima dengan p!)",
+            isCorrect: true,
+            feedback: "Benar! Untuk sembarang bilangan prima p, rumusnya sangat sederhana: φ(p) = p - 1.",
+          },
+          {
+            id: "pred-3-prime",
+            text: "3 angka",
+            isCorrect: false,
+            feedback: "Karena 7 prima, tidak ada satu pun angka di bawah 7 yang membagi 7.",
+          },
+        ],
+        simulationLabel: "Buktikan φ(p) = p - 1!",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 7, coprimeA: 8, coprimeB: 9 },
+        simulationVariables: { numberN: 7, coprimeA: 8, coprimeB: 9 },
+      },
+    },
+    {
+      id: "p4-s3",
+      type: "guided",
+      title: "Totient Perkalian Dua Prima: φ(p × q)",
+      naiExpression: "happy",
+      naiDialogue: "Geser N ke 15 (yaitu 3 × 5). Amati nilai totient Euler φ(15) pada HUD indikator!",
+      guided: {
+        instructionTitle: "Rumus Emas Kriptografi RSA",
+        instructionText: "Pada matriks 3 × 5, kotak bersih yang tersisa selalu persis berukuran (p - 1) × (q - 1).",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 15, coprimeA: 8, coprimeB: 9 },
+        observationTable: {
+          headers: ["Modulus N = p × q", "Faktor Prima", "Nilai Totient φ(N) = (p-1)(q-1)"],
+          rows: [
+            { parameter: "N = 15", expectedValue: "3 × 5", unit: "φ(15) = (2)(4) = 8" },
+            { parameter: "N = 77", expectedValue: "7 × 11", unit: "φ(77) = (6)(10) = 60" },
+          ],
+        },
+        discoveryQuestion: {
+          prompt: "Mengapa rumus φ(p · q) = (p - 1)(q - 1) menjadi rahasia keamanan enkripsi RSA?",
+          options: [
+            "Menghitung p × q sangat mudah, tetapi memfaktorkan kembali N menjadi p dan q untuk mencari φ(N) sangat sulit bagi peretas",
+            "Karena RSA hanya bekerja pada angka di bawah 100",
+            "Hanya kebetulan formula",
+          ],
+          correctOption: "Menghitung p × q sangat mudah, tetapi memfaktorkan kembali N menjadi p dan q untuk mencari φ(N) sangat sulit bagi peretas",
+          insight: "Inilah fungsi pintu jebakan (trapdoor function) yang melindungi transaksi perbankan di seluruh dunia!",
+        },
+      },
+    },
+    {
+      id: "p4-s4",
+      type: "formalize",
+      title: "Formula Fungsi Totient Euler",
+      naiExpression: "neutral",
+      naiDialogue: "Mari tuangkan rumus totient prima dan multiplikatif ke dalam KaTeX.",
+      formalize: {
+        title: "Formula Fungsi Euler φ(n)",
+        prompt: "Lengkapi rumus totient prima dan produk prima berikut:",
+        formulaTemplate: "\\phi(p) = [blank1] \\quad \\text{dan untuk } p, q \\text{ prima: } \\phi(p \\cdot q) = [blank2]",
+        blanks: [
+          { id: "blank1", label: "Totient Prima Tunggal", options: ["p - 1", "p", "p + 1"], correctOption: "p - 1" },
+          { id: "blank2", label: "Totient Dua Prima", options: ["(p - 1)(q - 1)", "p \\cdot q - 1", "p + q"], correctOption: "(p - 1)(q - 1)" },
+        ],
+        resolvedFormulaKaTeX: "\\phi(p) = p - 1 \\quad \\text{dan} \\quad \\phi(p \\cdot q) = (p - 1)(q - 1)",
+        explanation: "Fungsi Euler bersifat multiplikatif untuk bilangan yang saling koprima: φ(m · n) = φ(m) · φ(n).",
+      },
+    },
+    {
+      id: "p4-s5",
+      type: "check",
+      title: "Cek Hitung Cepat Totient",
+      naiExpression: "thinking",
+      naiDialogue: "Hitung nilai φ(77) menggunakan rumus perkalian dua prima!",
+      check: {
+        question: "Berapakah nilai dari φ(77)? (Petunjuk: 77 = 7 × 11)",
+        checkType: "multiple_choice",
+        options: [
+          { id: "opt-60-totient", text: "60 (karena (7 - 1) × (11 - 1) = 6 × 10 = 60)", isCorrect: true, explanation: "Tepat sekali! φ(77) = 6 × 10 = 60 angka koprima." },
+          { id: "opt-76-totient", text: "76", isCorrect: false, explanation: "76 hanya benar jika 77 adalah bilangan prima murni." },
+          { id: "opt-70-totient", text: "70", isCorrect: false, explanation: "Periksa kembali perkalian 6 × 10." },
+        ],
+        explanation: "φ(77) = φ(7) · φ(11) = (7 - 1)(11 - 1) = 6 · 10 = 60.",
+      },
+    },
+    {
+      id: "p4-s6",
+      type: "sandbox",
+      title: "Playground Totient Euler",
+      naiExpression: "happy",
+      naiDialogue: "Geser N untuk melihat perubahan nilai totient Euler φ(N) di HUD indikator.",
+      sandbox: {
+        title: "Simulasi Totient Euler",
+        instructions: "Geser N untuk melihat perubahan nilai totient Euler φ(N) di HUD indikator.",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 15, coprimeA: 8, coprimeB: 9 },
+      },
+    },
+    {
+      id: "p4-s7",
+      type: "challenge",
+      title: "Misi: Temukan Bilangan dengan φ(N) = 8",
+      naiExpression: "neutral",
+      naiDialogue: "Atur N = 15 (hasil kali dua prima 3 dan 5) sehingga nilai totient Euler φ(15) = 8!",
+      challenge: challengeTotient15,
+    },
+    {
+      id: "p4-s8",
+      type: "reflect",
+      title: "Refleksi Level 4: Jantung Kriptografi Modern",
+      naiExpression: "celebrating",
+      naiDialogue: "Rumus sederhana φ(p · q) = (p - 1)(q - 1) adalah pilar algoritma keamanan data dunia!",
+      reflect: {
+        title: "Level 4 Tuntas: Fungsi Totient Euler & RSA",
+        takeaways: [
+          "Fungsi φ(n) menghitung banyaknya bilangan bulat positif ≤ n yang saling koprima dengan n.",
+          "Untuk bilangan prima: φ(p) = p - 1.",
+          "Untuk hasil kali dua bilangan prima: φ(p · q) = (p - 1)(q - 1).",
+        ],
+        connectionText: "Di Level 5, kita akan melengkapi perjalanan ini dengan TEOREMA KECIL FERMAT yang melegenda!",
+        nextLevelTitle: "Level 5: Teorema Kecil Fermat & Kunci Publik",
+        badgeToUnlock: "pattern-seeker",
+        xpReward: 50,
+        formulaKaTeX: "\\phi(p \\cdot q) = (p - 1)(q - 1)",
+      },
+    },
+  ],
+};

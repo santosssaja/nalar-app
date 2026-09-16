@@ -52,50 +52,27 @@ Membangun bahasa matematika, penalaran logis, pemahaman bilangan, dan intuisi ge
 
 ### 1A · Bilangan & Aritmetika
 
-> 📖 **Spesifikasi Alur Belajar Lengkap:** Lihat rancangan mendalam *Guided Discovery Learning* (5 Level + Boss Level, ~50-54 layar per modul) di [alur-belajar-math-fondasi.md](alur-belajar-math-fondasi.md).
-
-* 🟢 **Operasi Bilangan Riil & Garis Bilangan** (`math-real-numbers-line`)
-  * *Filosofi Discovery:* Angka adalah besaran spasial kontinu, arah (vektor 1D), dan faktor skala, bukan sekadar simbol hafalan.
-  * *Level 1:* Translasi & Jalan Raya Garis Bilangan ($a + (-b) = a - b$).
-  * *Level 2:* Skala, Dilatasi, & Misteri Rotasi $(-1) \times (-1) = +1$.
-  * *Level 3:* Pecahan, Desimal, & Kerapatan Tak Hingga (Zoom Mikro).
-  * *Level 4:* Penemuan Bilangan Irasional ($\sqrt{2}$ & Geometri Pythagoras).
-  * *Level 5:* Bukti Visual Geometris Sifat Aljabar (Komutatif, Asosiatif, Distributif).
-  * *Boss Level:* Ujian 6 Soal Campuran Bilangan Riil.
-  * *Visualisasi:* Garis bilangan interaktif dengan zoom tak hingga, batang pecahan, dan spiral akar kuadrat.
+* 🟢 **Operasi Bilangan Riil & Garis Bilangan**
+  * Bilangan bulat, pecahan, desimal, rasio, eksponen, dan akar.
+  * Hukum komutatif, asosiatif, dan distributif secara geometris.
+  * *Visualisasi:* Garis bilangan interaktif dengan zoom tak hingga.
   * *Prasyarat:* —
 
-* 🟢 **Aritmetika Jam (Modulo)** (`arithmetic-modular-clock`)
-  * *Filosofi Discovery:* Garis lurus yang digulung menjadi lingkaran tertutup; sisa bagi melahirkan simetri dan kriptografi.
-  * *Level 1:* Menggulung Garis Lurus Menjadi Jam Modulo (Kongruensi Dasar).
-  * *Level 2:* Operasi Modular & Efisiensi Angka Raksasa (Tabel Cayley Mod $m$).
-  * *Level 3:* Pembagian Modulo & Invers Perkalian Modular ($a \cdot x \equiv 1 \pmod m$).
-  * *Level 4:* Fraktal Kardioid & Seni Geometri Amplop Modular.
-  * *Level 5:* Kriptografi Caesar, Barcode Modulo, & Protokol Pertukaran Kunci.
-  * *Boss Level:* Ujian 6 Soal Campuran Aritmetika Modular.
-  * *Visualisasi:* Jam modulo dinamis, roda sandi, dan kanvas kurva kardioid.
+* 🟢 **Aritmetika Jam (Modulo)**
+  * Modulo sebagai rotasi jam, sifat siklis, sisa bagi.
+  * Aritmetika modular: penjumlahan, perkalian, dan tabel mod $n$.
+  * *Visualisasi:* Lingkaran modulo interaktif, pola kardioid & fraktal perkalian modular.
   * *Prasyarat:* Operasi Bilangan Riil
 
-* 🟢 **Algoritma Euclid & FPB** (`math-euclid`)
-  * *Filosofi Discovery:* FPB adalah ukuran ubin bujur sangkar terbesar yang mengubin lantai persegi panjang tanpa sisa.
-  * *Level 1:* Geometri Pengubinan Lantai Persegi Panjang ($a \times b$).
-  * *Level 2:* Mengapa Euclid Bekerja: Sifat Pengurangan & Reduksi $\gcd(a, b) = \gcd(b, a \bmod b)$.
-  * *Level 3:* Dualitas FPB & KPK: $a \times b = \gcd(a,b) \times \operatorname{lcm}(a,b)$.
-  * *Level 4:* Algoritma Euclid Diperluas & Identitas Bézout ($ax + by = \gcd(a,b)$).
-  * *Level 5:* Kasus Terburuk Euclid, Bilangan Fibonacci, & Fraktal Rasio Emas $\phi$.
-  * *Boss Level:* Ujian 6 Soal Campuran Pengubinan Euclid.
-  * *Visualisasi:* Grid pemotongan ubin persegi dinamis, diagram balok faktor, dan simulasi teka-teki ember air.
+* 🟢 **Algoritma Euclid & FPB**
+  * Pembagian berulang, FPB, KPK, dan identitas Bézout.
+  * *Visualisasi:* Pengubinan persegi panjang dengan bujur sangkar terbesar.
   * *Prasyarat:* Operasi Bilangan Riil
 
-* 🔵 **Faktorisasi Prima & Koprima** (`math-primes-coprime`)
-  * *Filosofi Discovery:* Bilangan prima adalah atom penyusun semesta bilangan bulat; koprima adalah ketiadaan resonansi pembagi bersama.
-  * *Level 1:* Kisi Balok Cokelat & Teorema Dasar Aritmetika (Pohon Penguraian DNA Bilangan).
-  * *Level 2:* Saringan Eratosthenes: Harmoni Ritmis Eliminasi Kelipatan & Batas $\sqrt{N}$.
-  * *Level 3:* Bilangan Koprima & Garis Pandang Kisi Koordinat Bebas Hambatan.
-  * *Level 4:* Fungsi Totient Euler $\phi(n)$ & Pilar Kriptografi RSA $\phi(pq) = (p-1)(q-1)$.
-  * *Level 5:* Teorema Kecil Fermat ($a^{p-1} \equiv 1 \pmod p$) & Pengacakan Kunci Publik.
-  * *Boss Level:* Ujian 6 Soal Campuran Faktorisasi Prima & Koprima.
-  * *Visualisasi:* Pohon faktorisasi reaktif, animasi saringan Eratosthenes, kisi koprima 2D, dan simulator totient Euler.
+* 🔵 **Faktorisasi Prima & Koprima**
+  * Teorema dasar aritmetika — bilangan prima sebagai "atom" penyusun bilangan bulat.
+  * Bilangan relatif prima (koprima), fungsi Euler totient $\phi(n)$.
+  * *Visualisasi:* Pohon faktorisasi interaktif, animasi saringan Eratosthenes.
   * *Prasyarat:* Aritmetika Jam, Algoritma Euclid
 
 ### 1B · Aljabar & Fungsi

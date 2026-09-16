@@ -1,19 +1,19 @@
 import { TopicModule } from "@/types/topic";
-import { modularClockModule } from "./math/arithmetic-modular-clock/module";
-import { determinant2dModule } from "./math/linear-algebra-determinant-2d/module";
-import { euclidModule } from "./math/math-euclid/module";
-import { trigModule } from "./math/math-trig-unit-circle/module";
-import { tangentModule } from "./math/math-calculus-tangent/module";
-import { riemannModule } from "./math/math-calculus-riemann/module";
-import { realNumbersModule } from "./math/math-real-numbers-line/module";
-import { primesCoprimeModule } from "./math/math-primes-coprime/module";
-import { projectileModule } from "./science/physics-projectile-motion/module";
-import { inclineModule } from "./science/physics-newton-incline/module";
-import { rollerCoasterModule } from "./science/physics-roller-coaster/module";
-import { harmonicModule } from "./science/physics-harmonic-oscillator/module";
-import { waveModule } from "./science/physics-wave-simulator/module";
-import { electricFieldModule } from "./science/physics-electric-field/module";
-import { dcCircuitModule } from "./science/physics-dc-circuits/module";
+import { modularClockModule } from "./_legacy/math/arithmetic-modular-clock_legacy/module";
+import { determinant2dModule } from "./_legacy/math/linear-algebra-determinant-2d_legacy/module";
+import { euclidModule } from "./_legacy/math/math-euclid_legacy/module";
+import { trigModule } from "./_legacy/math/math-trig-unit-circle_legacy/module";
+import { tangentModule } from "./_legacy/math/math-calculus-tangent_legacy/module";
+import { riemannModule } from "./_legacy/math/math-calculus-riemann_legacy/module";
+import { realNumbersModule } from "./_legacy/math/math-real-numbers-line_legacy/module";
+import { primesCoprimeModule } from "./_legacy/math/math-primes-coprime_legacy/module";
+import { projectileModule } from "./_legacy/science/physics-projectile-motion_legacy/module";
+import { inclineModule } from "./_legacy/science/physics-newton-incline_legacy/module";
+import { rollerCoasterModule } from "./_legacy/science/physics-roller-coaster_legacy/module";
+import { harmonicModule } from "./_legacy/science/physics-harmonic-oscillator_legacy/module";
+import { waveModule } from "./_legacy/science/physics-wave-simulator_legacy/module";
+import { electricFieldModule } from "./_legacy/science/physics-electric-field_legacy/module";
+import { dcCircuitModule } from "./_legacy/science/physics-dc-circuits_legacy/module";
 
 export const TOPIC_MODULES_REGISTRY: Record<string, TopicModule> = {
   "math-real-numbers-line": realNumbersModule,
@@ -51,4 +51,3 @@ export function getTopicModule(slug: string): TopicModule | undefined {
 export function getAllTopicModules(): TopicModule[] {
   return Object.values(TOPIC_MODULES_REGISTRY);
 }
-

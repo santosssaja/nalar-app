@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { storage } from "../db/storage";
+import { saveProgressSchema, syncProgressSchema } from "../validations/schemas";
 
 export const progressRouter = new Hono();
 
@@ -34,12 +35,17 @@ progressRouter.get("/", async (c) => {
 progressRouter.post("/save", async (c) => {
   try {
     const userId = await getUserIdFromReq(c);
-    const body = await c.req.json();
-    const { topicSlug, levelId, completed = true, score = 100, xpEarned = 40 } = body;
+    const rawBody = await c.req.json();
+    const parsed = saveProgressSchema.safeParse(rawBody);
 
-    if (!topicSlug || !levelId) {
-      return c.json({ error: "topicSlug dan levelId diperlukan" }, 400);
+    if (!parsed.success) {
+      return c.json(
+        { error: parsed.error.issues.map((i) => i.message).join(", "), details: parsed.error.issues },
+        400
+      );
     }
+
+    const { topicSlug, levelId, completed, score, xpEarned } = parsed.data;
 
     const record = await storage.saveProgress(
       userId,
@@ -61,14 +67,27 @@ progressRouter.post("/save", async (c) => {
 progressRouter.post("/sync", async (c) => {
   try {
     const userId = await getUserIdFromReq(c);
-    const body = await c.req.json();
-    const { xp, completedLevels, unlockedBadges, streak } = body;
+    const rawBody = await c.req.json();
+    const parsed = syncProgressSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return c.json(
+        { error: parsed.error.issues.map((i) => i.message).join(", "), details: parsed.error.issues },
+        400
+      );
+    }
+
+    const { xp, completedLevels, unlockedBadges, streak } = parsed.data;
 
     const synced = await storage.syncFullProgress(userId, {
-      xp: xp || 0,
-      completedLevels: completedLevels || {},
-      unlockedBadges: unlockedBadges || [],
-      streak: streak || { current: 0, longest: 0, lastActiveDate: null },
+      xp,
+      completedLevels,
+      unlockedBadges,
+      streak: {
+        current: streak.current,
+        longest: streak.longest,
+        lastActiveDate: streak.lastActiveDate ?? null,
+      },
     });
 
     return c.json({ success: true, synced });

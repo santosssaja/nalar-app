@@ -1,29 +1,29 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Canvas as ClockCanvas } from "@/modules/math/arithmetic-modular-clock/Canvas";
-import { Controls as ClockControls } from "@/modules/math/arithmetic-modular-clock/Controls";
-import { KaTeXFormula as ClockKaTeX } from "@/modules/math/arithmetic-modular-clock/KaTeXFormula";
-import { ModularClockState } from "@/modules/math/arithmetic-modular-clock/engine";
+import { Canvas as ClockCanvas } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/Canvas";
+import { Controls as ClockControls } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/Controls";
+import { KaTeXFormula as ClockKaTeX } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/KaTeXFormula";
+import { ModularClockState } from "@/modules/_legacy/math/arithmetic-modular-clock_legacy/engine";
 
-import { Canvas as EuclidCanvas } from "@/modules/math/math-euclid/Canvas";
-import { Controls as EuclidControls, EuclidState } from "@/modules/math/math-euclid/Controls";
-import { KaTeXFormula as EuclidKaTeX } from "@/modules/math/math-euclid/KaTeXFormula";
+import { Canvas as EuclidCanvas } from "@/modules/_legacy/math/math-euclid_legacy/Canvas";
+import { Controls as EuclidControls, EuclidState } from "@/modules/_legacy/math/math-euclid_legacy/Controls";
+import { KaTeXFormula as EuclidKaTeX } from "@/modules/_legacy/math/math-euclid_legacy/KaTeXFormula";
 
-import { Canvas as RealCanvas } from "@/modules/math/math-real-numbers-line/Canvas";
-import { Controls as RealControls } from "@/modules/math/math-real-numbers-line/Controls";
-import { KaTeXFormula as RealKaTeX } from "@/modules/math/math-real-numbers-line/KaTeXFormula";
-import { RealNumberState } from "@/modules/math/math-real-numbers-line/engine";
+import { Canvas as RealCanvas } from "@/modules/_legacy/math/math-real-numbers-line_legacy/Canvas";
+import { Controls as RealControls } from "@/modules/_legacy/math/math-real-numbers-line_legacy/Controls";
+import { KaTeXFormula as RealKaTeX } from "@/modules/_legacy/math/math-real-numbers-line_legacy/KaTeXFormula";
+import { RealNumberState } from "@/modules/_legacy/math/math-real-numbers-line_legacy/engine";
 
-import { Canvas as PrimesCanvas } from "@/modules/math/math-primes-coprime/Canvas";
-import { Controls as PrimesControls } from "@/modules/math/math-primes-coprime/Controls";
-import { KaTeXFormula as PrimesKaTeX } from "@/modules/math/math-primes-coprime/KaTeXFormula";
-import { PrimesCoprimeState } from "@/modules/math/math-primes-coprime/engine";
+import { Canvas as PrimesCanvas } from "@/modules/_legacy/math/math-primes-coprime_legacy/Canvas";
+import { Controls as PrimesControls } from "@/modules/_legacy/math/math-primes-coprime_legacy/Controls";
+import { KaTeXFormula as PrimesKaTeX } from "@/modules/_legacy/math/math-primes-coprime_legacy/KaTeXFormula";
+import { PrimesCoprimeState } from "@/modules/_legacy/math/math-primes-coprime_legacy/engine";
 
-import { Canvas as DetCanvas } from "@/modules/math/linear-algebra-determinant-2d/Canvas";
-import { Controls as DetControls } from "@/modules/math/linear-algebra-determinant-2d/Controls";
-import { KaTeXFormula as DetKaTeX } from "@/modules/math/linear-algebra-determinant-2d/KaTeXFormula";
-import { DeterminantCanvasState } from "@/modules/math/linear-algebra-determinant-2d/engine";
+import { Canvas as DetCanvas } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/Canvas";
+import { Controls as DetControls } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/Controls";
+import { KaTeXFormula as DetKaTeX } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/KaTeXFormula";
+import { DeterminantCanvasState } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/engine";
 
 import { InclinePlaygroundEmbed } from "./embeds/InclinePlaygroundEmbed";
 

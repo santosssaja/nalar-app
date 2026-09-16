@@ -125,17 +125,33 @@ async function callGroqGemma(
 }
 
 /**
+ * Sanitizes input text before injecting into AI prompt templates
+ * to prevent prompt injection and delimiter attacks.
+ */
+function sanitizePromptText(input: string, maxLen = 300): string {
+  if (!input) return "";
+  return input
+    .slice(0, maxLen)
+    .replace(/[\r\n]+/g, " ")
+    .replace(/[`${}\\]/g, "")
+    .trim();
+}
+
+/**
  * Primary AI handler using Gemma with pedagogical fallback
  */
 export async function generateNaiHint(params: GenerateHintParams): Promise<GenerateHintResult> {
   const { topicSlug, challengeQuestion, hintLevel, userAttempts } = params;
   const naiMood = hintLevel === 4 ? "teaching" : "hinting";
 
+  const safeTopicSlug = sanitizePromptText(topicSlug, 100);
+  const safeChallengeQuestion = sanitizePromptText(challengeQuestion, 400);
+
   // Build targeted pedagogical prompt for Gemma
   const prompt = `Anda adalah Nai, teman belajar STEM ceria dan sabar di platform Nalar.
 Tugas Anda memberikan bantuan ${hintLevel === 3 ? "Langkah Petunjuk Konseptual (Hint 3)" : "Jawaban Lengkap Solusi (Hint 4)"}.
-Topik Pembelajaran: ${topicSlug}
-Pertanyaan Tantangan: ${challengeQuestion}
+Topik Pembelajaran: ${safeTopicSlug}
+Pertanyaan Tantangan: ${safeChallengeQuestion}
 Snapshot usaha pengguna terakhir: ${JSON.stringify(userAttempts?.slice(-2) || [])}
 
 Aturan:

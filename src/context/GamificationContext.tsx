@@ -147,6 +147,10 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
   const completeModule = useCallback(
     (topicSlug: string) => {
+      if (progress.completedTopics.includes(topicSlug)) {
+        return;
+      }
+
       setProgress((prev) => {
         if (prev.completedTopics.includes(topicSlug)) return prev;
 
@@ -167,7 +171,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       });
       triggerCelebration();
     },
-    [triggerCelebration, setProgress]
+    [triggerCelebration, setProgress, progress.completedTopics]
   );
 
   const resetProgress = useCallback(() => {

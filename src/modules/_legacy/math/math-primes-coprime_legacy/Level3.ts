@@ -1,0 +1,175 @@
+import { Level } from "@/types/level";
+import { challengeCoprimePair } from "./challenges";
+
+export const level3: Level = {
+  id: "primes-level-3",
+  index: 3,
+  tier: 2,
+  title: "Bilangan Koprima & Garis Pandang Kisi Koordinat",
+  description: "Memahami hubungan dua bilangan yang tidak berbagi faktor persekutuan selain 1.",
+  ahaMoment: "Dua bilangan tidak harus prima untuk menjadi saling prima (koprima): cukup jika mereka tidak berbagi satu pun faktor bersama!",
+  steps: [
+    {
+      id: "p3-s1",
+      type: "provoke",
+      title: "Dua Komposit yang Saling Asing",
+      naiExpression: "curious",
+      naiDialogue: "Angka 8 (2³) dan 9 (3²) keduanya bukan prima. Tapi bisakah kamu menemukan faktor bersama di antara keduanya selain 1?",
+      provoke: {
+        hookTitle: "Mengapa 8 dan 9 Saling Prima?",
+        hookText: "Faktor dari 8 adalah 1, 2, 4, 8. Faktor dari 9 adalah 1, 3, 9. Keduanya adalah bilangan komposit, tetapi satu-satunya faktor persekutuan mereka adalah 1.",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 12, coprimeA: 8, coprimeB: 9 },
+        question: "Disebut apakah pasangan dua bilangan yang memiliki FPB = 1?",
+        options: [
+          {
+            id: "opt-coprime-def",
+            text: "Bilangan Koprima (Relatively Prime)",
+            responseText: "Tepat sekali! Koprima adalah relasi antara dua bilangan yang tidak berbagi pembagi bersama selain angka 1.",
+          },
+          {
+            id: "opt-twin-def",
+            text: "Bilangan Prima Kembar",
+            responseText: "Prima kembar adalah dua bilangan prima yang berselisih 2 (seperti 3 dan 5, atau 11 dan 13).",
+          },
+        ],
+      },
+    },
+    {
+      id: "p3-s2",
+      type: "predict",
+      title: "Garis Pandang Kisi Bebas Hambatan",
+      naiExpression: "thinking",
+      naiDialogue: "Jika kamu berdiri di (0,0) menatap titik (8, 9) di grid kebun pohon, apakah pandanganmu terhalang pohon lain?",
+      predict: {
+        scenarioTitle: "Eksperimen Kebun Euclid (Orchard Problem)",
+        scenarioText: "Sebuah titik koordinat integer (x, y) terlihat langsung dari (0,0) tanpa terhalang jika garis pandangnya tidak melewati titik integer lain.",
+        question: "Apakah garis pandang ke titik (8, 9) terhalang atau bebas hambatan?",
+        options: [
+          {
+            id: "pred-clear-view",
+            text: "Bebas hambatan! Karena FPB(8, 9) = 1, tidak ada titik integer di antara (0,0) dan (8,9)",
+            isCorrect: true,
+            feedback: "Benar! Titik (4, 6) terhalang oleh (2, 3) karena FPB(4,6) = 2. Namun (8, 9) bebas hambatan karena koprima!",
+          },
+          {
+            id: "pred-blocked-view",
+            text: "Terhalang oleh titik tengah",
+            isCorrect: false,
+            feedback: "Titik tengah (4, 4.5) bukan koordinat bilangan bulat, jadi tidak ada pohon integer yang menghalangi.",
+          },
+        ],
+        simulationLabel: "Uji Garis Pandang!",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 12, coprimeA: 8, coprimeB: 9 },
+        simulationVariables: { numberN: 12, coprimeA: 8, coprimeB: 9 },
+      },
+    },
+    {
+      id: "p3-s3",
+      type: "guided",
+      title: "Simulator Garis Pandang Koprima",
+      naiExpression: "happy",
+      naiDialogue: "Pilih tab Garis Pandang Koprima, lalu ubah koordinat A dan B untuk melihat garis hijau (bebas) atau merah (terhalang)!",
+      guided: {
+        instructionTitle: "Visualisasi Kisi Resonansi Koprima",
+        instructionText: "Atur nilai A dan B pada kanvas koordinat untuk mengamati bagaimana FPB menentukan status garis pandang.",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 12, coprimeA: 8, coprimeB: 9 },
+        observationTable: {
+          headers: ["Koordinat (A, B)", "Nilai FPB(A, B)", "Status Garis Pandang"],
+          rows: [
+            { parameter: "(8, 9)", expectedValue: "FPB = 1", unit: "Garis Hijau (Koprima)" },
+            { parameter: "(6, 8)", expectedValue: "FPB = 2", unit: "Garis Merah (Terhalang di 3,4)" },
+          ],
+        },
+        discoveryQuestion: {
+          prompt: "Kapan sebuah pecahan A/B berada dalam bentuk paling sederhana (tidak bisa disederhanakan lagi)?",
+          options: [
+            "Jika pembilang A dan penyebut B saling koprima: FPB(A, B) = 1",
+            "Hanya jika pembilangnya bilangan prima",
+            "Hanya jika penyebutnya bilangan ganjil",
+          ],
+          correctOption: "Jika pembilang A dan penyebut B saling koprima: FPB(A, B) = 1",
+          insight: "Pecahan A/B tak tereduksi jika dan hanya jika A ⊥ B (saling koprima).",
+        },
+      },
+    },
+    {
+      id: "p3-s4",
+      type: "formalize",
+      title: "Definisi Bilangan Koprima",
+      naiExpression: "neutral",
+      naiDialogue: "Mari tuangkan definisi relasi koprima ke dalam KaTeX.",
+      formalize: {
+        title: "Definisi Formal Relasi Koprima",
+        prompt: "Lengkapi definisi formal dua bilangan saling koprima berikut:",
+        formulaTemplate: "a \\perp b \\iff \\gcd(a, b) = [blank1] \\quad \\text{dan dua prima berbeda } p \\neq q \\implies \\gcd(p, q) = [blank2]",
+        blanks: [
+          { id: "blank1", label: "Nilai FPB", options: ["1", "0", "a \\cdot b"], correctOption: "1" },
+          { id: "blank2", label: "FPB Dua Prima", options: ["1", "2", "p"], correctOption: "1" },
+        ],
+        resolvedFormulaKaTeX: "a \\perp b \\iff \\gcd(a, b) = 1 \\quad \\text{dan } p \\neq q \\implies \\gcd(p, q) = 1",
+        explanation: "Dua bilangan disebut relatif prima jika tidak berbagi pembagi bersama selain 1. Dua bilangan prima berbeda selalu saling koprima.",
+      },
+    },
+    {
+      id: "p3-s5",
+      type: "check",
+      title: "Deteksi Pasangan Koprima",
+      naiExpression: "thinking",
+      naiDialogue: "Manakah dari pasangan bilangan berikut yang BUKAN merupakan pasangan koprima?",
+      check: {
+        question: "Manakah dari pasangan berikut yang BUKAN pasangan koprima?",
+        checkType: "multiple_choice",
+        options: [
+          { id: "opt-15-25", text: "(15, 25) karena keduanya habis dibagi 5 (FPB = 5 ≠ 1)", isCorrect: true, explanation: "Tepat sekali! 15 dan 25 berbagi faktor persekutuan 5, sehingga bukan koprima." },
+          { id: "opt-14-15", text: "(14, 15)", isCorrect: false, explanation: "14 dan 15 adalah bilangan berurutan, sehingga FPB-nya selalu 1 (koprima)." },
+          { id: "opt-9-28", text: "(9, 28)", isCorrect: false, explanation: "9 = 3² dan 28 = 2² × 7, tidak berbagi faktor bersama selain 1 (koprima)." },
+        ],
+        explanation: "FPB(15, 25) = 5 ≠ 1, jadi (15, 25) bukan pasangan koprima.",
+      },
+    },
+    {
+      id: "p3-s6",
+      type: "sandbox",
+      title: "Playground Garis Pandang Koprima",
+      naiExpression: "happy",
+      naiDialogue: "Atur koordinat A dan B di kanvas untuk mengeksplorasi garis pandang bebas hambatan.",
+      sandbox: {
+        title: "Simulasi Titik Pandang Koordinat",
+        instructions: "Ubah koordinat A dan B untuk melihat garis pandang hijau atau merah.",
+        interactiveComponentSlug: "math-primes-coprime",
+        initialVariables: { numberN: 12, coprimeA: 7, coprimeB: 5 },
+      },
+    },
+    {
+      id: "p3-s7",
+      type: "challenge",
+      title: "Tantangan: Garis Pandang Bebas Koprima (A = 7, B = 5)",
+      naiExpression: "neutral",
+      naiDialogue: "Atur koordinat A = 7 dan koordinat B = 5 sehingga garis pandang berwarna hijau bebas hambatan (FPB = 1)!",
+      challenge: challengeCoprimePair,
+    },
+    {
+      id: "p3-s8",
+      type: "reflect",
+      title: "Refleksi Level 3: Harmoni Tanpa Faktor Bersama",
+      naiExpression: "celebrating",
+      naiDialogue: "Koprima adalah konsep relasional: tentang keharmonisan hubungan antara dua bilangan!",
+      reflect: {
+        title: "Level 3 Tuntas: Bilangan Relatif Prima (Koprima)",
+        takeaways: [
+          "Dua bilangan koprima tidak memiliki faktor persekutuan selain 1 (FPB = 1).",
+          "Garis pandang dari (0,0) ke (A, B) bebas hambatan jika dan hanya jika A ⊥ B.",
+          "Koprima adalah syarat mutlak pecahan paling sederhana dan eksistensi invers modular.",
+        ],
+        connectionText: "Di Level 4, kita akan menghitung berapa banyak bilangan yang koprima dengan n lewat FUNGSI TOTIENT EULER φ(n)!",
+        nextLevelTitle: "Level 4: Fungsi Totient Euler & Fondasi RSA",
+        badgeToUnlock: "pattern-seeker",
+        xpReward: 50,
+        formulaKaTeX: "\\gcd(a, b) = 1",
+      },
+    },
+  ],
+};

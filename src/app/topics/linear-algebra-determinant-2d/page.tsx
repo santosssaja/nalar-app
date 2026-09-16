@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/math/linear-algebra-determinant-2d/InteractiveLesson";
+import { InteractiveLesson } from "@/modules/_legacy/math/linear-algebra-determinant-2d_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {

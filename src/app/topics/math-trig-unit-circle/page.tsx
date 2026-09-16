@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InteractiveLesson } from "@/modules/math/math-trig-unit-circle/InteractiveLesson";
+import { InteractiveLesson } from "@/modules/_legacy/math/math-trig-unit-circle_legacy/InteractiveLesson";
 import { TopicModuleView } from "@/components/learning/TopicModuleView";
 
 export const metadata: Metadata = {

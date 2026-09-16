@@ -2,7 +2,9 @@ import { CurriculumTreeData } from "./types";
 
 export const mathTreeData: CurriculumTreeData = {
   nodes: [
-    // Track 1: Aritmetika & Teori Bilangan (Number Theory & Cryptography)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 1: Bilangan & Kriptografi (Number Theory)
+    // ═══════════════════════════════════════════════════════
     {
       id: "math-real-numbers",
       slug: "math-real-numbers-line",
@@ -11,11 +13,11 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Fondasi nalar bilangan bulat, pecahan, rasio, dan garis bilangan berkesinambungan.",
+      description: "Fondasi bilangan bulat, pecahan, rasio, garis bilangan, dan operasi translasi/dilatasi.",
       xp: 100,
       isAvailable: true,
       route: "/topics/math-real-numbers-line",
-      position: { x: 380, y: 60 },
+      position: { x: 300, y: 60 },
     },
     {
       id: "arithmetic-modular-clock",
@@ -25,11 +27,11 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Modulo sebagai rotasi jam dinding, sisa bagi siklis, dan pola kurva kardioid.",
+      description: "Modulo sebagai rotasi jam dinding, sisa bagi siklis, pola kardioid, dan generator prima.",
       xp: 120,
       isAvailable: true,
       route: "/topics/arithmetic-modular-clock",
-      position: { x: 60, y: 240 },
+      position: { x: 120, y: 240 },
     },
     {
       id: "math-euclid",
@@ -39,11 +41,11 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Pengubinan persegi panjang dengan bujur sangkar terbesar untuk mencari faktor persekutuan.",
+      description: "Pengubinan persegi panjang, FPB, KPK, Identitas Bézout, dan kasus terburuk Fibonacci.",
       xp: 110,
       isAvailable: true,
       route: "/topics/math-euclid",
-      position: { x: 380, y: 240 },
+      position: { x: 480, y: 240 },
     },
     {
       id: "math-prime-factorization",
@@ -53,11 +55,11 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Teorema dasar aritmetika, bilangan prima sebagai atom bilangan, saringan Eratosthenes, dan pilar RSA.",
+      description: "Teorema dasar aritmetika, Eratosthenes, koprima, fungsi Euler, dan Teorema Fermat.",
       xp: 130,
       isAvailable: true,
       route: "/topics/math-primes-coprime",
-      position: { x: 220, y: 440 },
+      position: { x: 300, y: 420 },
     },
     {
       id: "math-cryptography",
@@ -67,13 +69,15 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "v2.0",
       level: 3,
-      description: "Kunci publik RSA, pertukaran Diffie-Hellman, dan kurva eliptik berbasis aritmetika modulo.",
+      description: "Kunci publik RSA, pertukaran Diffie-Hellman, dan kurva eliptik.",
       xp: 180,
       isAvailable: false,
-      position: { x: 220, y: 660 },
+      position: { x: 300, y: 600 },
     },
 
-    // Track 2: Aljabar & Aljabar Linear (Algebra & Linear Algebra)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 2: Aljabar & Linear Algebra
+    // ═══════════════════════════════════════════════════════
     {
       id: "math-elementary-algebra",
       slug: "math-elementary-algebra",
@@ -82,10 +86,10 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Manipulasi kesetaraan variabel, sistem persamaan dua variabel, dan timbangan logika.",
+      description: "Persamaan linear, sistem persamaan, pertidaksamaan, dan timbangan logika.",
       xp: 60,
       isAvailable: false,
-      position: { x: 700, y: 240 },
+      position: { x: 720, y: 240 },
     },
     {
       id: "linear-algebra-determinant-2d",
@@ -95,11 +99,11 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "mvp",
       level: 3,
-      description: "Faktor skala luas spasial hasil transformasi matriks basis koordinat 2D.",
+      description: "Faktor skala luas spasial, singularitas, dan orientasi transformasi matriks.",
       xp: 120,
       isAvailable: true,
       route: "/topics/linear-algebra-determinant-2d",
-      position: { x: 700, y: 440 },
+      position: { x: 720, y: 420 },
     },
     {
       id: "math-vector-spaces",
@@ -109,13 +113,15 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "v1.1",
       level: 3,
-      description: "Kombinasi linear, kebebasan linear, basis, dan dimensi ruang dimensi-n.",
+      description: "Kombinasi linear, kebebasan linear, basis, dan dimensi ruang vektor.",
       xp: 140,
       isAvailable: false,
-      position: { x: 700, y: 660 },
+      position: { x: 720, y: 600 },
     },
 
-    // Track 3: Fungsi & Kalkulus (Functions & Calculus)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 3: Fungsi & Kalkulus
+    // ═══════════════════════════════════════════════════════
     {
       id: "math-functions-graphs",
       slug: "math-functions-graphs",
@@ -124,10 +130,10 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Pemetaan domain ke kodomain, transformasi translasi, dilatasi, dan kurva reaktif.",
+      description: "Domain kodomain, transformasi fungsi, dan jenis-jenis kurva.",
       xp: 90,
       isAvailable: false,
-      position: { x: 1020, y: 340 },
+      position: { x: 960, y: 240 },
     },
     {
       id: "math-limits-continuity",
@@ -137,38 +143,38 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Perilaku fungsi saat mendekati titik kritis dan definisi intuisi limit.",
+      description: "Intuisi limit, limit tak hingga, dan titik diskontinuitas.",
       xp: 100,
       isAvailable: false,
-      position: { x: 1020, y: 520 },
+      position: { x: 960, y: 420 },
     },
     {
       id: "math-differential-calculus",
-      slug: "math-differential-calculus",
+      slug: "math-calculus-tangent",
       title: "Kalkulus Diferensial",
       domain: "math",
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Garis singgung, laju perubahan sesaat, dan optimasi nilai ekstrem fungsi.",
+      description: "Garis singgung, laju perubahan sesaat, dan optimasi nilai ekstrem.",
       xp: 120,
       isAvailable: true,
       route: "/topics/math-calculus-tangent",
-      position: { x: 1020, y: 700 },
+      position: { x: 960, y: 600 },
     },
     {
       id: "math-integral-calculus",
-      slug: "math-integral-calculus",
+      slug: "math-calculus-riemann",
       title: "Kalkulus Integral",
       domain: "math",
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Akumulasi luas di bawah kurva dan teorema dasar kalkulus.",
+      description: "Akumulasi luas di bawah kurva, Riemann sum, dan teorema dasar kalkulus.",
       xp: 130,
       isAvailable: true,
       route: "/topics/math-calculus-riemann",
-      position: { x: 1020, y: 880 },
+      position: { x: 960, y: 780 },
     },
     {
       id: "math-multivariable-calculus",
@@ -178,13 +184,15 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "scholar",
       phase: "v1.1",
       level: 3,
-      description: "Turunan parsial, gradien medan skalar, dan integral lipat pada permukaan 3D.",
+      description: "Turunan parsial, gradien, dan integral lipat pada permukaan 3D.",
       xp: 160,
       isAvailable: false,
-      position: { x: 860, y: 1060 },
+      position: { x: 960, y: 960 },
     },
 
-    // Track 4: Geometri & Logika Formal (Geometry & Discrete Logic)
+    // ═══════════════════════════════════════════════════════
+    // TRACK 4: Geometri & Logika
+    // ═══════════════════════════════════════════════════════
     {
       id: "math-logic-prop",
       slug: "math-logic-prop",
@@ -193,10 +201,10 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Tabel kebenaran, implikasi logis, dan penalaran deduktif formal.",
+      description: "Tabel kebenaran, implikasi, kontraposisi, dan gerbang logika.",
       xp: 65,
       isAvailable: false,
-      position: { x: 1360, y: 60 },
+      position: { x: 1260, y: 60 },
     },
     {
       id: "math-euclidean-geometry",
@@ -206,49 +214,54 @@ export const mathTreeData: CurriculumTreeData = {
       stage: "explorer",
       phase: "mvp",
       level: 1,
-      description: "Aksioma bidang, sudut, segitiga, dan pembuktian visual Teorema Pythagoras.",
+      description: "Aksioma bidang, sudut, segitiga, dan pembuktian visual Pythagoras.",
       xp: 70,
       isAvailable: false,
-      position: { x: 1360, y: 240 },
+      position: { x: 1260, y: 240 },
     },
     {
       id: "math-trig-unit-circle",
       slug: "math-trig-unit-circle",
-      title: "Lingkaran Satuan Trigonometri",
+      title: "Trigonometri Lingkaran Satuan",
       domain: "math",
       stage: "navigator",
       phase: "mvp",
       level: 2,
-      description: "Proyeksi spasial sinus, kosinus, tangen, dan identitas Pythagoras pada lingkaran satuan.",
+      description: "Sinus, kosinus, tangen, identitas, dan proyeksi spasial pada lingkaran satuan.",
       xp: 100,
       isAvailable: true,
       route: "/topics/math-trig-unit-circle",
-      position: { x: 1360, y: 440 },
+      position: { x: 1260, y: 420 },
     },
   ],
+
   edges: [
-    // Track 1
+    // Track 1: Bilangan & Kriptografi
     { id: "e-real-clock", source: "math-real-numbers", target: "arithmetic-modular-clock" },
     { id: "e-real-euclid", source: "math-real-numbers", target: "math-euclid" },
     { id: "e-clock-prime", source: "arithmetic-modular-clock", target: "math-prime-factorization" },
     { id: "e-euclid-prime", source: "math-euclid", target: "math-prime-factorization" },
     { id: "e-prime-crypto", source: "math-prime-factorization", target: "math-cryptography" },
 
-    // Track 2
+    // Track 2: Aljabar
     { id: "e-real-alg", source: "math-real-numbers", target: "math-elementary-algebra" },
     { id: "e-alg-det", source: "math-elementary-algebra", target: "linear-algebra-determinant-2d" },
     { id: "e-det-vectors", source: "linear-algebra-determinant-2d", target: "math-vector-spaces" },
 
-    // Track 3
+    // Track 3: Kalkulus
     { id: "e-alg-func", source: "math-elementary-algebra", target: "math-functions-graphs" },
     { id: "e-func-limits", source: "math-functions-graphs", target: "math-limits-continuity" },
     { id: "e-limits-diff", source: "math-limits-continuity", target: "math-differential-calculus" },
     { id: "e-diff-integ", source: "math-differential-calculus", target: "math-integral-calculus" },
-    { id: "e-vectors-multi", source: "math-vector-spaces", target: "math-multivariable-calculus" },
     { id: "e-integ-multi", source: "math-integral-calculus", target: "math-multivariable-calculus" },
+    { id: "e-vectors-multi", source: "math-vector-spaces", target: "math-multivariable-calculus" },
 
-    // Track 4
+    // Track 4: Geometri
     { id: "e-logic-geo", source: "math-logic-prop", target: "math-euclidean-geometry" },
     { id: "e-geo-trig", source: "math-euclidean-geometry", target: "math-trig-unit-circle" },
+
+    // Cross-track connections
+    { id: "e-prime-det", source: "math-prime-factorization", target: "linear-algebra-determinant-2d", label: "modular arithmetic" },
+    { id: "e-trig-wave", source: "math-trig-unit-circle", target: "math-integral-calculus", label: "sin/cos integration" },
   ],
 };
